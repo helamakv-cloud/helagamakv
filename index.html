@@ -291,7 +291,7 @@
                 <div class="card" id="searchCard">
                     <h3 class="section-title">ශිෂ්‍ය ප්‍රතිඵල සෙවීම (Search Marks)</h3>
                     <div class="flex-row" style="align-items: center; margin-top: 15px;">
-                        <input type="text" id="searchIdInput" placeholder="ශිෂ්‍ය අංකය ඇතුළත් කරන්න (උදා: 1234)">
+                        <input type="text" id="searchIdInput" placeholder="ශිෂ්‍ය අංකය ඇතුළත් ক্ষমতায় (උදා: 1234)">
                         <div class="flex-row" style="width: 100%; gap: 10px;">
                             <button type="button" class="btn-submit" style="flex: 2; margin-top: 0; padding: 14px;" onclick="searchStudentById()">සොයන්න</button>
                             <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="clearSearchInputs()">Clear</button>
@@ -345,12 +345,15 @@
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">උපන් දිනය (Date of Birth)</label>
-                                <input type="date" id="reg_dob" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="reg_dob" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: center; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 10px; width: 100%; margin-top: 18px;">
-                                <label style="color: #cbd5e1; font-size: 13px; font-weight: 600; margin-right: 15px;">ශිෂ්‍යත්ව ලාභියෙක්ද? </label>
-                                <input type="radio" name="reg_scholarship" value="ඔව්" id="schol_yes" required style="width: auto; margin: 0 5px 0 0;"><label for="schol_yes" style="color: #f8fafc; margin-right: 15px; font-size: 13px;">ඔව්</label>
-                                <input type="radio" name="reg_scholarship" value="නැත" id="schol_no" required style="width: auto; margin: 0 5px 0 0;"><label for="schol_no" style="color: #f8fafc; font-size: 13px;">නැත</label>
+                            <div style="width: 100%; text-align: left;">
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">ශිෂ්‍යත්ව ලාභියෙක් ද?</label>
+                                <select id="reg_scholarship" required style="width: 100%; margin-top: 2px;">
+                                    <option value="" disabled selected>තෝරන්න</option>
+                                    <option value="ඔව්">ඔව්</option>
+                                    <option value="නැත">නැත</option>
+                                </select>
                             </div>
                         </div>
                         
@@ -412,18 +415,18 @@
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">පත්වීමේ දිනය (Appointment Date)</label>
-                                <input type="date" id="treg_appoint_date" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="treg_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">මෙම පාසලට පත්වු දිනය</label>
-                                <input type="date" id="treg_school_appoint_date" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="treg_school_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
                             </div>
                         </div>
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">වාරසටහන් අනුමත දිනය</label>
-                                <input type="date" id="treg_timetable_date" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="treg_timetable_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #0f172a; display: block; margin-top: 2px;">.</label>
@@ -466,10 +469,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // FIREBASE CONFIGURATION 
-        // (ඔබ ලබාදුන් තොරතුරු මෙහි නිවැරදිව ඇතුළත් කර ඇත)
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyADQ3WX1c1gkbx3WZAN4RZGmJ2R1lXzl2c",
             authDomain: "helagama-marks.firebaseapp.com",
@@ -481,42 +480,34 @@
             measurementId: "G-377N17NJMX"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Data Variables
         let studentsData = []; 
         let registeredStudents = []; 
         let registeredTeachers = []; 
         let myChart = null; 
 
         window.onload = function() {
-            // Firebase හරහා දත්ත ලබාගැනීම
             loadFromFirebase();
-            
             document.getElementById("gradeSelect").value = "11"; 
             loadSubjects();
             document.getElementById("gradeSelect").value = ""; 
             document.getElementById("subjectsContainer").innerHTML = ""; 
         };
 
-        // Firebase Read Data (Real-time synchronization)
         function loadFromFirebase() {
-            // Marks Data
             db.ref('hkMarksData').on('value', (snapshot) => {
                 studentsData = snapshot.val() || [];
                 updateTable(); 
                 updateChart();
             });
 
-            // Registered Students
             db.ref('hkRegStudents').on('value', (snapshot) => {
                 registeredStudents = snapshot.val() || [];
                 renderStudentsTable();
             });
 
-            // Registered Teachers
             db.ref('hkRegTeachers').on('value', (snapshot) => {
                 registeredTeachers = snapshot.val() || [];
                 renderTeachersTable();
@@ -568,9 +559,6 @@
             }
         });
 
-        // ==========================================
-        // Student Management (Write to Firebase)
-        // ==========================================
         document.getElementById("studentRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
             let phone = document.getElementById("reg_phone").value.trim();
@@ -578,7 +566,7 @@
                 alert("කරුණාකර නිවැරදි දුරකථන අංකයක් ඇතුළත් කරන්න (ඉලක්කම් 10 යි).");
                 return;
             }
-            let scholarshipStatus = document.querySelector('input[name="reg_scholarship"]:checked').value;
+            let scholarshipStatus = document.getElementById("reg_scholarship").value;
             let newStudent = {
                 admissionNo: document.getElementById("reg_admNo").value.trim(),
                 fullName: document.getElementById("reg_fullName").value.trim(),
@@ -599,7 +587,6 @@
                 alert("ශිෂ්‍ය තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
             }
 
-            // Firebase Save
             db.ref('hkRegStudents').set(registeredStudents);
             document.getElementById("studentRegForm").reset();
             loadStudentsForMarks(); 
@@ -638,17 +625,14 @@
                 document.getElementById("reg_initialName").value = s.nameInitials;
                 document.getElementById("reg_grade").value = s.grade;
                 document.getElementById("reg_dob").value = s.dob;
-                if(s.scholarship === "ඔව්") document.getElementById("schol_yes").checked = true;
-                else document.getElementById("schol_no").checked = true;
+                if(s.scholarship === "ඔව්") document.getElementById("reg_scholarship").value = "ඔව්";
+                else document.getElementById("reg_scholarship").value = "නැත";
                 document.getElementById("reg_address").value = s.address;
                 document.getElementById("reg_phone").value = s.phone;
                 window.scrollTo({ top: document.getElementById("regStudentFormCard").offsetTop, behavior: 'smooth' });
             }
         }
 
-        // ==========================================
-        // Teacher Management (Write to Firebase)
-        // ==========================================
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
             let phone = document.getElementById("treg_phone").value.trim();
@@ -678,7 +662,6 @@
                 alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
             }
 
-            // Firebase Save
             db.ref('hkRegTeachers').set(registeredTeachers);
             document.getElementById("teacherRegForm").reset();
         });
@@ -720,9 +703,6 @@
             }
         }
 
-        // ==========================================
-        // Marks Entry Logic (Write to Firebase)
-        // ==========================================
         function loadStudentsForMarks() {
             let grade = document.getElementById("gradeSelect").value;
             let drop = document.getElementById("selectedStudentDrop");
@@ -834,7 +814,6 @@
                 studentsData.push(studentRecord); 
             }
             
-            // Firebase Save
             db.ref('hkMarksData').set(studentsData);
             
             alert("නියමයි! ලකුණු සාර්ථකව සේව් වුණා.");
@@ -843,13 +822,9 @@
             clearMarksInputs(); 
         });
 
-        // ==========================================
-        // Reporting Logic
-        // ==========================================
         function clearAllData() {
             if (confirm("ඔබට විශ්වාසද සියලුම ලකුණු දත්ත පද්ධතියෙන් මකා දැමිය යුතු බව? (ලියාපදිංචි සිසුන් මකා නොදැමේ) මෙම ක්‍රියාව ආපසු හැරවිය නොහැක!")) {
                 studentsData = [];
-                // Firebase Delete
                 db.ref('hkMarksData').remove();
                 document.getElementById("searchResults").innerHTML = "";
                 alert("ලකුණු දත්ත සාර්ථකව මකා දමන ලදී.");
