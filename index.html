@@ -8,26 +8,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
+    <!-- Firebase Scripts (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    
     <style>
         /* --- Base Reset & Prevent Horizontal Scroll --- */
         * { box-sizing: border-box; -webkit-text-size-adjust: 100%;}
         html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; }
-        /* Modern Dark Theme Vibe */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 10px; }
 
-        /* --- Loading Overlay --- */
-        #loadingOverlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); z-index: 9999; text-align: center;
-            padding-top: 30vh; flex-direction: column; align-items: center; justify-content: flex-start;
-        }
-        .spinner {
-            border: 6px solid #334155; border-top: 6px solid #38bdf8; border-radius: 50%;
-            width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- Login Interface (Dark Modern Vibe) --- */
+        /* --- Login Interface --- */
         #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 15px;}
         .login-box { background: rgba(30, 41, 59, 0.95); padding: 40px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 400px; backdrop-filter: blur(10px);}
         .login-box h2 { margin: 0 0 10px; color: #f8fafc; font-size: 24px; font-weight: 700;}
@@ -40,22 +31,17 @@
 
         /* --- Main App Container --- */
         #mainApp { display: none; width: 100%; max-width: 100%; margin: 0 auto; padding: 5px; padding-bottom: 30px; }
-        
         .school-header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-align: center; padding: 20px; border-radius: 16px; margin-bottom: 20px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1);}
         .school-header h1 { margin: 0; font-size: clamp(20px, 5vw, 32px); font-weight: 800; letter-spacing: 1px;}
         .school-header h3 { margin: 8px 0 0 0; font-size: clamp(13px, 3vw, 18px); color: #e0e7ff; font-weight: 500;}
 
-        /* --- Tabs --- */
+        /* --- Tabs & Cards --- */
         .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
         .tab-btn { flex: 1 1 30%; background: #1e293b; border: 1px solid #334155; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.3s; color: #94a3b8; min-width: 120px;}
         .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
-        
-        /* Fixed Grid Blowout Issue */
         .dashboard { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; width: 100%; }
-        
-        /* --- Cards --- */
         .card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; min-width: 0; margin-bottom: 20px;}
         h3.section-title { margin-top: 0; color: #f8fafc; padding-bottom: 12px; border-bottom: 1px solid #334155; font-size: 18px; text-align: center; font-weight: 600;}
 
@@ -76,7 +62,6 @@
         .btn-print { background: linear-gradient(to right, #10b981, #059669); color: white; }
         .btn-pdf { background: linear-gradient(to right, #f43f5e, #e11d48); color: white; }
         .btn-clear { background: linear-gradient(to right, #64748b, #475569); color: white; border: none; }
-
         .table-filters { display: flex; gap: 10px; flex-wrap: wrap; background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 12px; width: 100%; justify-content: center;}
         .table-filters select, .table-filters button { flex: 1 1 30%; min-width: 120px; padding: 12px 10px; font-size: 14px;}
 
@@ -90,22 +75,20 @@
         .rank-col { background-color: rgba(234, 179, 8, 0.1); font-weight: bold; color: #facc15; font-size: 15px;}
         .serial-col { font-weight: bold; color: #64748b; }
         .term-badge { background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; white-space: nowrap; border: 1px solid rgba(59,130,246,0.3);}
-
         .chart-container { position: relative; width: 100%; height: 350px; margin-top: 20px;}
         .dev-footer { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; font-weight: 500; border-top: 1px solid #334155; margin-top: 20px;}
         .dev-footer span { color: #38bdf8; font-weight: bold; }
 
+        /* --- PDF & Print Handling --- */
         #printHeader { display: none; text-align: center; margin-bottom: 20px; }
         #printHeader h2 { margin: 0; color: #000; font-size: 24px; font-weight: bold; }
         #printHeader h4 { margin: 8px 0; color: #333; font-size: 16px; font-weight: 500;}
         #printHeader hr { border: 2px solid #000; margin-top: 15px; margin-bottom: 15px;}
-
         .search-result-box { background:#0f172a; border-radius:12px; padding:20px; margin-top:20px; text-align:left; border: 1px solid #3b82f6;}
         .search-result-box h4 { margin: 0 0 15px 0; color: #38bdf8; font-size: 18px;}
         .search-table { width: 100%; min-width: 100%; border-collapse: collapse;}
         .search-table th, .search-table td { border: 1px solid #334155; padding: 10px; font-size: 14px; text-align: center; color: #e2e8f0;}
         .print-only-header { display: none; }
-
         .hint-text { font-size: 12px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
         /* PDF Export Mode CSS (fixes invisible text on pdf) */
@@ -122,7 +105,7 @@
             .hide-print { display: none !important; }
         }
 
-        /* Mobile Responsive */
+        /* Responsive Settings */
         @media (max-width: 768px) {
             #mainApp { padding: 10px; }
             .card { padding: 15px; border-radius: 12px; }
@@ -185,7 +168,7 @@
                 <button type="submit" class="btn-login">Login</button>
             </form>
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -204,9 +187,7 @@
             <button class="tab-btn" id="btn-teachers" onclick="openTab('teachers')">👨‍🏫 ගුරු ලියාපදිංචිය</button>
         </div>
         
-        <!-- ========================================== -->
         <!-- TAB 1: ලකුණු කළමනාකරණය -->
-        <!-- ========================================== -->
         <div id="tab-marks" class="tab-content active">
             <div class="dashboard">
                 <div class="card" id="formCard">
@@ -341,9 +322,7 @@
             </div>
         </div>
 
-        <!-- ========================================== -->
         <!-- TAB 2: ශිෂ්‍ය ලියාපදිංචිය -->
-        <!-- ========================================== -->
         <div id="tab-students" class="tab-content">
             <div class="dashboard">
                 <div class="card" id="regStudentFormCard">
@@ -369,7 +348,7 @@
                                 <input type="date" id="reg_dob" required style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="display: flex; align-items: center; justify-content: center; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 10px; width: 100%; margin-top: 18px;">
-                                <label style="color: #cbd5e1; font-size: 13px; font-weight: 600; margin-right: 15px;">ශිෂ්‍යත්ව ලාභියෙක්ද? </label>
+                                <label style="color: #cbd5e1; font-size: 13px; font-weight: 600; margin-right: 15px;">ශිෂ්‍යත්වලාභියෙක්ද? </label>
                                 <input type="radio" name="reg_scholarship" value="ඔව්" id="schol_yes" required style="width: auto; margin: 0 5px 0 0;"><label for="schol_yes" style="color: #f8fafc; margin-right: 15px; font-size: 13px;">ඔව්</label>
                                 <input type="radio" name="reg_scholarship" value="නැත" id="schol_no" required style="width: auto; margin: 0 5px 0 0;"><label for="schol_no" style="color: #f8fafc; font-size: 13px;">නැත</label>
                             </div>
@@ -414,9 +393,7 @@
             </div>
         </div>
 
-        <!-- ========================================== -->
         <!-- TAB 3: ගුරු ලියාපදිංචිය -->
-        <!-- ========================================== -->
         <div id="tab-teachers" class="tab-content">
             <div class="dashboard">
                 <div class="card" id="regTeacherFormCard">
@@ -489,6 +466,25 @@
     </div>
 
     <script>
+        // ==========================================
+        // FIREBASE CONFIGURATION 
+        // (ඔබ ලබාදුන් තොරතුරු මෙහි නිවැරදිව ඇතුළත් කර ඇත)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADQ3WX1c1gkbx3WZAN4RZGmJ2R1lXzl2c",
+            authDomain: "helagama-marks.firebaseapp.com",
+            databaseURL: "https://helagama-marks-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "helagama-marks",
+            storageBucket: "helagama-marks.firebasestorage.app",
+            messagingSenderId: "617994405351",
+            appId: "1:617994405351:web:b95b499a40ec712b5a6942",
+            measurementId: "G-377N17NJMX"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         // Data Variables
         let studentsData = []; 
         let registeredStudents = []; 
@@ -496,23 +492,35 @@
         let myChart = null; 
 
         window.onload = function() {
-            loadFromLocalStorage();
+            // Firebase හරහා දත්ත ලබාගැනීම
+            loadFromFirebase();
+            
             document.getElementById("gradeSelect").value = "11"; 
             loadSubjects();
             document.getElementById("gradeSelect").value = ""; 
             document.getElementById("subjectsContainer").innerHTML = ""; 
-            updateTable(); 
-            renderStudentsTable();
-            renderTeachersTable();
         };
 
-        function loadFromLocalStorage() {
-            let savedMarks = localStorage.getItem("hkMarksData");
-            if (savedMarks) studentsData = JSON.parse(savedMarks);
-            let savedStudents = localStorage.getItem("hkRegStudents");
-            if (savedStudents) registeredStudents = JSON.parse(savedStudents);
-            let savedTeachers = localStorage.getItem("hkRegTeachers");
-            if (savedTeachers) registeredTeachers = JSON.parse(savedTeachers);
+        // Firebase Read Data (Real-time synchronization)
+        function loadFromFirebase() {
+            // Marks Data
+            db.ref('hkMarksData').on('value', (snapshot) => {
+                studentsData = snapshot.val() || [];
+                updateTable(); 
+                updateChart();
+            });
+
+            // Registered Students
+            db.ref('hkRegStudents').on('value', (snapshot) => {
+                registeredStudents = snapshot.val() || [];
+                renderStudentsTable();
+            });
+
+            // Registered Teachers
+            db.ref('hkRegTeachers').on('value', (snapshot) => {
+                registeredTeachers = snapshot.val() || [];
+                renderTeachersTable();
+            });
         }
 
         function clearMarksInputs() {
@@ -561,7 +569,7 @@
         });
 
         // ==========================================
-        // Student Management
+        // Student Management (Write to Firebase)
         // ==========================================
         document.getElementById("studentRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
@@ -591,9 +599,9 @@
                 alert("ශිෂ්‍ය තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
             }
 
-            localStorage.setItem("hkRegStudents", JSON.stringify(registeredStudents));
+            // Firebase Save
+            db.ref('hkRegStudents').set(registeredStudents);
             document.getElementById("studentRegForm").reset();
-            renderStudentsTable();
             loadStudentsForMarks(); 
         });
 
@@ -639,7 +647,7 @@
         }
 
         // ==========================================
-        // Teacher Management
+        // Teacher Management (Write to Firebase)
         // ==========================================
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
@@ -670,9 +678,9 @@
                 alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
             }
 
-            localStorage.setItem("hkRegTeachers", JSON.stringify(registeredTeachers));
+            // Firebase Save
+            db.ref('hkRegTeachers').set(registeredTeachers);
             document.getElementById("teacherRegForm").reset();
-            renderTeachersTable();
         });
 
         function renderTeachersTable() {
@@ -713,7 +721,7 @@
         }
 
         // ==========================================
-        // Marks Entry Logic 
+        // Marks Entry Logic (Write to Firebase)
         // ==========================================
         function loadStudentsForMarks() {
             let grade = document.getElementById("gradeSelect").value;
@@ -826,23 +834,23 @@
                 studentsData.push(studentRecord); 
             }
             
-            localStorage.setItem("hkMarksData", JSON.stringify(studentsData));
+            // Firebase Save
+            db.ref('hkMarksData').set(studentsData);
+            
             alert("නියමයි! ලකුණු සාර්ථකව සේව් වුණා.");
             document.getElementById("tableTermSelect").value = term;
             document.getElementById("tableGradeSelect").value = grade.toString();
             clearMarksInputs(); 
-            updateTable(); 
-            updateChart(); 
         });
 
         // ==========================================
-        // Reporting Logic & Ranking Lock
+        // Reporting Logic
         // ==========================================
         function clearAllData() {
             if (confirm("ඔබට විශ්වාසද සියලුම ලකුණු දත්ත පද්ධතියෙන් මකා දැමිය යුතු බව? (ලියාපදිංචි සිසුන් මකා නොදැමේ) මෙම ක්‍රියාව ආපසු හැරවිය නොහැක!")) {
                 studentsData = [];
-                localStorage.removeItem("hkMarksData");
-                updateTable(); updateChart();
+                // Firebase Delete
+                db.ref('hkMarksData').remove();
                 document.getElementById("searchResults").innerHTML = "";
                 alert("ලකුණු දත්ත සාර්ථකව මකා දමන ලදී.");
             }
@@ -935,7 +943,6 @@
                 });
 
                 row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
-                // Hide Lock on Print
                 if (!isAdvancedFilterActive) row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
@@ -954,7 +961,6 @@
                 });
 
                 row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
-                // Hide Pending icon on Print
                 if (!isAdvancedFilterActive) row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
@@ -967,7 +973,6 @@
             for(let i=0; i<completeCohort.length; i++){
                 if(i > 0 && completeCohort[i].total < prevTotal) rank = i + 1;
                 prevTotal = completeCohort[i].total;
-                // Hide lock symbol in print
                 if(completeCohort[i].id === recordId) return rank + ' <span class="hide-print">🔒</span>';
             }
             return 'Pending <span class="hide-print">⏳</span>';
@@ -1013,9 +1018,6 @@
             setTimeout(() => { document.body.classList.remove('print-search-mode'); let el = document.getElementById('search-print-style'); if (el) el.remove(); }, 1000);
         }
 
-        // ==========================================
-        // Fix PDF blank text by activating Light theme (.pdf-mode)
-        // ==========================================
         function downloadPDF() {
             if(studentsData.length === 0) { alert("PDF කිරීමට පෙර දත්ත ඇතුළත් කරන්න!"); return; }
             const element = document.getElementById('reportCard');
@@ -1025,9 +1027,7 @@
             document.getElementById('actionButtons').style.display = 'none';
             document.querySelectorAll('.table-filters').forEach(el => el.style.display = 'none'); 
             
-            // Add light layout so text shows properly in PDF 
             element.classList.add('pdf-mode');
-
             tableContainer.style.overflow = 'visible'; 
             tableContainer.style.display = 'table'; 
             tableContainer.style.width = '100%';
@@ -1047,7 +1047,7 @@
                 document.querySelectorAll('.table-filters').forEach(el => el.style.display = 'flex');
                 tableContainer.style.overflow = 'auto'; 
                 tableContainer.style.display = 'block';
-                element.classList.remove('pdf-mode'); // Revert to Dark Mode
+                element.classList.remove('pdf-mode'); 
             });
         }
 
