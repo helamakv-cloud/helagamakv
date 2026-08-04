@@ -655,16 +655,14 @@
             let timeTableDate = document.getElementById("treg_timetable_date").value;
             
             let rawPhone = document.getElementById("treg_phone").value.trim();
-            // දුරකථන අංකයේ ඇති හිස්තැන් හෝ ඉරි ස්වයංක්‍රීයව ඉවත් කිරීම
-            let phone = rawPhone.replace(/[\s-]/g, '');
+            let phone = rawPhone.replace(/[\s-]/g, ''); // හිස්තැන් ඉවත් කිරීම
 
             // 2. හිස් තැන් තිබේදැයි පරීක්ෂා කිරීම
             if(!id || !name || !nic || !address || !qual || !salaryNo || !appDate || !schoolAppDate || !timeTableDate || !rawPhone) {
                 alert("කරුණාකර පෝරමයේ ඇති සියලුම තොරතුරු සම්පූර්ණ කරන්න!");
-                return; // ක්‍රියාවලිය මෙතැනින් නවතී
+                return; 
             }
 
-            // 3. දුරකථන අංකය පරීක්ෂා කිරීම
             if (!/^\d{10}$/.test(phone)) {
                 alert("කරුණාකර නිවැරදි දුරකථන අංකයක් ඇතුළත් කරන්න (ඉලක්කම් 10 යි).");
                 return;
@@ -683,8 +681,12 @@
                 phone: phone
             };
 
-            let existingIdx = registeredTeachers.findIndex(t => t.id === newTeacher.id);
+            // දෝෂය නිවැරදි කළ ස්ථානය: 't' යනු null නොවන බව පරීක්ෂා කිරීම (t && t.id)
+            let existingIdx = registeredTeachers.findIndex(t => t && t.id === newTeacher.id);
             let isUpdate = existingIdx !== -1;
+
+            // Firebase හි ඇති හිස් දත්ත (null arrays) ඉවත් කිරීම
+            registeredTeachers = registeredTeachers.filter(t => t !== null && t !== undefined);
 
             if (isUpdate) {
                 registeredTeachers[existingIdx] = newTeacher;
@@ -713,6 +715,9 @@
             let tbody = document.getElementById("teachersRegTableBody");
             tbody.innerHTML = "";
             registeredTeachers.forEach(t => {
+                // null දත්ත වගුවේ පෙන්වීම මගහැරීම
+                if (!t) return;
+                
                 tbody.innerHTML += `
                     <tr>
                         <td style="font-weight:bold; color:#f43f5e;">${t.id}</td>
@@ -730,7 +735,7 @@
         }
 
         function editTeacher(id) {
-            let t = registeredTeachers.find(x => x.id === id);
+            let t = registeredTeachers.find(x => x && x.id === id);
             if(t) {
                 document.getElementById("treg_id").value = t.id;
                 document.getElementById("treg_name").value = t.name;
@@ -754,7 +759,7 @@
             document.getElementById("studentName").value = "";
 
             if(grade) {
-                let studentsInGrade = registeredStudents.filter(s => s.grade === grade);
+                let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
                 if(studentsInGrade.length > 0) {
                     drop.innerHTML = '<option value="" disabled selected>ශිෂ්‍යයා තෝරන්න (Select Student)</option>';
                     studentsInGrade.forEach(s => {
@@ -768,7 +773,7 @@
 
         function populateStudentHiddenFields() {
             let selectedAdmNo = document.getElementById("selectedStudentDrop").value;
-            let student = registeredStudents.find(s => s.admissionNo === selectedAdmNo);
+            let student = registeredStudents.find(s => s && s.admissionNo === selectedAdmNo);
             if(student) {
                 document.getElementById("studentId").value = student.admissionNo;
                 document.getElementById("studentName").value = student.nameInitials;
@@ -842,7 +847,7 @@
 
             let average = subjectCount > 0 ? parseFloat((total / subjectCount).toFixed(2)) : 0;
             let studentRecord = { id: id, name: name, term: term, grade: grade.toString(), fullClassName: "Grade " + grade, marks: studentMarks, total: total, average: average };
-            let existingIndex = studentsData.findIndex(s => s.id === id && s.term === term);
+            let existingIndex = studentsData.findIndex(s => s && s.id === id && s.term === term);
             
             if (existingIndex !== -1) {
                 let existingStudent = studentsData[existingIndex];
@@ -856,6 +861,9 @@
                 studentRecord.serialNo = studentsData.length + 1;
                 studentsData.push(studentRecord); 
             }
+            
+            // Firebase හි ඇති හිස් දත්ත (null arrays) ඉවත් කිරීම
+            studentsData = studentsData.filter(s => s !== null && s !== undefined);
             
             db.ref('hkMarksData').set(studentsData);
             
@@ -885,7 +893,7 @@
             let printSubText = "වාරය: " + selectedTerm + " | ශ්‍රේණිය: " + selectedGrade;
             document.getElementById("printSubHeader").innerText = printSubText;
 
-            let filteredData = studentsData.filter(s => s.term === selectedTerm && s.grade === selectedGrade);
+            let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
             let subjectSelect = document.getElementById("filterSubject");
             let currentSelectedSub = subjectSelect ? subjectSelect.value : "all";
             let uniqueSubjects = new Set();
@@ -1000,7 +1008,7 @@
             let searchId = document.getElementById("searchIdInput").value.trim();
             let resultsContainer = document.getElementById("searchResults");
             if(!searchId) { resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top:10px;'>කරුණාකර ශිෂ්‍ය අංකය ඇතුළත් කරන්න.</p>"; return; }
-            let foundRecords = studentsData.filter(s => s.id === searchId);
+            let foundRecords = studentsData.filter(s => s && s.id === searchId);
             if(foundRecords.length === 0) { resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top:10px;'>මෙම අංකය සහිත ප්‍රතිඵල පද්ධතියේ නොමැත.</p>"; return; }
 
             const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
@@ -1015,7 +1023,7 @@
             foundRecords.forEach(record => {
                 let reqCount = getReqSubCount(record.grade);
                 let isComplete = Object.keys(record.marks).length >= reqCount;
-                let sameGradeCohort = studentsData.filter(s => s.term === record.term && s.grade === record.grade);
+                let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
                 let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
                 
                 html += `<div class="search-result-box"><h4>👤 ${record.name} - ${record.fullClassName}</h4><div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: #94a3b8;">📅 ${record.term}</div><table class="search-table"><tr><th>විෂය (Subject)</th><th>ලකුණු (Marks)</th></tr>`;
@@ -1070,7 +1078,7 @@
         }
 
         function updateChart() {
-            let filteredChartData = studentsData.filter(s => s.term === document.getElementById("chartTermSelect").value && s.grade === document.getElementById("chartGradeSelect").value);
+            let filteredChartData = studentsData.filter(s => s && s.term === document.getElementById("chartTermSelect").value && s.grade === document.getElementById("chartGradeSelect").value);
             let uniqueSubjects = Array.from(new Set(filteredChartData.flatMap(s => Object.keys(s.marks))));
             let subjectAverages = uniqueSubjects.map(subject => {
                 let count = 0; let sum = 0;
