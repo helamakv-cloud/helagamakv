@@ -636,13 +636,19 @@
             }
         }
 
+        // === UPDATED TEACHER REGISTRATION LOGIC ===
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
-            let phone = document.getElementById("treg_phone").value.trim();
+
+            // දුරකථන අංකයේ ඇති හිස්තැන් (spaces) හෝ ඉරි (-) ස්වයංක්‍රීයව ඉවත් කිරීම
+            let rawPhone = document.getElementById("treg_phone").value.trim();
+            let phone = rawPhone.replace(/[\s-]/g, '');
+
             if (!/^\d{10}$/.test(phone)) {
                 alert("කරුණාකර නිවැරදි දුරකථන අංකයක් ඇතුළත් කරන්න (ඉලක්කම් 10 යි).");
                 return;
             }
+
             let newTeacher = {
                 id: document.getElementById("treg_id").value.trim(),
                 name: document.getElementById("treg_name").value.trim(),
@@ -657,16 +663,29 @@
             };
 
             let existingIdx = registeredTeachers.findIndex(t => t.id === newTeacher.id);
-            if(existingIdx !== -1) { 
-                registeredTeachers[existingIdx] = newTeacher; 
-                alert("ගුරු තොරතුරු සාර්ථකව Update කරන ලදී!");
-            } else { 
-                registeredTeachers.push(newTeacher); 
-                alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
+            let isUpdate = existingIdx !== -1;
+
+            if (isUpdate) {
+                registeredTeachers[existingIdx] = newTeacher;
+            } else {
+                registeredTeachers.push(newTeacher);
             }
 
-            db.ref('hkRegTeachers').set(registeredTeachers);
-            document.getElementById("teacherRegForm").reset();
+            // Firebase වෙත දත්ත යැවීම සහ Error Handling
+            db.ref('hkRegTeachers').set(registeredTeachers)
+                .then(() => {
+                    if (isUpdate) {
+                        alert("ගුරු තොරතුරු සාර්ථකව Update කරන ලදී!");
+                    } else {
+                        alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
+                    }
+                    document.getElementById("teacherRegForm").reset();
+                    renderTeachersTable(); // වගුව (Table) යාවත්කාලීන කිරීම
+                })
+                .catch((error) => {
+                    console.error("Firebase Error: ", error);
+                    alert("දත්ත සමුදායට ඇතුළත් කිරීමේදී දෝෂයක් ඇති විය: " + error.message);
+                });
         });
 
         function renderTeachersTable() {
