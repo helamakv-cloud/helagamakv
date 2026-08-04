@@ -171,7 +171,7 @@
                 <button type="submit" class="btn-login">Login</button>
             </form>
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -405,35 +405,35 @@
                 <div class="card" id="regTeacherFormCard">
                     <h3 class="section-title">නව ගුරු තොරතුරු ඇතුළත් කරන්න</h3>
                     <form id="teacherRegForm">
-                        <input type="text" id="treg_id" placeholder="ගුරු හැඳුනුම් අංකය (Teacher ID)" required>
-                        <input type="text" id="treg_name" placeholder="නම (Name)" required style="text-align: left; padding-left: 20px;">
-                        <input type="text" id="treg_nic" placeholder="ජාතික හැඳුනුම්පත් අංකය (NIC Number)" required style="text-align: left; padding-left: 20px;">
-                        <input type="text" id="treg_address" placeholder="ලිපිනය (Address)" required style="text-align: left; padding-left: 20px;">
+                        <input type="text" id="treg_id" placeholder="ගුරු හැඳුනුම් අංකය (Teacher ID)">
+                        <input type="text" id="treg_name" placeholder="නම (Name)" style="text-align: left; padding-left: 20px;">
+                        <input type="text" id="treg_nic" placeholder="ජාතික හැඳුනුම්පත් අංකය (NIC Number)" style="text-align: left; padding-left: 20px;">
+                        <input type="text" id="treg_address" placeholder="ලිපිනය (Address)" style="text-align: left; padding-left: 20px;">
                         
                         <div class="flex-row">
-                            <input type="text" id="treg_qualifications" placeholder="සුදුසුකම් (Qualifications)" required style="text-align: left; padding-left: 20px;">
-                            <input type="text" id="treg_salary_no" placeholder="වැටුප් අංකය (Salary No)" required style="text-align: left; padding-left: 20px;">
+                            <input type="text" id="treg_qualifications" placeholder="සුදුසුකම් (Qualifications)" style="text-align: left; padding-left: 20px;">
+                            <input type="text" id="treg_salary_no" placeholder="වැටුප් අංකය (Salary No)" style="text-align: left; padding-left: 20px;">
                         </div>
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">පත්වීමේ දිනය (Appointment Date)</label>
-                                <input type="text" id="treg_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="treg_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">මෙම පාසලට පත්වු දිනය</label>
-                                <input type="text" id="treg_school_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="treg_school_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
                             </div>
                         </div>
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">වාරසටහන් අනුමත දිනය</label>
-                                <input type="text" id="treg_timetable_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
+                                <input type="text" id="treg_timetable_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
                                 <label style="font-size: 12px; color: #0f172a; display: block; margin-top: 2px;">.</label>
-                                <input type="tel" id="treg_phone" placeholder="දුරකථන අංකය (Phone Number)" required style="margin-top: -3px;">
+                                <input type="tel" id="treg_phone" placeholder="දුරකථන අංකය (Phone Number)" style="margin-top: -3px;">
                             </div>
                         </div>
 
@@ -467,7 +467,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Konara</span> | 0714469232
+            Developer - <span>Kelum Koonara</span> | 0714469232
         </div>
     </div>
 
@@ -497,6 +497,9 @@
             loadSubjects();
             document.getElementById("gradeSelect").value = ""; 
             document.getElementById("subjectsContainer").innerHTML = ""; 
+            
+            // Remove required attributes from teacher form to handle via custom JS alerts
+            document.querySelectorAll('#teacherRegForm input').forEach(inp => inp.removeAttribute('required'));
         };
 
         function loadFromFirebase() {
@@ -636,29 +639,47 @@
             }
         }
 
-        // === UPDATED TEACHER REGISTRATION LOGIC ===
+        // === TEACHER REGISTRATION LOGIC ===
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
-            // දුරකථන අංකයේ ඇති හිස්තැන් (spaces) හෝ ඉරි (-) ස්වයංක්‍රීයව ඉවත් කිරීම
+            // 1. සියලුම දත්ත ලබාගැනීම
+            let id = document.getElementById("treg_id").value.trim();
+            let name = document.getElementById("treg_name").value.trim();
+            let nic = document.getElementById("treg_nic").value.trim();
+            let address = document.getElementById("treg_address").value.trim();
+            let qual = document.getElementById("treg_qualifications").value.trim();
+            let salaryNo = document.getElementById("treg_salary_no").value.trim();
+            let appDate = document.getElementById("treg_appoint_date").value;
+            let schoolAppDate = document.getElementById("treg_school_appoint_date").value;
+            let timeTableDate = document.getElementById("treg_timetable_date").value;
+            
             let rawPhone = document.getElementById("treg_phone").value.trim();
+            // දුරකථන අංකයේ ඇති හිස්තැන් හෝ ඉරි ස්වයංක්‍රීයව ඉවත් කිරීම
             let phone = rawPhone.replace(/[\s-]/g, '');
 
+            // 2. හිස් තැන් තිබේදැයි පරීක්ෂා කිරීම
+            if(!id || !name || !nic || !address || !qual || !salaryNo || !appDate || !schoolAppDate || !timeTableDate || !rawPhone) {
+                alert("කරුණාකර පෝරමයේ ඇති සියලුම තොරතුරු සම්පූර්ණ කරන්න!");
+                return; // ක්‍රියාවලිය මෙතැනින් නවතී
+            }
+
+            // 3. දුරකථන අංකය පරීක්ෂා කිරීම
             if (!/^\d{10}$/.test(phone)) {
                 alert("කරුණාකර නිවැරදි දුරකථන අංකයක් ඇතුළත් කරන්න (ඉලක්කම් 10 යි).");
                 return;
             }
 
             let newTeacher = {
-                id: document.getElementById("treg_id").value.trim(),
-                name: document.getElementById("treg_name").value.trim(),
-                nic: document.getElementById("treg_nic").value.trim(),
-                address: document.getElementById("treg_address").value.trim(),
-                qualifications: document.getElementById("treg_qualifications").value.trim(),
-                salaryNo: document.getElementById("treg_salary_no").value.trim(),
-                appointDate: document.getElementById("treg_appoint_date").value,
-                schoolAppointDate: document.getElementById("treg_school_appoint_date").value,
-                timetableDate: document.getElementById("treg_timetable_date").value,
+                id: id,
+                name: name,
+                nic: nic,
+                address: address,
+                qualifications: qual,
+                salaryNo: salaryNo,
+                appointDate: appDate,
+                schoolAppointDate: schoolAppDate,
+                timetableDate: timeTableDate,
                 phone: phone
             };
 
@@ -671,16 +692,16 @@
                 registeredTeachers.push(newTeacher);
             }
 
-            // Firebase වෙත දත්ත යැවීම සහ Error Handling
+            // දත්ත සමුදායට (Firebase) යැවීම
             db.ref('hkRegTeachers').set(registeredTeachers)
                 .then(() => {
                     if (isUpdate) {
-                        alert("ගුරු තොරතුරු සාර්ථකව Update කරන ලදී!");
+                        alert("ගුරු තොරතුරු සාර්ථකව යාවත්කාලීන (Update) කරන ලදී!");
                     } else {
                         alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
                     }
                     document.getElementById("teacherRegForm").reset();
-                    renderTeachersTable(); // වගුව (Table) යාවත්කාලීන කිරීම
+                    renderTeachersTable(); 
                 })
                 .catch((error) => {
                     console.error("Firebase Error: ", error);
