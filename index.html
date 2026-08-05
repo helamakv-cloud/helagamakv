@@ -154,22 +154,49 @@
         }
     </style>
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#3b82f6">
-<link rel="apple-touch-icon" href="icon-192x192.png">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
 </head>
 <body>
 
-    <!-- Login -->
+    <!-- Login & Student Portal -->
     <div id="loginScreen">
-        <div class="login-box">
+        <!-- Admin Login Box -->
+        <div class="login-box" id="adminLoginBox">
             <h2>Welcome Back!</h2>
             <p>Helagama K.V.<br>Marks Analyzing System</p>
             <form id="loginForm">
                 <input type="text" id="username" placeholder="Username" required>
                 <input type="password" id="password" placeholder="Password" required>
                 <div id="loginError" class="login-error">Username හෝ Password වැරදියි!</div>
-                <button type="submit" class="btn-login">Login</button>
+                <button type="submit" class="btn-login">Login as Admin</button>
             </form>
+            
+            <!-- Student Result Button -->
+            <hr style="border: 1px solid #334155; margin: 25px 0 15px 0;">
+            <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
+            <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ශිෂ්‍ය ප්‍රතිඵල බලන්න</button>
+            
+            <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
+                Developer - Kelum Koonara | 0714469232
+            </div>
+        </div>
+
+        <!-- Student Search Box (Newly Added) -->
+        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px;">
+            <h2 style="color: #38bdf8;">Helagama K.V.</h2>
+            <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
+            
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">ඔබගේ ඇතුළත්වීමේ අංකය (Admission No):</label>
+                <input type="text" id="portalSearchInput" placeholder="උදා: 1234">
+            </div>
+            
+            <button class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
+            <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
+            
+            <div id="portalSearchResults" style="margin-top: 20px; max-height: 400px; overflow-y: auto; text-align: left;"></div>
+            
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
                 Developer - Kelum Koonara | 0714469232
             </div>
@@ -1116,6 +1143,90 @@
                     plugins: { legend: { display: false } }
                 } 
             });
+        }
+
+        // ==========================================
+        // STUDENT PORTAL FUNCTIONS (Login Screen)
+        // ==========================================
+        
+        function showStudentPortal() {
+            document.getElementById("adminLoginBox").style.display = "none";
+            document.getElementById("studentSearchBox").style.display = "block";
+        }
+
+        function showAdminLogin() {
+            document.getElementById("studentSearchBox").style.display = "none";
+            document.getElementById("adminLoginBox").style.display = "block";
+            // Clear previous searches
+            document.getElementById("portalSearchInput").value = "";
+            document.getElementById("portalSearchResults").innerHTML = "";
+        }
+
+        function searchInPortal() {
+            let searchId = document.getElementById("portalSearchInput").value.trim();
+            let resultsContainer = document.getElementById("portalSearchResults");
+            
+            if(!searchId) { 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>කරුණාකර ඇතුළත්වීමේ අංකය ඇතුළත් කරන්න.</p>"; 
+                return; 
+            }
+
+            // Database එකෙන් Load වූ දත්ත භාවිතා කර සෙවීම
+            let foundRecords = studentsData.filter(s => s && s.id === searchId);
+            
+            if(foundRecords.length === 0) { 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය පරීක්ෂා කරන්න.</p>"; 
+                return; 
+            }
+
+            // වාර අනුපිළිවෙලට සැකසීම
+            const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
+            foundRecords.sort((a, b) => (termOrder[a.term] || 99) - (termOrder[b.term] || 99));
+
+            let html = "";
+            
+            foundRecords.forEach(record => {
+                let reqCount = getReqSubCount(record.grade);
+                let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
+                let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
+                
+                html += `
+                <div class="search-result-box" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6;">
+                    <h4 style="color: #38bdf8; margin: 0 0 5px 0; font-size: 16px;">👤 ${record.name} - ${record.fullClassName}</h4>
+                    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; font-weight: bold;">📅 වාරය: ${record.term}</div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent;">
+                        <tr>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2);">විෂය</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2);">ලකුණු</th>
+                        </tr>`;
+                
+                for (let [sub, mark] of Object.entries(record.marks)) { 
+                    html += `
+                        <tr>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0;">${sub}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark}</td>
+                        </tr>`; 
+                }
+                
+                html += `
+                        <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.total}</th>
+                        </tr>
+                        <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">සාමාන්‍යය:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.average}</th>
+                        </tr>
+                        <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">ස්ථානය:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${classRankDisplay}</th>
+                        </tr>
+                    </table>
+                </div>`;
+            });
+            
+            resultsContainer.innerHTML = html;
         }
     </script>
 </body>
