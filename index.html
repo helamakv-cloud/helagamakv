@@ -1244,8 +1244,7 @@
                 let reqCount = getReqSubCount(record.grade);
                 let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
                 let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
-                
-                let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
+                let totalStudentsInClass = sameGradeCohort.length;
                 
                 html += `<div class="search-result-box" style="width: 100%; box-sizing: border-box;">
                             <h4>👤 ${record.name} - ${record.fullClassName}</h4>
@@ -1260,22 +1259,10 @@
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
-                    if (gradeCounts[grade] !== undefined) gradeCounts[grade]++;
                     html += `<tr><td style="text-align:left; white-space: normal;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                let gradesSummaryArray = [];
-                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
-                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
-                });
-                let gradesSummary = gradesSummaryArray.join(', ') || '-';
-
-                html += `<tr style="background: rgba(167, 139, 250, 0.1); color:#a78bfa;">
-                            <th style="text-align:right;">ප්‍රතිඵලය (Grades):</th>
-                            <th style="font-size:15px; text-align: center;">${gradesSummary}</th>
-                            <th style="text-align: center;">-</th>
-                         </tr>
-                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right;">එකතුව (Total):</th>
                             <th style="font-size:15px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
@@ -1288,6 +1275,11 @@
                          <tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;">
                             <th style="text-align:right;">ස්ථානය (Rank):</th>
                             <th style="font-size:16px; text-align: center;">${classRankDisplay}</th>
+                            <th style="text-align: center;">-</th>
+                         </tr>
+                         <tr style="background: rgba(236, 72, 153, 0.2); color:#f472b6;">
+                            <th style="text-align:right;">පන්තියේ සිසුන් ගණන:</th>
+                            <th style="font-size:16px; text-align: center;">${totalStudentsInClass}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
                     </table>
@@ -1347,8 +1339,7 @@
                 let reqCount = getReqSubCount(record.grade);
                 let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
                 let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
-                
-                let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
+                let totalStudentsInClass = sameGradeCohort.length;
                 
                 html += `
                 <div class="search-result-box portal-result-card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;">
@@ -1356,7 +1347,7 @@
                     <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; font-weight: bold;">📅 වාරය: ${record.term}</div>
                     
                     <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent; min-width: 300px;">
                         <tr>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: normal;">විෂය</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">ලකුණු</th>
@@ -1365,27 +1356,15 @@
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
-                    if (gradeCounts[grade] !== undefined) gradeCounts[grade]++;
                     html += `
                         <tr>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal;">${sub}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15;">${grade}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8; white-space: normal;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15; white-space: normal;">${grade}</td>
                         </tr>`; 
                 }
                 
-                let gradesSummaryArray = [];
-                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
-                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
-                });
-                let gradesSummary = gradesSummaryArray.join(', ') || '-';
-                
                 html += `
-                        <tr style="background: rgba(167, 139, 250, 0.1); color: #a78bfa;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">ප්‍රතිඵලය (Grades):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${gradesSummary}</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
-                        </tr>
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
                             <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">එකතුව (Total):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.total}</th>
@@ -1399,6 +1378,11 @@
                         <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
                             <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">ස්ථානය (Rank):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${classRankDisplay}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        </tr>
+                        <tr style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">පන්තියේ සිසුන් ගණන:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${totalStudentsInClass}</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                     </table>
