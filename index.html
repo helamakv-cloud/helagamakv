@@ -185,7 +185,7 @@
             <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ශිෂ්‍ය ප්‍රතිඵල බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
 
@@ -205,7 +205,7 @@
             <div id="portalSearchResults" style="margin-top: 20px; text-align: left;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -360,7 +360,7 @@
             </div>
         </div>
 
-        <!-- TAB 4: ප්‍රතිඵල විශ්ලේෂණය (NEW) -->
+        <!-- TAB 4: ප්‍රතිඵල විශ්ලේෂණය -->
         <div id="tab-analysis" class="tab-content">
             <div class="dashboard">
                 <div class="card" id="analysisReportCard">
@@ -1022,7 +1022,6 @@
 
             let currentRank = 1; let previousTotal = -1; let serialNoCounter = 1;
 
-            // Simple Marks Display (No Grades)
             completeStudents.forEach((student, index) => {
                 if (index > 0 && student.total < previousTotal) { currentRank = index + 1; }
                 previousTotal = student.total;
@@ -1346,20 +1345,24 @@
                 
                 html += `
                         <tr style="background: rgba(167, 139, 250, 0.1); color: #a78bfa;">
-                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">ප්‍රතිඵලය (Grades):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">ප්‍රතිඵලය (Grades):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${gradesSummary}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center;">-</th>
                         </tr>
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
-                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව (Total):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.total}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center;">-</th>
                         </tr>
                         <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
-                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">සාමාන්‍යය:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">සාමාන්‍යය (Average):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.average}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center;">-</th>
                         </tr>
                         <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
-                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">ස්ථානය:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">ස්ථානය (Rank):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${classRankDisplay}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center;">-</th>
                         </tr>
                     </table>
                 </div>`;
