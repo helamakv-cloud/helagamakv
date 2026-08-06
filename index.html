@@ -91,6 +91,11 @@
         .print-only-header { display: none; }
         .hint-text { font-size: 12px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
+        /* Custom Scrollbar for Results */
+        .scrollable-results::-webkit-scrollbar { width: 6px; }
+        .scrollable-results::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 8px; }
+        .scrollable-results::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 8px; }
+
         /* PDF Export Mode CSS */
         .pdf-mode { background: white !important; color: black !important; padding: 20px; }
         .pdf-mode * { color: black !important; }
@@ -105,7 +110,7 @@
 
         @media print {
             .hide-print { display: none !important; }
-            #portalSearchResults { max-height: none !important; overflow: visible !important; } 
+            #portalSearchResults, #searchResults { max-height: none !important; overflow: visible !important; } 
         }
 
         /* Responsive Settings */
@@ -185,12 +190,12 @@
             <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ශිෂ්‍ය ප්‍රතිඵල බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
 
         <!-- Student Search Box -->
-        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px;">
+        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px; padding-bottom: 20px;">
             <h2 style="color: #38bdf8;">Helagama K.V.</h2>
             <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
             
@@ -202,10 +207,11 @@
             <button class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
             <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
             
-            <div id="portalSearchResults" style="margin-top: 20px; text-align: left;"></div>
+            <!-- Scrollable Container Added Here -->
+            <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 50vh; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -335,7 +341,8 @@
                             <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="clearSearchInputs()">Clear</button>
                         </div>
                     </div>
-                    <div id="searchResults"></div>
+                    <!-- Scrollable Container Added Here -->
+                    <div id="searchResults" class="scrollable-results" style="margin-top: 15px; max-height: 50vh; overflow-y: auto;"></div>
                 </div>
 
                 <div class="card" id="chartCard">
@@ -1245,9 +1252,8 @@
                     html += `<tr><td style="text-align:left;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                // Removed Grades Summary Row as requested
-                
-                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `
+                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව (Total):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.total}</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center;">-</th>
@@ -1270,7 +1276,7 @@
         function printStudentSearch() {
             let printStyle = document.createElement('style');
             printStyle.id = 'search-print-style';
-            printStyle.innerHTML = '@media print { @page { size: A4 portrait !important; margin: 1cm; } }';
+            printStyle.innerHTML = '@media print { @page { size: A4 portrait !important; margin: 1cm; } #searchResults { max-height: none !important; overflow: visible !important; } }';
             document.head.appendChild(printStyle);
             document.body.classList.add('print-search-mode');
             window.print();
@@ -1339,8 +1345,6 @@
                             <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15;">${grade}</td>
                         </tr>`; 
                 }
-                
-                // Removed Grades Summary Row as requested
                 
                 html += `
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
@@ -1450,6 +1454,8 @@
             };
             
             html2pdf().set(opt).from(element).save().then(() => {
+                element.style.maxHeight = '50vh';
+                element.style.overflow = 'auto';
                 searchInPortal(); 
             });
         }
