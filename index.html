@@ -37,7 +37,7 @@
 
         /* --- Tabs & Cards --- */
         .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-        .tab-btn { flex: 1 1 30%; background: #1e293b; border: 1px solid #334155; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.3s; color: #94a3b8; min-width: 120px;}
+        .tab-btn { flex: 1 1 20%; background: #1e293b; border: 1px solid #334155; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.3s; color: #94a3b8; min-width: 120px;}
         .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
@@ -80,10 +80,10 @@
         .dev-footer span { color: #38bdf8; font-weight: bold; }
 
         /* --- PDF & Print Handling --- */
-        #printHeader { display: none; text-align: center; margin-bottom: 20px; }
-        #printHeader h2 { margin: 0; color: #000; font-size: 24px; font-weight: bold; }
-        #printHeader h4 { margin: 8px 0; color: #333; font-size: 16px; font-weight: 500;}
-        #printHeader hr { border: 2px solid #000; margin-top: 15px; margin-bottom: 15px;}
+        #printHeader, #analysisPrintHeader { display: none; text-align: center; margin-bottom: 20px; }
+        #printHeader h2, #analysisPrintHeader h2 { margin: 0; color: #000; font-size: 24px; font-weight: bold; }
+        #printHeader h4, #analysisPrintHeader h4 { margin: 8px 0; color: #333; font-size: 16px; font-weight: 500;}
+        #printHeader hr, #analysisPrintHeader hr { border: 2px solid #000; margin-top: 15px; margin-bottom: 15px;}
         .search-result-box { background:#0f172a; border-radius:12px; padding:20px; margin-top:20px; text-align:left; border: 1px solid #3b82f6;}
         .search-result-box h4 { margin: 0 0 15px 0; color: #38bdf8; font-size: 18px;}
         .search-table { width: 100%; min-width: 100%; border-collapse: collapse;}
@@ -132,13 +132,12 @@
         @media print {
             @page { size: A4 landscape; margin: 1cm; }
             body { background: white; margin: 0; padding: 0; overflow: visible; color: #000; }
-            .school-header, .tab-nav, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard { display: none !important; }
-            body:not(.print-search-mode) #searchCard { display: none !important; }
-            body:not(.print-search-mode) #printHeader { display: block; }
+            .school-header, .tab-nav, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard { display: none !important; }
+            body:not(.print-search-mode) #printHeader, body:not(.print-search-mode) #analysisPrintHeader { display: block; }
             body:not(.print-search-mode) .table-responsive { overflow-x: visible !important; border: none; display: table; width: 100%;}
             
             body.print-search-mode @page { size: A4 portrait; margin: 1cm; }
-            body.print-search-mode #reportCard, body.print-search-mode #regStudentTableCard, body.print-search-mode #regTeacherTableCard { display: none !important; }
+            body.print-search-mode .card { display: none !important; }
             body.print-search-mode #searchCard { display: block !important; box-shadow: none; border: none; padding: 0; margin: 0;}
             body.print-search-mode .flex-row { display: none !important; } 
             body.print-search-mode .search-result-box { border: 1px solid #000; background: #fff; box-shadow: none; page-break-inside: avoid; margin-top: 0;}
@@ -153,8 +152,8 @@
             td { font-size: 11px; padding: 6px; border: 1px solid #000 !important; color: #000;}
             th, td { border: 1px solid #000 !important; }
             
-            #dataTable td[style*="background"] { background: transparent !important; }
-            #dataTable td div, #dataTable td span { color: #000 !important; }
+            #dataTable td[style*="background"], #analysisDataTable td[style*="background"] { background: transparent !important; }
+            #dataTable td div, #dataTable td span, #analysisDataTable td div, #analysisDataTable td span { color: #000 !important; }
 
             .search-table th, .search-table td { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 12px; color: #000; }
             .rank-col, .term-badge { background-color: transparent !important; color: #000 !important; border: none !important;}
@@ -221,6 +220,7 @@
         <!-- Navigation Tabs -->
         <div class="tab-nav">
             <button class="tab-btn active" id="btn-marks" onclick="openTab('marks')">📊 ලකුණු කළමනාකරණය</button>
+            <button class="tab-btn" id="btn-analysis" onclick="openTab('analysis')">📈 ප්‍රතිඵල විශ්ලේෂණය</button>
             <button class="tab-btn" id="btn-students" onclick="openTab('students')">🎓 ශිෂ්‍ය ලියාපදිංචිය</button>
             <button class="tab-btn" id="btn-teachers" onclick="openTab('teachers')">👨‍🏫 ගුරු ලියාපදිංචිය</button>
         </div>
@@ -274,7 +274,7 @@
                 <div class="card" id="reportCard">
                     <div id="printHeader">
                         <h2>Helagama K.V.</h2>
-                        <h4>ශිෂ්‍ය ප්‍රතිඵල ලේඛනය (Marks & Grades Master Sheet)</h4>
+                        <h4>ශිෂ්‍ය ලකුණු වාර්තාව (Marks Report)</h4>
                         <h4 id="printSubHeader" style="font-weight: bold; color: #000;"></h4>
                         <hr>
                     </div>
@@ -309,12 +309,12 @@
                                 <option value="35_49">35 - 49 (S)</option>
                                 <option value="0_34">0 - 34 (W)</option>
                             </select>
-                            <button class="btn-clear" onclick="clearTableFilters()" style="flex: 1 1 100%; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; border: 1px solid #475569;">🔄 Reset List View (Clear Filters)</button>
+                            <button class="btn-clear" onclick="clearTableFilters()" style="flex: 1 1 100%; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; border: 1px solid #475569;">🔄 Reset List View</button>
                         </div>
                     </div>
 
                     <div class="action-buttons" id="actionButtons">
-                        <button onclick="window.print()" class="btn-print">🖨️ Print Master Sheet</button>
+                        <button onclick="window.print()" class="btn-print">🖨️ Print</button>
                         <button onclick="downloadPDF()" class="btn-pdf">📄 Download PDF</button>
                     </div>
                     
@@ -356,6 +356,53 @@
                         </div>
                     </div>
                     <div class="chart-container"><canvas id="marksChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: ප්‍රතිඵල විශ්ලේෂණය (NEW) -->
+        <div id="tab-analysis" class="tab-content">
+            <div class="dashboard">
+                <div class="card" id="analysisReportCard">
+                    <div id="analysisPrintHeader">
+                        <h2>Helagama K.V.</h2>
+                        <h4>ශිෂ්‍ය ප්‍රතිඵල ලේඛනය (Master Sheet)</h4>
+                        <h4 id="analysisPrintSubHeader" style="font-weight: bold; color: #000;"></h4>
+                        <hr>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; gap: 15px;">
+                        <h3 class="section-title" style="border: none; padding: 0; width: 100%;">විභාග ප්‍රතිඵල විශ්ලේෂණය</h3>
+                        
+                        <div class="table-filters">
+                            <select id="analysisTermSelect" onchange="updateAnalysisTable()">
+                                <option value="all">සියලුම වාර</option>
+                                <option value="පළමු වාරය" selected>පළමු වාරය</option>
+                                <option value="දෙවන වාරය">දෙවන වාරය</option>
+                                <option value="තෙවන වාරය">තෙවන වාරය</option>
+                            </select>
+                            <select id="analysisGradeSelect" onchange="updateAnalysisTable()">
+                                <option value="6">6 ශ්‍රේණිය</option>
+                                <option value="7">7 ශ්‍රේණිය</option>
+                                <option value="8">8 ශ්‍රේණිය</option>
+                                <option value="9">9 ශ්‍රේණිය</option>
+                                <option value="10">10 ශ්‍රේණිය</option>
+                                <option value="11" selected>11 ශ්‍රේණිය</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons" id="analysisActionButtons">
+                        <button onclick="printAnalysis()" class="btn-print">🖨️ Print Master Sheet</button>
+                        <button onclick="downloadAnalysisPDF()" class="btn-pdf">📄 Download PDF</button>
+                    </div>
+                    
+                    <div class="table-responsive" id="analysisTableResponsiveContainer">
+                        <table id="analysisDataTable">
+                            <thead><tr id="analysisTableHeadRow"></tr></thead>
+                            <tbody id="analysisTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -550,6 +597,7 @@
             db.ref('hkMarksData').on('value', (snapshot) => {
                 studentsData = snapshot.val() || [];
                 updateTable(); 
+                updateAnalysisTable();
                 updateChart();
             });
 
@@ -609,6 +657,9 @@
             }
         });
 
+        // ==========================================
+        // STUDENT REGISTRATION
+        // ==========================================
         document.getElementById("studentRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
             let phone = document.getElementById("reg_phone").value.trim();
@@ -683,7 +734,9 @@
             }
         }
 
-        // === TEACHER REGISTRATION LOGIC ===
+        // ==========================================
+        // TEACHER REGISTRATION
+        // ==========================================
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -774,6 +827,9 @@
             }
         }
 
+        // ==========================================
+        // MARKS MANAGEMENT
+        // ==========================================
         function loadStudentsForMarks() {
             let grade = document.getElementById("gradeSelect").value;
             let drop = document.getElementById("selectedStudentDrop");
@@ -892,6 +948,9 @@
             clearMarksInputs(); 
         });
 
+        // ==========================================
+        // RANK BOARD (Clean Marks Only)
+        // ==========================================
         function applySubjectFilter() { updateTable(true); }
 
         function updateTable(isSubjectFilterTrigger = false) {
@@ -937,23 +996,101 @@
             }
 
             let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>වාරය</th>`;
-            
             displaySubjects.forEach(sub => {
                 let isFiltered = (filterSub === sub);
                 let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold;' : '';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
-            
-            // --- NEW: Added Grades Summary Column to the master sheet ---
-            headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th><th>එකතුව</th><th>සාමාන්‍යය</th>`;
-            if (!isAdvancedFilterActive) headHtml += `<th>ස්ථානය<br>(Rank)</th>`;
+            headHtml += `<th>එකතුව</th><th>සාමාන්‍යය</th>`;
+            if (!isAdvancedFilterActive) headHtml += `<th>ස්ථානය (Rank)</th>`;
             
             tableHeadRow.innerHTML = headHtml;
             tableBody.innerHTML = ""; 
 
             if(filteredData.length === 0) {
-                let totalCols = isAdvancedFilterActive ? (6 + displaySubjects.length) : (7 + displaySubjects.length);
+                let totalCols = isAdvancedFilterActive ? (5 + displaySubjects.length) : (6 + displaySubjects.length);
                 tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">තෝරාගත් කාණ්ඩය සඳහා දත්ත නොමැත.</td></tr>`;
+                return;
+            }
+
+            let reqCount = getReqSubCount(selectedGrade);
+            let completeStudents = filteredData.filter(s => Object.keys(s.marks).length >= reqCount);
+            let pendingStudents = filteredData.filter(s => Object.keys(s.marks).length < reqCount);
+
+            completeStudents.sort((a, b) => b.total - a.total);
+            pendingStudents.sort((a, b) => b.total - a.total);
+
+            let currentRank = 1; let previousTotal = -1; let serialNoCounter = 1;
+
+            // Simple Marks Display (No Grades)
+            completeStudents.forEach((student, index) => {
+                if (index > 0 && student.total < previousTotal) { currentRank = index + 1; }
+                previousTotal = student.total;
+                let row = `<tr>
+                    <td class="serial-col">${serialNoCounter++}</td>
+                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>
+                    <td><span class="term-badge">${student.term}</span></td>`;
+                
+                displaySubjects.forEach(sub => {
+                    let mark = student.marks[sub]; 
+                    let displayMark = (mark !== undefined) ? mark : '-';
+                    let isFiltered = (filterSub === sub); 
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
+                    row += `<td style="${style}">${displayMark}</td>`;
+                });
+
+                row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
+                if (!isAdvancedFilterActive) row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
+                row += `</tr>`; tableBody.innerHTML += row; 
+            });
+
+            pendingStudents.forEach((student) => {
+                let row = `<tr>
+                    <td class="serial-col">${serialNoCounter++}</td>
+                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>
+                    <td><span class="term-badge">${student.term}</span></td>`;
+                
+                displaySubjects.forEach(sub => {
+                    let mark = student.marks[sub]; 
+                    let displayMark = (mark !== undefined) ? mark : '-';
+                    let isFiltered = (filterSub === sub); 
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
+                    row += `<td style="${style}">${displayMark}</td>`;
+                });
+
+                row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
+                if (!isAdvancedFilterActive) row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
+                row += `</tr>`; tableBody.innerHTML += row; 
+            });
+        }
+
+        // ==========================================
+        // ANALYSIS REPORT (Master Sheet)
+        // ==========================================
+        function updateAnalysisTable() {
+            let tableHeadRow = document.getElementById("analysisTableHeadRow");
+            let tableBody = document.getElementById("analysisTableBody");
+            let selectedTerm = document.getElementById("analysisTermSelect").value;
+            let selectedGrade = document.getElementById("analysisGradeSelect").value;
+            
+            let printSubText = "වාරය: " + selectedTerm + " | ශ්‍රේණිය: " + selectedGrade;
+            document.getElementById("analysisPrintSubHeader").innerText = printSubText;
+
+            let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
+            let uniqueSubjects = new Set();
+            filteredData.forEach(s => Object.keys(s.marks).forEach(sub => uniqueSubjects.add(sub)));
+            let displaySubjects = Array.from(uniqueSubjects);
+
+            let headHtml = `<th>No</th><th style="text-align:left;">නම</th>`;
+            displaySubjects.forEach(sub => { headHtml += `<th>${sub}</th>`; });
+            headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th><th>එකතුව</th><th>සාමාන්‍යය</th><th>ස්ථානය</th>`;
+            
+            tableHeadRow.innerHTML = headHtml;
+            tableBody.innerHTML = ""; 
+
+            if(filteredData.length === 0) {
+                let totalCols = 6 + displaySubjects.length;
+                tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">මෙම වාරය සහ ශ්‍රේණිය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
 
@@ -971,12 +1108,10 @@
                 previousTotal = student.total;
                 let row = `<tr>
                     <td class="serial-col">${serialNoCounter++}</td>
-                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>
-                    <td><span class="term-badge">${student.term}</span></td>`;
+                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>`;
                 
                 let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
 
-                // --- Render each mark as a STACKED cell (Mark on top, Grade on bottom) ---
                 displaySubjects.forEach(sub => {
                     let mark = student.marks[sub]; 
                     let displayHtml = '-';
@@ -985,12 +1120,9 @@
                         displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #f8fafc;">${mark}</div><div style="font-size: 12px; color: #facc15; font-weight: 800;">${g}</div>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
-                    let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2);' : '';
-                    row += `<td style="${style}; padding: 6px;">${displayHtml}</td>`;
+                    row += `<td style="padding: 6px;">${displayHtml}</td>`;
                 });
 
-                // Generate Grade Summary (e.g. 3A 2B)
                 let gradesSummaryArray = [];
                 ['A', 'B', 'C', 'S', 'W'].forEach(g => {
                     if (gradeCounts[g] > 0) gradesSummaryArray.push(`<span style="display:inline-block; margin:0 2px;">${gradeCounts[g]}${g}</span>`);
@@ -999,15 +1131,14 @@
 
                 row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
                 row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
-                if (!isAdvancedFilterActive) row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
+                row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
 
             pendingStudents.forEach((student) => {
                 let row = `<tr>
                     <td class="serial-col">${serialNoCounter++}</td>
-                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>
-                    <td><span class="term-badge">${student.term}</span></td>`;
+                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>`;
                 
                 let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
 
@@ -1019,9 +1150,7 @@
                         displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #94a3b8;">${mark}</div><div style="font-size: 12px; color: #94a3b8; font-weight: 800;">${g}</div>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
-                    let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2);' : '';
-                    row += `<td style="${style}; padding: 6px;">${displayHtml}</td>`;
+                    row += `<td style="padding: 6px;">${displayHtml}</td>`;
                 });
 
                 let gradesSummaryArray = [];
@@ -1032,8 +1161,45 @@
 
                 row += `<td style="font-weight:bold; color:#64748b; font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
                 row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
-                if (!isAdvancedFilterActive) row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
+                row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
+            });
+        }
+
+        function printAnalysis() {
+            window.print();
+        }
+
+        function downloadAnalysisPDF() {
+            if(studentsData.length === 0) { alert("PDF කිරීමට පෙර දත්ත ඇතුළත් කරන්න!"); return; }
+            const element = document.getElementById('analysisReportCard');
+            const tableContainer = document.getElementById('analysisTableResponsiveContainer');
+            
+            document.getElementById('analysisPrintHeader').style.display = 'block';
+            document.getElementById('analysisActionButtons').style.display = 'none';
+            document.querySelectorAll('.table-filters').forEach(el => el.style.display = 'none'); 
+            
+            element.classList.add('pdf-mode');
+            tableContainer.style.overflow = 'visible'; 
+            tableContainer.style.display = 'table'; 
+            tableContainer.style.width = '100%';
+            
+            let fileName = `Master_Sheet_${document.getElementById("analysisTermSelect").value}_Grade_${document.getElementById("analysisGradeSelect").value}.pdf`;
+            const opt = { 
+                margin: 0.2, 
+                filename: fileName, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2 }, 
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } 
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                document.getElementById('analysisPrintHeader').style.display = 'none';
+                document.getElementById('analysisActionButtons').style.display = 'flex';
+                document.querySelectorAll('.table-filters').forEach(el => el.style.display = 'flex');
+                tableContainer.style.overflow = 'auto'; 
+                tableContainer.style.display = 'block';
+                element.classList.remove('pdf-mode'); 
             });
         }
 
@@ -1199,7 +1365,6 @@
                 </div>`;
             });
             
-            // --- Action Buttons placed at the BOTTOM ---
             html += `
             <div id="portalActionButtons" style="text-align: center; margin-top: 25px; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
                 <button class="btn-submit" onclick="printPortalSearch()" style="background: linear-gradient(to right, #10b981, #059669); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">🖨️ Print</button>
