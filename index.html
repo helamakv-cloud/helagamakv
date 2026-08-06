@@ -69,7 +69,7 @@
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid #334155; display: block;}
         table { width: 100%; border-collapse: collapse; font-size: 14px; background: #1e293b;}
         th, td { padding: 10px 8px; border-bottom: 1px solid #334155; text-align: center; border-right: 1px solid #334155;}
-        th { background-color: #0f172a; color: #38bdf8; font-weight: 600; white-space: nowrap; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;}
+        th { background-color: #0f172a; color: #38bdf8; font-weight: 600; white-space: normal; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;}
         tr:nth-child(even) { background-color: rgba(15, 23, 42, 0.4); }
         tr:hover { background-color: rgba(56, 189, 248, 0.05); }
         .rank-col { background-color: rgba(234, 179, 8, 0.1); font-weight: bold; color: #facc15; font-size: 15px;}
@@ -84,10 +84,10 @@
         #printHeader h2, #analysisPrintHeader h2 { margin: 0; color: #000; font-size: 24px; font-weight: bold; }
         #printHeader h4, #analysisPrintHeader h4 { margin: 8px 0; color: #333; font-size: 16px; font-weight: 500;}
         #printHeader hr, #analysisPrintHeader hr { border: 2px solid #000; margin-top: 15px; margin-bottom: 15px;}
-        .search-result-box { background:#0f172a; border-radius:12px; padding:20px; margin-top:20px; text-align:left; border: 1px solid #3b82f6;}
+        .search-result-box { background:#0f172a; border-radius:12px; padding:15px; margin-top:20px; text-align:left; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;}
         .search-result-box h4 { margin: 0 0 15px 0; color: #38bdf8; font-size: 18px;}
-        .search-table { width: 100%; min-width: 100%; border-collapse: collapse;}
-        .search-table th, .search-table td { border: 1px solid #334155; padding: 10px; font-size: 14px; text-align: center; color: #e2e8f0;}
+        .search-table { width: 100%; border-collapse: collapse;}
+        .search-table th, .search-table td { border: 1px solid #334155; padding: 8px; font-size: 14px; text-align: center; color: #e2e8f0; word-wrap: break-word;}
         .print-only-header { display: none; }
         .hint-text { font-size: 12px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
@@ -341,7 +341,7 @@
                             <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="clearSearchInputs()">Clear</button>
                         </div>
                     </div>
-                    <!-- Scrollable Container Added Here -->
+                    <!-- Scrollable Container -->
                     <div id="searchResults" class="scrollable-results" style="margin-top: 15px; max-height: 50vh; overflow-y: auto;"></div>
                 </div>
 
@@ -556,7 +556,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Koonara</span> | 0714469232
+            Developer - <span>Kelum Konara</span> | 0714469232
         </div>
     </div>
 
@@ -1247,20 +1247,21 @@
                 
                 let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
                 
-                html += `<div class="search-result-box">
+                html += `<div class="search-result-box" style="width: 100%; box-sizing: border-box;">
                             <h4>👤 ${record.name} - ${record.fullClassName}</h4>
                             <div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: #94a3b8;">📅 ${record.term}</div>
-                            <div style="overflow-x: auto; width: 100%;">
-                                <table class="search-table" style="min-width: 300px; white-space: nowrap;">
+                            <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
+                                <table class="search-table" style="width: 100%; min-width: unset;">
                                     <tr>
-                                        <th style="text-align: left;">විෂය (Subject)</th>
-                                        <th style="text-align: center;">ලකුණු (Marks)</th>
+                                        <th style="text-align: left; white-space: normal;">විෂය (Subject)</th>
+                                        <th style="text-align: center; white-space: normal;">ලකුණු (Marks)</th>
+                                        <th style="text-align: center; white-space: normal;">සාමාර්ථය (Grade)</th>
                                     </tr>`;
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
                     if (gradeCounts[grade] !== undefined) gradeCounts[grade]++;
-                    html += `<tr><td style="text-align:left;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td></tr>`; 
+                    html += `<tr><td style="text-align:left; white-space: normal;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
                 let gradesSummaryArray = [];
@@ -1272,18 +1273,22 @@
                 html += `<tr style="background: rgba(167, 139, 250, 0.1); color:#a78bfa;">
                             <th style="text-align:right;">ප්‍රතිඵලය (Grades):</th>
                             <th style="font-size:15px; text-align: center;">${gradesSummary}</th>
+                            <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right;">එකතුව (Total):</th>
                             <th style="font-size:15px; text-align: center;">${record.total}</th>
+                            <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;">
                             <th style="text-align:right;">සාමාන්‍යය (Average):</th>
                             <th style="font-size:15px; text-align: center;">${record.average}</th>
+                            <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;">
                             <th style="text-align:right;">ස්ථානය (Rank):</th>
                             <th style="font-size:16px; text-align: center;">${classRankDisplay}</th>
+                            <th style="text-align: center;">-</th>
                          </tr>
                     </table>
                 </div></div>`;
@@ -1346,15 +1351,16 @@
                 let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
                 
                 html += `
-                <div class="search-result-box portal-result-card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6;">
-                    <h4 class="portal-student-name" style="color: #38bdf8; margin: 0 0 5px 0; font-size: 16px;">👤 ${record.name} - ${record.fullClassName}</h4>
+                <div class="search-result-box portal-result-card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;">
+                    <h4 class="portal-student-name" style="color: #38bdf8; margin: 0 0 5px 0; font-size: 16px; word-wrap: break-word;">👤 ${record.name} - ${record.fullClassName}</h4>
                     <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; font-weight: bold;">📅 වාරය: ${record.term}</div>
                     
-                    <div style="overflow-x: auto; width: 100%;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent; min-width: 300px;">
+                    <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent;">
                         <tr>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: nowrap;">විෂය</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: nowrap;">ලකුණු</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: normal;">විෂය</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">ලකුණු</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">සාමාර්ථය</th>
                         </tr>`;
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
@@ -1362,8 +1368,9 @@
                     if (gradeCounts[grade] !== undefined) gradeCounts[grade]++;
                     html += `
                         <tr>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: nowrap;">${sub}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8; white-space: nowrap;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal;">${sub}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15;">${grade}</td>
                         </tr>`; 
                 }
                 
@@ -1375,20 +1382,24 @@
                 
                 html += `
                         <tr style="background: rgba(167, 139, 250, 0.1); color: #a78bfa;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: nowrap;">ප්‍රතිඵලය (Grades):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: nowrap;">${gradesSummary}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">ප්‍රතිඵලය (Grades):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${gradesSummary}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: nowrap;">එකතුව (Total):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: nowrap;">${record.total}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">එකතුව (Total):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.total}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                         <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: nowrap;">සාමාන්‍යය (Average):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: nowrap;">${record.average}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">සාමාන්‍යය (Average):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.average}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                         <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: nowrap;">ස්ථානය (Rank):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: nowrap;">${classRankDisplay}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">ස්ථානය (Rank):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${classRankDisplay}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                     </table>
                     </div>
