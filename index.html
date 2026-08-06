@@ -18,9 +18,9 @@
         html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 10px; }
 
-        /* --- Login & Portal Interface --- */
-        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 15px;}
-        .login-box { background: rgba(30, 41, 59, 0.95); padding: 40px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 400px; backdrop-filter: blur(10px);}
+        /* --- Login & Portal Interface - SCROLLING FIXED --- */
+        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); z-index: 1000; padding: 20px; display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; }
+        .login-box { margin: auto; background: rgba(30, 41, 59, 0.95); padding: 40px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 450px; backdrop-filter: blur(10px);}
         .login-box h2 { margin: 0 0 10px; color: #f8fafc; font-size: 24px; font-weight: 700;}
         .login-box p { color: #94a3b8; margin-bottom: 30px; font-size: 14px;}
         .login-box input { width: 100%; padding: 14px 15px; margin: 10px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-size: 16px; text-align: center; transition: 0.3s;}
@@ -198,11 +198,11 @@
             <button class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
             <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
             
-            <!-- Removed max-height here, allowing it to expand normally for printing, or scroll locally if needed -->
-            <div id="portalSearchResults" style="margin-top: 20px; text-align: left; max-height: 400px; overflow-y: auto;"></div>
+            <!-- Here the max-height limit is removed, allowing the whole page to scroll properly on mobile -->
+            <div id="portalSearchResults" style="margin-top: 20px; text-align: left;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -327,7 +327,7 @@
                     <div class="flex-row" style="align-items: center; margin-top: 15px;">
                         <input type="text" id="searchIdInput" placeholder="ශිෂ්‍ය අංකය ඇතුළත් කරන්න. (උදා: 1234)">
                         <div class="flex-row" style="width: 100%; gap: 10px;">
-                            <button type="button" class="btn-submit" style="flex: 2; margin-top: 0; padding: 14px;" onclick="searchStudentById()">සොයන්න</button>
+                            <button type="button" class="btn-submit" style="flex: 2; margin-top: 0; padding: 14px;" onclick="searchAdminStudentById()">සොයන්න</button>
                             <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="clearSearchInputs()">Clear</button>
                         </div>
                     </div>
@@ -498,7 +498,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Konara</span> | 0714469232
+            Developer - <span>Kelum Koonara</span> | 0714469232
         </div>
     </div>
 
@@ -939,7 +939,7 @@
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
             
-            // --- Added Grades Count Header ---
+            // --- Added Grades Count Header for Admin Dashboard ---
             headHtml += `<th>සාමාර්ථ</th><th>එකතුව</th><th>සාමාන්‍යය</th>`;
             if (!isAdvancedFilterActive) headHtml += `<th>ස්ථානය (Rank)</th>`;
             
@@ -1046,7 +1046,52 @@
         }
 
         // ==========================================
-        // STUDENT PORTAL FUNCTIONS
+        // ADMIN SEARCH FUNCTION (Inside Dashboard)
+        // ==========================================
+        function searchAdminStudentById() {
+            let searchId = document.getElementById("searchIdInput").value.trim();
+            let resultsContainer = document.getElementById("searchResults");
+            if(!searchId) { resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top:10px;'>කරුණාකර ශිෂ්‍ය අංකය ඇතුළත් කරන්න.</p>"; return; }
+            let foundRecords = studentsData.filter(s => s && s.id === searchId);
+            if(foundRecords.length === 0) { resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top:10px;'>මෙම අංකය සහිත ප්‍රතිඵල පද්ධතියේ නොමැත.</p>"; return; }
+
+            const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
+            foundRecords.sort((a, b) => (termOrder[a.term] || 99) - (termOrder[b.term] || 99));
+
+            let html = `<div class="print-only-header">
+                <h2 style="margin:0; font-size:24px; color:#000;">Helagama K.V.</h2>
+                <h4 style="margin:5px 0 15px 0; color:#333; font-weight:normal;">ශිෂ්‍ය ප්‍රතිඵල වාර්තාව | මුද්‍රිත දිනය: ${new Date().toLocaleDateString('si-LK')}</h4>
+                <hr style="border:1px solid #000; margin-bottom:15px;">
+            </div>`;
+
+            foundRecords.forEach(record => {
+                let reqCount = getReqSubCount(record.grade);
+                let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
+                let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
+                
+                html += `<div class="search-result-box"><h4>👤 ${record.name} - ${record.fullClassName}</h4><div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: #94a3b8;">📅 ${record.term}</div><table class="search-table"><tr><th>විෂය (Subject)</th><th>ලකුණු (Marks)</th><th>සාමාර්ථය (Grade)</th></tr>`;
+                for (let [sub, mark] of Object.entries(record.marks)) { 
+                    let grade = getGrade(mark);
+                    html += `<tr><td style="text-align:left;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
+                }
+                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;"><th colspan="2" style="text-align:right;">එකතුව (Total):</th><th style="font-size:15px;">${record.total}</th></tr><tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;"><th colspan="2" style="text-align:right;">සාමාන්‍යය (Average):</th><th style="font-size:15px;">${record.average}</th></tr><tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;"><th colspan="2" style="text-align:right;">ශ්‍රේණියේ ස්ථානය (Grade Rank):</th><th style="font-size:16px;">${classRankDisplay}</th></tr></table></div>`;
+            });
+            html += `<div style="text-align: center; margin-top: 25px;"><button class="btn-submit btn-print-search" onclick="printStudentSearch()" style="background: linear-gradient(to right, #10b981, #059669); max-width: 280px; margin: 0 auto; display: inline-block; padding: 14px 25px; border-radius: 10px;">🖨️ මෙම ප්‍රතිඵල මුද්‍රණය කරන්න</button></div>`;
+            resultsContainer.innerHTML = html;
+        }
+
+        function printStudentSearch() {
+            let printStyle = document.createElement('style');
+            printStyle.id = 'search-print-style';
+            printStyle.innerHTML = '@media print { @page { size: A4 portrait !important; margin: 1cm; } }';
+            document.head.appendChild(printStyle);
+            document.body.classList.add('print-search-mode');
+            window.print();
+            setTimeout(() => { document.body.classList.remove('print-search-mode'); let el = document.getElementById('search-print-style'); if (el) el.remove(); }, 1000);
+        }
+
+        // ==========================================
+        // STUDENT PORTAL FUNCTIONS (Outside App)
         // ==========================================
         function showStudentPortal() {
             document.getElementById("adminLoginBox").style.display = "none";
@@ -1079,12 +1124,7 @@
             const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
             foundRecords.sort((a, b) => (termOrder[a.term] || 99) - (termOrder[b.term] || 99));
 
-            // --- Action Buttons placed at the TOP ---
-            let html = `
-            <div id="portalActionButtons" style="text-align: center; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button class="btn-submit" onclick="printPortalSearch()" style="background: linear-gradient(to right, #10b981, #059669); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">🖨️ Print</button>
-                <button class="btn-submit" onclick="downloadPortalPDF()" style="background: linear-gradient(to right, #f43f5e, #e11d48); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">📄 PDF</button>
-            </div>`;
+            let html = "";
             
             foundRecords.forEach(record => {
                 let reqCount = getReqSubCount(record.grade);
@@ -1099,7 +1139,8 @@
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent;">
                         <tr>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2);">විෂය</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2);">ලකුණු / සාමාර්ථය</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2);">ලකුණු</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2);">සාමාර්ථය</th>
                         </tr>`;
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
@@ -1107,27 +1148,35 @@
                     html += `
                         <tr>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0;">${sub}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark} <span style="color:#facc15; margin-left:8px;">(${grade})</span></td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15;">${grade}</td>
                         </tr>`; 
                 }
                 
                 html += `
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව:</th>
+                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව:</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.total}</th>
                         </tr>
                         <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">සාමාන්‍යය:</th>
+                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">සාමාන්‍යය:</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.average}</th>
                         </tr>
                         <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right;">ස්ථානය:</th>
+                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">ස්ථානය:</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${classRankDisplay}</th>
                         </tr>
                     </table>
                 </div>`;
             });
             
+            // --- Action Buttons placed at the BOTTOM ---
+            html += `
+            <div id="portalActionButtons" style="text-align: center; margin-top: 25px; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-submit" onclick="printPortalSearch()" style="background: linear-gradient(to right, #10b981, #059669); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">🖨️ Print</button>
+                <button class="btn-submit" onclick="downloadPortalPDF()" style="background: linear-gradient(to right, #f43f5e, #e11d48); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">📄 PDF</button>
+            </div>`;
+
             resultsContainer.innerHTML = html;
         }
 
@@ -1184,10 +1233,6 @@
             element.insertAdjacentHTML('afterbegin', headerHTML);
             
             document.getElementById('portalActionButtons').style.display = 'none';
-            
-            // Apply temporary styles for clean PDF export
-            element.style.maxHeight = 'none';
-            element.style.overflow = 'visible';
             
             const resultBoxes = element.querySelectorAll('.portal-result-card');
             resultBoxes.forEach(box => {
