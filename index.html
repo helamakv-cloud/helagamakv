@@ -68,7 +68,7 @@
         /* --- Scrollable Table Container --- */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid #334155; display: block;}
         table { width: 100%; border-collapse: collapse; font-size: 14px; background: #1e293b;}
-        th, td { padding: 12px 10px; border-bottom: 1px solid #334155; text-align: center; border-right: 1px solid #334155;}
+        th, td { padding: 10px 8px; border-bottom: 1px solid #334155; text-align: center; border-right: 1px solid #334155;}
         th { background-color: #0f172a; color: #38bdf8; font-weight: 600; white-space: nowrap; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;}
         tr:nth-child(even) { background-color: rgba(15, 23, 42, 0.4); }
         tr:hover { background-color: rgba(56, 189, 248, 0.05); }
@@ -91,19 +91,21 @@
         .print-only-header { display: none; }
         .hint-text { font-size: 12px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
-        /* PDF Export Mode CSS (fixes invisible text on pdf) */
+        /* PDF Export Mode CSS */
         .pdf-mode { background: white !important; color: black !important; padding: 20px; }
         .pdf-mode * { color: black !important; }
         .pdf-mode table { border: 1px solid #000 !important; background: #fff !important; }
-        .pdf-mode th { background-color: #f1f5f9 !important; border: 1px solid #94a3b8 !important; }
-        .pdf-mode td { border: 1px solid #94a3b8 !important; }
+        .pdf-mode th { background-color: #f1f5f9 !important; border: 1px solid #000 !important; }
+        .pdf-mode td { border: 1px solid #000 !important; background: transparent !important; }
+        .pdf-mode td div { color: #000 !important; }
+        .pdf-mode td span { color: #000 !important; }
         .pdf-mode .rank-col, .pdf-mode .term-badge, .pdf-mode .serial-col { background: transparent !important; border: none !important; }
         .pdf-mode .hide-print { display: none !important; }
         .pdf-mode .section-title { border-bottom: 1px solid #000; color: #000 !important; }
 
         @media print {
             .hide-print { display: none !important; }
-            #portalSearchResults { max-height: none !important; overflow: visible !important; } /* Fixes cut off print issue */
+            #portalSearchResults { max-height: none !important; overflow: visible !important; } 
         }
 
         /* Responsive Settings */
@@ -148,10 +150,14 @@
             .card { box-shadow: none; border: none; padding: 0; margin: 0; width: 100%; background: #fff;}
             table { min-width: 100%; border: 1px solid #000; background: #fff;}
             th { background-color: #eee !important; color: #000 !important; font-size: 11px; padding: 6px;}
-            td { font-size: 11px; padding: 6px; border: 1px solid #999; color: #000;}
-            th, td { border: 1px solid #000; }
+            td { font-size: 11px; padding: 6px; border: 1px solid #000 !important; color: #000;}
+            th, td { border: 1px solid #000 !important; }
+            
+            #dataTable td[style*="background"] { background: transparent !important; }
+            #dataTable td div, #dataTable td span { color: #000 !important; }
+
             .search-table th, .search-table td { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 12px; color: #000; }
-            .rank-col, .term-badge { background-color: transparent !important; color: #000 !important; border: 1px solid #000;}
+            .rank-col, .term-badge { background-color: transparent !important; color: #000 !important; border: none !important;}
             .dev-footer { position: fixed; bottom: 0; width: 100%; border-top: 1px dashed #ccc; padding-top: 5px; color: #000;}
             .dev-footer span { color: #000; }
         }
@@ -175,7 +181,6 @@
                 <button type="submit" class="btn-login">Login as Admin</button>
             </form>
             
-            <!-- Student Result Button -->
             <hr style="border: 1px solid #334155; margin: 25px 0 15px 0;">
             <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
             <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ශිෂ්‍ය ප්‍රතිඵල බලන්න</button>
@@ -198,11 +203,10 @@
             <button class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
             <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
             
-            <!-- Here the max-height limit is removed, allowing the whole page to scroll properly on mobile -->
             <div id="portalSearchResults" style="margin-top: 20px; text-align: left;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Koonara | 0714469232
+                Developer - Kelum Konara | 0714469232
             </div>
         </div>
     </div>
@@ -270,7 +274,7 @@
                 <div class="card" id="reportCard">
                     <div id="printHeader">
                         <h2>Helagama K.V.</h2>
-                        <h4>ශිෂ්‍ය ලකුණු වාර්තාව (Marks Report)</h4>
+                        <h4>ශිෂ්‍ය ප්‍රතිඵල ලේඛනය (Marks & Grades Master Sheet)</h4>
                         <h4 id="printSubHeader" style="font-weight: bold; color: #000;"></h4>
                         <hr>
                     </div>
@@ -310,8 +314,8 @@
                     </div>
 
                     <div class="action-buttons" id="actionButtons">
-                        <button onclick="window.print()" class="btn-print">🖨️ Print</button>
-                        <button onclick="downloadPDF()" class="btn-pdf">📄 PDF</button>
+                        <button onclick="window.print()" class="btn-print">🖨️ Print Master Sheet</button>
+                        <button onclick="downloadPDF()" class="btn-pdf">📄 Download PDF</button>
                     </div>
                     
                     <div class="table-responsive" id="tableResponsiveContainer">
@@ -498,7 +502,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Konara</span> | 0714469232
+            Developer - <span>Kelum Koonara</span> | 0714469232
         </div>
     </div>
 
@@ -932,22 +936,23 @@
                 });
             }
 
-            let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>ශ්‍රේණිය</th><th>වාරය</th>`;
+            let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>වාරය</th>`;
+            
             displaySubjects.forEach(sub => {
                 let isFiltered = (filterSub === sub);
                 let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold;' : '';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
             
-            // --- Added Grades Count Header for Admin Dashboard ---
-            headHtml += `<th>සාමාර්ථ</th><th>එකතුව</th><th>සාමාන්‍යය</th>`;
-            if (!isAdvancedFilterActive) headHtml += `<th>ස්ථානය (Rank)</th>`;
+            // --- NEW: Added Grades Summary Column to the master sheet ---
+            headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th><th>එකතුව</th><th>සාමාන්‍යය</th>`;
+            if (!isAdvancedFilterActive) headHtml += `<th>ස්ථානය<br>(Rank)</th>`;
             
             tableHeadRow.innerHTML = headHtml;
             tableBody.innerHTML = ""; 
 
             if(filteredData.length === 0) {
-                let totalCols = isAdvancedFilterActive ? (7 + displaySubjects.length) : (8 + displaySubjects.length);
+                let totalCols = isAdvancedFilterActive ? (6 + displaySubjects.length) : (7 + displaySubjects.length);
                 tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">තෝරාගත් කාණ්ඩය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
@@ -966,33 +971,33 @@
                 previousTotal = student.total;
                 let row = `<tr>
                     <td class="serial-col">${serialNoCounter++}</td>
-                    <td style="text-align:left; white-space:nowrap;">${student.name}</td>
-                    <td>${student.fullClassName}</td>
+                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>
                     <td><span class="term-badge">${student.term}</span></td>`;
                 
                 let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
 
+                // --- Render each mark as a STACKED cell (Mark on top, Grade on bottom) ---
                 displaySubjects.forEach(sub => {
                     let mark = student.marks[sub]; 
-                    let displayMark = '-';
+                    let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        displayMark = `${mark} <span style="font-size:11px; color:#facc15;">(${g})</span>`;
+                        displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #f8fafc;">${mark}</div><div style="font-size: 12px; color: #facc15; font-weight: 800;">${g}</div>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
                     let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
-                    row += `<td style="${style}; white-space: nowrap;">${displayMark}</td>`;
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2);' : '';
+                    row += `<td style="${style}; padding: 6px;">${displayHtml}</td>`;
                 });
 
-                // Generate Grade Summary (e.g. 3A, 2B)
+                // Generate Grade Summary (e.g. 3A 2B)
                 let gradesSummaryArray = [];
                 ['A', 'B', 'C', 'S', 'W'].forEach(g => {
-                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
+                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`<span style="display:inline-block; margin:0 2px;">${gradeCounts[g]}${g}</span>`);
                 });
-                let gradesSummary = gradesSummaryArray.join(', ') || '-';
+                let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap;">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
                 row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
                 if (!isAdvancedFilterActive) row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
@@ -1001,32 +1006,31 @@
             pendingStudents.forEach((student) => {
                 let row = `<tr>
                     <td class="serial-col">${serialNoCounter++}</td>
-                    <td style="text-align:left; white-space:nowrap;">${student.name}</td>
-                    <td>${student.fullClassName}</td>
+                    <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>
                     <td><span class="term-badge">${student.term}</span></td>`;
                 
                 let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
 
                 displaySubjects.forEach(sub => {
                     let mark = student.marks[sub]; 
-                    let displayMark = '-';
+                    let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        displayMark = `${mark} <span style="font-size:11px; color:#facc15;">(${g})</span>`;
+                        displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #94a3b8;">${mark}</div><div style="font-size: 12px; color: #94a3b8; font-weight: 800;">${g}</div>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
                     let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
-                    row += `<td style="${style}; white-space: nowrap;">${displayMark}</td>`;
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2);' : '';
+                    row += `<td style="${style}; padding: 6px;">${displayHtml}</td>`;
                 });
 
                 let gradesSummaryArray = [];
                 ['A', 'B', 'C', 'S', 'W'].forEach(g => {
-                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
+                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`<span style="display:inline-block; margin:0 2px;">${gradeCounts[g]}${g}</span>`);
                 });
-                let gradesSummary = gradesSummaryArray.join(', ') || '-';
+                let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap;">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#64748b; font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
                 row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
                 if (!isAdvancedFilterActive) row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
@@ -1069,11 +1073,23 @@
                 let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
                 let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
                 
+                let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
+                
                 html += `<div class="search-result-box"><h4>👤 ${record.name} - ${record.fullClassName}</h4><div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: #94a3b8;">📅 ${record.term}</div><table class="search-table"><tr><th>විෂය (Subject)</th><th>ලකුණු (Marks)</th><th>සාමාර්ථය (Grade)</th></tr>`;
+                
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
+                    if (gradeCounts[grade] !== undefined) gradeCounts[grade]++;
                     html += `<tr><td style="text-align:left;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
+                
+                let gradesSummaryArray = [];
+                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
+                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
+                });
+                let gradesSummary = gradesSummaryArray.join(', ') || '-';
+
+                html += `<tr style="background: rgba(167, 139, 250, 0.1); color:#a78bfa;"><th colspan="2" style="text-align:right;">ප්‍රතිඵලය (Grades):</th><th style="font-size:15px;">${gradesSummary}</th></tr>`;
                 html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;"><th colspan="2" style="text-align:right;">එකතුව (Total):</th><th style="font-size:15px;">${record.total}</th></tr><tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;"><th colspan="2" style="text-align:right;">සාමාන්‍යය (Average):</th><th style="font-size:15px;">${record.average}</th></tr><tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;"><th colspan="2" style="text-align:right;">ශ්‍රේණියේ ස්ථානය (Grade Rank):</th><th style="font-size:16px;">${classRankDisplay}</th></tr></table></div>`;
             });
             html += `<div style="text-align: center; margin-top: 25px;"><button class="btn-submit btn-print-search" onclick="printStudentSearch()" style="background: linear-gradient(to right, #10b981, #059669); max-width: 280px; margin: 0 auto; display: inline-block; padding: 14px 25px; border-radius: 10px;">🖨️ මෙම ප්‍රතිඵල මුද්‍රණය කරන්න</button></div>`;
@@ -1131,6 +1147,8 @@
                 let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
                 let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
                 
+                let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
+                
                 html += `
                 <div class="search-result-box portal-result-card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6;">
                     <h4 class="portal-student-name" style="color: #38bdf8; margin: 0 0 5px 0; font-size: 16px;">👤 ${record.name} - ${record.fullClassName}</h4>
@@ -1145,6 +1163,7 @@
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
+                    if (gradeCounts[grade] !== undefined) gradeCounts[grade]++;
                     html += `
                         <tr>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0;">${sub}</td>
@@ -1153,7 +1172,17 @@
                         </tr>`; 
                 }
                 
+                let gradesSummaryArray = [];
+                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
+                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
+                });
+                let gradesSummary = gradesSummaryArray.join(', ') || '-';
+                
                 html += `
+                        <tr style="background: rgba(167, 139, 250, 0.1); color: #a78bfa;">
+                            <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">ප්‍රතිඵලය (Grades):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${gradesSummary}</th>
+                        </tr>
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
                             <th colspan="2" style="border: 1px solid #334155; padding: 6px; text-align: right;">එකතුව:</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center;">${record.total}</th>
@@ -1233,6 +1262,9 @@
             element.insertAdjacentHTML('afterbegin', headerHTML);
             
             document.getElementById('portalActionButtons').style.display = 'none';
+            
+            element.style.maxHeight = 'none';
+            element.style.overflow = 'visible';
             
             const resultBoxes = element.querySelectorAll('.portal-result-card');
             resultBoxes.forEach(box => {
