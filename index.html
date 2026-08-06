@@ -103,6 +103,7 @@
 
         @media print {
             .hide-print { display: none !important; }
+            #portalSearchResults { max-height: none !important; overflow: visible !important; } /* Fixes cut off print issue */
         }
 
         /* Responsive Settings */
@@ -133,6 +134,7 @@
             body:not(.print-search-mode) #searchCard { display: none !important; }
             body:not(.print-search-mode) #printHeader { display: block; }
             body:not(.print-search-mode) .table-responsive { overflow-x: visible !important; border: none; display: table; width: 100%;}
+            
             body.print-search-mode @page { size: A4 portrait; margin: 1cm; }
             body.print-search-mode #reportCard, body.print-search-mode #regStudentTableCard, body.print-search-mode #regTeacherTableCard { display: none !important; }
             body.print-search-mode #searchCard { display: block !important; box-shadow: none; border: none; padding: 0; margin: 0;}
@@ -141,6 +143,7 @@
             body.print-search-mode .search-result-box h4 { color: #000; }
             body.print-search-mode .btn-print-search { display: none !important; } 
             body.print-search-mode .print-only-header { display: block !important; text-align: center; margin-bottom: 20px; }
+            
             .dashboard { display: block; }
             .card { box-shadow: none; border: none; padding: 0; margin: 0; width: 100%; background: #fff;}
             table { min-width: 100%; border: 1px solid #000; background: #fff;}
@@ -182,7 +185,7 @@
             </div>
         </div>
 
-        <!-- Student Search Box (Newly Added) -->
+        <!-- Student Search Box -->
         <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px;">
             <h2 style="color: #38bdf8;">Helagama K.V.</h2>
             <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
@@ -195,7 +198,8 @@
             <button class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
             <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
             
-            <div id="portalSearchResults" style="margin-top: 20px; max-height: 400px; overflow-y: auto; text-align: left;"></div>
+            <!-- Removed max-height here, allowing it to expand normally for printing, or scroll locally if needed -->
+            <div id="portalSearchResults" style="margin-top: 20px; text-align: left; max-height: 400px; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
                 Developer - Kelum Koonara | 0714469232
@@ -525,9 +529,18 @@
             document.getElementById("gradeSelect").value = ""; 
             document.getElementById("subjectsContainer").innerHTML = ""; 
             
-            // Remove required attributes from teacher form to handle via custom JS alerts
             document.querySelectorAll('#teacherRegForm input').forEach(inp => inp.removeAttribute('required'));
         };
+
+        // --- Grade Calculation Helper ---
+        function getGrade(mark) {
+            if (mark >= 75) return 'A';
+            if (mark >= 65) return 'B';
+            if (mark >= 50) return 'C';
+            if (mark >= 35) return 'S';
+            if (mark >= 0)  return 'W';
+            return '-';
+        }
 
         function loadFromFirebase() {
             db.ref('hkMarksData').on('value', (snapshot) => {
@@ -875,15 +888,6 @@
             clearMarksInputs(); 
         });
 
-        function clearAllData() {
-            if (confirm("ඔබට විශ්වාසද සියලුම ලකුණු දත්ත පද්ධතියෙන් මකා දැමිය යුතු බව? (ලියාපදිංචි සිසුන් මකා නොදැමේ) මෙම ක්‍රියාව ආපසු හැරවිය නොහැක!")) {
-                studentsData = [];
-                db.ref('hkMarksData').remove();
-                document.getElementById("searchResults").innerHTML = "";
-                alert("ලකුණු දත්ත සාර්ථකව මකා දමන ලදී.");
-            }
-        }
-
         function applySubjectFilter() { updateTable(true); }
 
         function updateTable(isSubjectFilterTrigger = false) {
@@ -934,14 +938,16 @@
                 let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold;' : '';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
-            headHtml += `<th>එකතුව</th><th>සාමාන්‍යය</th>`;
+            
+            // --- Added Grades Count Header ---
+            headHtml += `<th>සාමාර්ථ</th><th>එකතුව</th><th>සාමාන්‍යය</th>`;
             if (!isAdvancedFilterActive) headHtml += `<th>ස්ථානය (Rank)</th>`;
             
             tableHeadRow.innerHTML = headHtml;
             tableBody.innerHTML = ""; 
 
             if(filteredData.length === 0) {
-                let totalCols = isAdvancedFilterActive ? (6 + displaySubjects.length) : (7 + displaySubjects.length);
+                let totalCols = isAdvancedFilterActive ? (7 + displaySubjects.length) : (8 + displaySubjects.length);
                 tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">තෝරාගත් කාණ්ඩය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
@@ -964,12 +970,29 @@
                     <td>${student.fullClassName}</td>
                     <td><span class="term-badge">${student.term}</span></td>`;
                 
+                let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
+
                 displaySubjects.forEach(sub => {
-                    let mark = student.marks[sub]; let displayMark = (mark !== undefined) ? mark : '-';
-                    let isFiltered = (filterSub === sub); let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
-                    row += `<td style="${style}">${displayMark}</td>`;
+                    let mark = student.marks[sub]; 
+                    let displayMark = '-';
+                    if (mark !== undefined) {
+                        let g = getGrade(mark);
+                        displayMark = `${mark} <span style="font-size:11px; color:#facc15;">(${g})</span>`;
+                        if (gradeCounts[g] !== undefined) gradeCounts[g]++;
+                    }
+                    let isFiltered = (filterSub === sub); 
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
+                    row += `<td style="${style}; white-space: nowrap;">${displayMark}</td>`;
                 });
 
+                // Generate Grade Summary (e.g. 3A, 2B)
+                let gradesSummaryArray = [];
+                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
+                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
+                });
+                let gradesSummary = gradesSummaryArray.join(', ') || '-';
+
+                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap;">${gradesSummary}</td>`;
                 row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
                 if (!isAdvancedFilterActive) row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
@@ -982,12 +1005,28 @@
                     <td>${student.fullClassName}</td>
                     <td><span class="term-badge">${student.term}</span></td>`;
                 
+                let gradeCounts = { A: 0, B: 0, C: 0, S: 0, W: 0 };
+
                 displaySubjects.forEach(sub => {
-                    let mark = student.marks[sub]; let displayMark = (mark !== undefined) ? mark : '-';
-                    let isFiltered = (filterSub === sub); let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
-                    row += `<td style="${style}">${displayMark}</td>`;
+                    let mark = student.marks[sub]; 
+                    let displayMark = '-';
+                    if (mark !== undefined) {
+                        let g = getGrade(mark);
+                        displayMark = `${mark} <span style="font-size:11px; color:#facc15;">(${g})</span>`;
+                        if (gradeCounts[g] !== undefined) gradeCounts[g]++;
+                    }
+                    let isFiltered = (filterSub === sub); 
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
+                    row += `<td style="${style}; white-space: nowrap;">${displayMark}</td>`;
                 });
 
+                let gradesSummaryArray = [];
+                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
+                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`${gradeCounts[g]}${g}`);
+                });
+                let gradesSummary = gradesSummaryArray.join(', ') || '-';
+
+                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap;">${gradesSummary}</td>`;
                 row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
                 if (!isAdvancedFilterActive) row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
@@ -1006,123 +1045,9 @@
             return 'Pending <span class="hide-print">⏳</span>';
         }
 
-        function searchStudentById() {
-            let searchId = document.getElementById("searchIdInput").value.trim();
-            let resultsContainer = document.getElementById("searchResults");
-            if(!searchId) { resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top:10px;'>කරුණාකර ශිෂ්‍ය අංකය ඇතුළත් කරන්න.</p>"; return; }
-            let foundRecords = studentsData.filter(s => s && s.id === searchId);
-            if(foundRecords.length === 0) { resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top:10px;'>මෙම අංකය සහිත ප්‍රතිඵල පද්ධතියේ නොමැත.</p>"; return; }
-
-            const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
-            foundRecords.sort((a, b) => (termOrder[a.term] || 99) - (termOrder[b.term] || 99));
-
-            let html = `<div class="print-only-header">
-                <h2 style="margin:0; font-size:24px; color:#000;">Helagama K.V.</h2>
-                <h4 style="margin:5px 0 15px 0; color:#333; font-weight:normal;">ශිෂ්‍ය ප්‍රතිඵල වාර්තාව | මුද්‍රිත දිනය: ${new Date().toLocaleDateString('si-LK')}</h4>
-                <hr style="border:1px solid #000; margin-bottom:15px;">
-            </div>`;
-
-            foundRecords.forEach(record => {
-                let reqCount = getReqSubCount(record.grade);
-                let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
-                let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
-                
-                html += `<div class="search-result-box"><h4>👤 ${record.name} - ${record.fullClassName}</h4><div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: #94a3b8;">📅 ${record.term}</div><table class="search-table"><tr><th>විෂය (Subject)</th><th>ලකුණු (Marks)</th></tr>`;
-                for (let [sub, mark] of Object.entries(record.marks)) { html += `<tr><td style="text-align:left;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td></tr>`; }
-                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;"><th style="text-align:right;">එකතුව (Total):</th><th style="font-size:15px;">${record.total}</th></tr><tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;"><th style="text-align:right;">සාමාන්‍යය (Average):</th><th style="font-size:15px;">${record.average}</th></tr><tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;"><th style="text-align:right;">ශ්‍රේණියේ ස්ථානය (Grade Rank):</th><th style="font-size:16px;">${classRankDisplay}</th></tr></table></div>`;
-            });
-            html += `<div style="text-align: center; margin-top: 25px;"><button class="btn-submit btn-print-search" onclick="printStudentSearch()" style="background: linear-gradient(to right, #10b981, #059669); max-width: 280px; margin: 0 auto; display: inline-block; padding: 14px 25px; border-radius: 10px;">🖨️ මෙම ප්‍රතිඵල මුද්‍රණය කරන්න</button></div>`;
-            resultsContainer.innerHTML = html;
-        }
-
-        function printStudentSearch() {
-            let printStyle = document.createElement('style');
-            printStyle.id = 'search-print-style';
-            printStyle.innerHTML = '@media print { @page { size: A4 portrait !important; margin: 1cm; } }';
-            document.head.appendChild(printStyle);
-            document.body.classList.add('print-search-mode');
-            window.print();
-            setTimeout(() => { document.body.classList.remove('print-search-mode'); let el = document.getElementById('search-print-style'); if (el) el.remove(); }, 1000);
-        }
-
-        function downloadPDF() {
-            if(studentsData.length === 0) { alert("PDF කිරීමට පෙර දත්ත ඇතුළත් කරන්න!"); return; }
-            const element = document.getElementById('reportCard');
-            const tableContainer = document.getElementById('tableResponsiveContainer');
-            
-            document.getElementById('printHeader').style.display = 'block';
-            document.getElementById('actionButtons').style.display = 'none';
-            document.querySelectorAll('.table-filters').forEach(el => el.style.display = 'none'); 
-            
-            element.classList.add('pdf-mode');
-            tableContainer.style.overflow = 'visible'; 
-            tableContainer.style.display = 'table'; 
-            tableContainer.style.width = '100%';
-            
-            let fileName = `Rank_Board_${document.getElementById("tableTermSelect").value}_Grade_${document.getElementById("tableGradeSelect").value}.pdf`;
-            const opt = { 
-                margin: 0.2, 
-                filename: fileName, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2 }, 
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } 
-            };
-            
-            html2pdf().set(opt).from(element).save().then(() => {
-                document.getElementById('printHeader').style.display = 'none';
-                document.getElementById('actionButtons').style.display = 'flex';
-                document.querySelectorAll('.table-filters').forEach(el => el.style.display = 'flex');
-                tableContainer.style.overflow = 'auto'; 
-                tableContainer.style.display = 'block';
-                element.classList.remove('pdf-mode'); 
-            });
-        }
-
-        function updateChart() {
-            let filteredChartData = studentsData.filter(s => s && s.term === document.getElementById("chartTermSelect").value && s.grade === document.getElementById("chartGradeSelect").value);
-            let uniqueSubjects = Array.from(new Set(filteredChartData.flatMap(s => Object.keys(s.marks))));
-            let subjectAverages = uniqueSubjects.map(subject => {
-                let count = 0; let sum = 0;
-                filteredChartData.forEach(s => {
-                    if (s.marks[subject] !== undefined) { sum += s.marks[subject]; count++; }
-                });
-                return count === 0 ? 0 : parseFloat((sum / count).toFixed(2));
-            });
-
-            let barColors = uniqueSubjects.map((_, i) => {
-                const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#14b8a6', '#0ea5e9'];
-                return colors[i % colors.length];
-            });
-
-            let chartDatasets = [{
-                label: 'Grade ' + document.getElementById("chartGradeSelect").value + ' - Subject Averages',
-                data: subjectAverages,
-                backgroundColor: barColors,
-                borderRadius: 6
-            }];
-
-            if (myChart !== null) { myChart.destroy(); }
-            const ctx = document.getElementById('marksChart').getContext('2d');
-            Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = '#334155';
-
-            myChart = new Chart(ctx, { 
-                type: 'bar', 
-                data: { labels: uniqueSubjects, datasets: chartDatasets }, 
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    scales: { 
-                        y: { beginAtZero: true, max: 100, grid: { color: '#334155' } },
-                        x: { grid: { display: false } }
-                    },
-                    plugins: { legend: { display: false } }
-                } 
-            });
-        }
-
         // ==========================================
-        // STUDENT PORTAL FUNCTIONS (Login Screen)
+        // STUDENT PORTAL FUNCTIONS
         // ==========================================
-        
         function showStudentPortal() {
             document.getElementById("adminLoginBox").style.display = "none";
             document.getElementById("studentSearchBox").style.display = "block";
@@ -1154,7 +1079,12 @@
             const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
             foundRecords.sort((a, b) => (termOrder[a.term] || 99) - (termOrder[b.term] || 99));
 
-            let html = "";
+            // --- Action Buttons placed at the TOP ---
+            let html = `
+            <div id="portalActionButtons" style="text-align: center; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-submit" onclick="printPortalSearch()" style="background: linear-gradient(to right, #10b981, #059669); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">🖨️ Print</button>
+                <button class="btn-submit" onclick="downloadPortalPDF()" style="background: linear-gradient(to right, #f43f5e, #e11d48); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">📄 PDF</button>
+            </div>`;
             
             foundRecords.forEach(record => {
                 let reqCount = getReqSubCount(record.grade);
@@ -1169,14 +1099,15 @@
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent;">
                         <tr>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2);">විෂය</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2);">ලකුණු</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2);">ලකුණු / සාමාර්ථය</th>
                         </tr>`;
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
+                    let grade = getGrade(mark);
                     html += `
                         <tr>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0;">${sub}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8;">${mark} <span style="color:#facc15; margin-left:8px;">(${grade})</span></td>
                         </tr>`; 
                 }
                 
@@ -1197,12 +1128,6 @@
                 </div>`;
             });
             
-            html += `
-            <div id="portalActionButtons" style="text-align: center; margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
-                <button class="btn-submit" onclick="printPortalSearch()" style="background: linear-gradient(to right, #10b981, #059669); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">🖨️ Print</button>
-                <button class="btn-submit" onclick="downloadPortalPDF()" style="background: linear-gradient(to right, #f43f5e, #e11d48); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">📄 PDF</button>
-            </div>`;
-
             resultsContainer.innerHTML = html;
         }
 
@@ -1218,7 +1143,7 @@
                     #studentSearchBox { width: 100% !important; max-width: 100% !important; background: white !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
                     #studentSearchBox > h2, #studentSearchBox > p:nth-of-type(1), #studentSearchBox > div:nth-of-type(1) { display: none !important; } 
                     .btn-login, .btn-clear, #portalActionButtons { display: none !important; } 
-                    .portal-result-card { background: white !important; border: 1px solid #000 !important; color: #000 !important; box-shadow: none !important; page-break-inside: avoid; }
+                    .portal-result-card { background: white !important; border: 1px solid #000 !important; color: #000 !important; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 20px !important; }
                     .portal-result-card * { color: #000 !important; border-color: #000 !important; }
                     .portal-print-header { display: block !important; text-align: center; margin-bottom: 20px; color: #000; }
                     .portal-print-header h2 { font-size: 24px; margin: 0; color: #000; font-weight: bold; }
@@ -1259,6 +1184,11 @@
             element.insertAdjacentHTML('afterbegin', headerHTML);
             
             document.getElementById('portalActionButtons').style.display = 'none';
+            
+            // Apply temporary styles for clean PDF export
+            element.style.maxHeight = 'none';
+            element.style.overflow = 'visible';
+            
             const resultBoxes = element.querySelectorAll('.portal-result-card');
             resultBoxes.forEach(box => {
                 box.style.background = 'white';
