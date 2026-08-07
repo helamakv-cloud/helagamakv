@@ -166,14 +166,14 @@
             .dashboard { display: block; }
             .card { box-shadow: none; border: none; padding: 0; margin: 0; width: 100%; background: #fff;}
             table { min-width: 100%; border: 1px solid #000; background: #fff;}
-            th { background-color: #eee !important; color: #000 !important; font-size: 12px; padding: 6px;}
-            td { font-size: 12px; padding: 6px; border: 1px solid #000 !important; color: #000;}
+            th { background-color: #eee !important; color: #000 !important; font-size: 11px; padding: 6px;}
+            td { font-size: 11px; padding: 6px; border: 1px solid #000 !important; color: #000;}
             th, td { border: 1px solid #000 !important; }
             
             #dataTable td[style*="background"], #analysisDataTable td[style*="background"] { background: transparent !important; }
             #dataTable td div, #dataTable td span, #analysisDataTable td div, #analysisDataTable td span { color: #000 !important; }
 
-            .search-table th, .search-table td { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 13px; color: #000; }
+            .search-table th, .search-table td { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 12px; color: #000; }
             .rank-col, .term-badge { background-color: transparent !important; color: #000 !important; border: none !important;}
             .dev-footer { display: none !important; }
         }
@@ -198,7 +198,7 @@
             </form>
             
             <hr style="border: 1px solid #334155; margin: 25px 0 15px 0;">
-            <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
+            <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
@@ -539,7 +539,7 @@
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 13px; color: #94a3b8; padding-left: 10px;">පන්තිභාර ශ්‍රේණිය (Class Teacher)</label>
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">පන්තිභාර ශ්‍රේණිය (Class Teacher)</label>
                                 <select id="treg_class" style="color: #f8fafc; margin-top: 2px;">
                                     <option value="නැත" selected>නැත (None)</option>
                                     <option value="6">6 ශ්‍රේණිය</option>
@@ -553,7 +553,7 @@
                             
                             <!-- Custom Teacher Subject Dropdown -->
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 13px; color: #94a3b8; padding-left: 10px;">විෂයභාර ගුරු (Subjects)</label>
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">විෂයභාර ගුරු (Subjects)</label>
                                 <div class="custom-dropdown" id="teacherSubjectDropdown" style="margin-top: 2px;">
                                     <div class="dropdown-header" onclick="toggleTeacherSubjectDropdown()">
                                         <span id="teacherSubjectText" style="color: #f8fafc; font-weight: normal;">විෂයයන් තෝරන්න</span>
@@ -583,22 +583,22 @@
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 13px; color: #94a3b8; padding-left: 10px;">පත්වීමේ දිනය (Appointment Date)</label>
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">පත්වීමේ දිනය (Appointment Date)</label>
                                 <input type="text" id="treg_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 13px; color: #94a3b8; padding-left: 10px;">මෙම පාසලට පත්වු දිනය</label>
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">මෙම පාසලට පත්වු දිනය</label>
                                 <input type="text" id="treg_school_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
                             </div>
                         </div>
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 13px; color: #94a3b8; padding-left: 10px;">වාරසටහන් අනුමත දිනය</label>
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">වාරසටහන් අනුමත දිනය</label>
                                 <input type="text" id="treg_timetable_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 13px; color: #0f172a; display: block; margin-top: 2px;">.</label>
+                                <label style="font-size: 12px; color: #0f172a; display: block; margin-top: 2px;">.</label>
                                 <input type="tel" id="treg_phone" placeholder="දුරකථන අංකය (Phone Number)" style="margin-top: -3px;">
                             </div>
                         </div>
@@ -637,6 +637,25 @@
     </div>
 
     <script>
+        // Safely bind global event listeners to prevent null errors on login screen
+        document.addEventListener('click', function(event) {
+            try {
+                let customDropdown = document.getElementById('studentCustomDropdown');
+                let dropdownList = document.getElementById('studentDropdownList');
+                if (customDropdown && dropdownList && !customDropdown.contains(event.target)) {
+                    dropdownList.style.display = 'none';
+                }
+                
+                let teacherDropdown = document.getElementById('teacherSubjectDropdown');
+                let teacherList = document.getElementById('teacherSubjectList');
+                if (teacherDropdown && teacherList && !teacherDropdown.contains(event.target)) {
+                    teacherList.style.display = 'none';
+                }
+            } catch (e) {
+                console.warn("Dropdown outside click issue ignored.");
+            }
+        });
+
         const firebaseConfig = {
             apiKey: "AIzaSyADQ3WX1c1gkbx3WZAN4RZGmJ2R1lXzl2c",
             authDomain: "helagama-marks.firebaseapp.com",
@@ -664,21 +683,6 @@
             document.getElementById("subjectsContainer").innerHTML = ""; 
             
             document.querySelectorAll('#teacherRegForm input').forEach(inp => inp.removeAttribute('required'));
-            
-            // Close dropdowns if clicked outside
-            document.addEventListener('click', function(event) {
-                let customDropdown = document.getElementById('studentCustomDropdown');
-                let dropdownList = document.getElementById('studentDropdownList');
-                if (customDropdown && !customDropdown.contains(event.target)) {
-                    dropdownList.style.display = 'none';
-                }
-                
-                let teacherDropdown = document.getElementById('teacherSubjectDropdown');
-                let teacherList = document.getElementById('teacherSubjectList');
-                if (teacherDropdown && !teacherDropdown.contains(event.target)) {
-                    teacherList.style.display = 'none';
-                }
-            });
         };
 
         // --- Teacher Subject Multi-select Dropdown ---
@@ -1357,7 +1361,7 @@
                 });
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#a78bfa; font-size:14px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
 
@@ -1385,7 +1389,7 @@
                 });
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#64748b; font-size:14px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#64748b; font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
         }
@@ -1480,14 +1484,15 @@
                     html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `
+                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right; padding-right: 10px;">එකතුව (Total):</th>
-                            <th style="font-size:15px; text-align: center;">${record.total}</th>
+                            <th style="font-size:16px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;">
                             <th style="text-align:right; padding-right: 10px;">සාමාන්‍යය (Average):</th>
-                            <th style="font-size:15px; text-align: center;">${record.average}</th>
+                            <th style="font-size:16px; text-align: center;">${record.average}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;">
@@ -1503,7 +1508,7 @@
                     </table>
                 </div></div>`;
             });
-            html += `<div style="text-align: center; margin-top: 25px;"><button class="btn-submit btn-print-search" onclick="printStudentSearch()" style="background: linear-gradient(to right, #10b981, #059669); max-width: 280px; margin: 0 auto; display: inline-block; padding: 14px 25px; border-radius: 10px;">🖨️ මෙම ප්‍රතිඵල මුද්‍රණය කරන්න</button></div>`;
+            html += `<div style="text-align: center; margin-top: 25px;"><button type="button" class="btn-submit btn-print-search" onclick="printStudentSearch()" style="background: linear-gradient(to right, #10b981, #059669); max-width: 280px; margin: 0 auto; display: inline-block; padding: 14px 25px; border-radius: 10px;">🖨️ මෙම ප්‍රතිඵල මුද්‍රණය කරන්න</button></div>`;
             resultsContainer.innerHTML = html;
         }
 
@@ -1515,6 +1520,190 @@
             document.body.classList.add('print-search-mode');
             window.print();
             setTimeout(() => { document.body.classList.remove('print-search-mode'); let el = document.getElementById('search-print-style'); if (el) el.remove(); }, 1000);
+        }
+
+        // ==========================================
+        // STUDENT PORTAL FUNCTIONS (Outside App)
+        // ==========================================
+        function showStudentPortal() {
+            document.getElementById("adminLoginBox").style.display = "none";
+            document.getElementById("studentSearchBox").style.display = "block";
+        }
+
+        function showAdminLogin() {
+            document.getElementById("studentSearchBox").style.display = "none";
+            document.getElementById("adminLoginBox").style.display = "block";
+            document.getElementById("portalSearchInput").value = "";
+            document.getElementById("portalSearchResults").innerHTML = "";
+        }
+
+        function searchInPortal() {
+            let searchId = document.getElementById("portalSearchInput").value.trim();
+            let selectedTerm = document.getElementById("portalTermSelect").value;
+            let resultsContainer = document.getElementById("portalSearchResults");
+            
+            if(!searchId) { 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>කරුණාකර ඇතුළත්වීමේ අංකය ඇතුළත් කරන්න.</p>"; 
+                return; 
+            }
+
+            let foundRecords = studentsData.filter(s => s && s.id === searchId && s.term === selectedTerm);
+            
+            if(foundRecords.length === 0) { 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා කරන්න.</p>"; 
+                return; 
+            }
+
+            let html = "";
+            
+            foundRecords.forEach(record => {
+                let reqCount = getReqSubCount(record.grade);
+                let sameGradeCohort = studentsData.filter(s => s && s.term === record.term && s.grade === record.grade);
+                let classRankDisplay = calculateRankIfComplete(sameGradeCohort, record.id, reqCount);
+                let totalStudentsInClass = sameGradeCohort.length;
+                
+                html += `
+                <div class="search-result-box portal-result-card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;">
+                    <h4 class="portal-student-name" style="color: #38bdf8; margin: 0 0 5px 0; font-size: 16px; word-wrap: break-word;">👤 ${record.name} - ${record.fullClassName}</h4>
+                    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; font-weight: bold;">📅 වාරය: ${record.term}</div>
+                    
+                    <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent; min-width: 300px;">
+                        <tr>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: normal; padding-left: 10px;">විෂය</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">ලකුණු</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">සාමාර්ථය</th>
+                        </tr>`;
+                
+                for (let [sub, mark] of Object.entries(record.marks)) { 
+                    let grade = getGrade(mark);
+                    html += `
+                        <tr>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal; padding-left: 10px;">${sub}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8; white-space: normal;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15; white-space: normal;">${grade}</td>
+                        </tr>`; 
+                }
+                
+                html += `
+                        <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">එකතුව (Total):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.total}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        </tr>
+                        <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">සාමාන්‍යය (Average):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.average}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        </tr>
+                        <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">ස්ථානය (Rank):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${classRankDisplay}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        </tr>
+                        <tr style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">පන්තියේ සිසුන් ගණන:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${totalStudentsInClass}</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        </tr>
+                    </table>
+                    </div>
+                </div>`;
+            });
+            
+            html += `
+            <div id="portalActionButtons" style="text-align: center; margin-top: 25px; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn-submit" onclick="printPortalSearch()" style="background: linear-gradient(to right, #10b981, #059669); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">🖨️ Print</button>
+                <button type="button" class="btn-submit" onclick="downloadPortalPDF()" style="background: linear-gradient(to right, #f43f5e, #e11d48); margin: 0; padding: 12px 20px; border-radius: 8px; flex: 1;">📄 PDF</button>
+            </div>`;
+
+            resultsContainer.innerHTML = html;
+        }
+
+        function printPortalSearch() {
+            let printStyle = document.createElement('style');
+            printStyle.id = 'portal-print-style';
+            
+            printStyle.innerHTML = `
+                @media print { 
+                    @page { size: A4 portrait !important; margin: 1cm; } 
+                    body { background: white !important; }
+                    #adminLoginBox { display: none !important; }
+                    #studentSearchBox { width: 100% !important; max-width: 100% !important; background: white !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
+                    #studentSearchBox > *:not(#portalSearchResults) { display: none !important; } 
+                    .btn-login, .btn-clear, #portalActionButtons { display: none !important; } 
+                    .portal-result-card { background: white !important; border: 1px solid #000 !important; color: #000 !important; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 20px !important; }
+                    .portal-result-card * { color: #000 !important; border-color: #000 !important; }
+                    .portal-print-header { display: block !important; text-align: center; margin-bottom: 20px; color: #000; }
+                    .portal-print-header h2 { font-size: 24px; margin: 0; color: #000; font-weight: bold; }
+                    .portal-print-header h4 { font-size: 16px; margin: 5px 0 15px 0; font-weight: normal; color: #333; }
+                    .portal-print-header hr { border: 1px solid #000; }
+                    .dev-footer { display: none !important; }
+                    .scrollable-results { overflow: visible !important; max-height: none !important; }
+                }
+            `;
+            document.head.appendChild(printStyle);
+            
+            let resultsDiv = document.getElementById("portalSearchResults");
+            let headerHTML = `<div class="portal-print-header" style="display:none;">
+                <h2>මො/හෙළගම කනිටු විදුහල</h2>
+                <h4>ශිෂ්‍ය ප්‍රතිඵල වාර්තාව | මුද්‍රිත දිනය: ${new Date().toLocaleDateString('si-LK')}</h4>
+                <hr>
+            </div>`;
+            resultsDiv.insertAdjacentHTML('afterbegin', headerHTML);
+            
+            window.print();
+            
+            setTimeout(() => { 
+                let el = document.getElementById('portal-print-style'); if (el) el.remove(); 
+                let header = resultsDiv.querySelector('.portal-print-header'); if (header) header.remove();
+            }, 1000);
+        }
+
+        function downloadPortalPDF() {
+            const element = document.getElementById('portalSearchResults');
+            const searchId = document.getElementById("portalSearchInput").value.trim();
+            const nameEl = element.querySelector('.portal-student-name');
+            const studentName = nameEl ? nameEl.innerText.split('-')[0].replace('👤', '').trim() : "Student";
+            
+            let headerHTML = `<div id="tempPdfHeader" style="text-align: center; margin-bottom: 20px; color: #000; background: white; padding-top: 10px;">
+                <h2 style="font-size: 24px; margin: 0; font-weight: bold;">මො/හෙළගම කනිටු විදුහල</h2>
+                <h4 style="font-size: 16px; margin: 5px 0 15px 0; font-weight: normal;">ශිෂ්‍ය ප්‍රතිඵල වාර්තාව | අංකය: ${searchId}</h4>
+                <hr style="border: 1px solid #000;">
+            </div>`;
+            element.insertAdjacentHTML('afterbegin', headerHTML);
+            
+            document.getElementById('portalActionButtons').style.display = 'none';
+            
+            element.style.maxHeight = 'none';
+            element.style.overflow = 'visible';
+            
+            const resultBoxes = element.querySelectorAll('.portal-result-card');
+            resultBoxes.forEach(box => {
+                box.style.background = 'white';
+                box.style.border = '1px solid black';
+                let texts = box.querySelectorAll('*');
+                texts.forEach(t => {
+                    t.style.color = 'black';
+                    t.style.borderColor = 'black';
+                    if (t.tagName === 'TH' || t.tagName === 'TD') t.style.background = 'transparent';
+                });
+            });
+
+            let fileName = `${searchId}_${studentName}_Results.pdf`;
+            const opt = { 
+                margin: 0.5, 
+                filename: fileName, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2 }, 
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } 
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.maxHeight = '50vh';
+                element.style.overflow = 'auto';
+                searchInPortal(); 
+            });
         }
 
         // --- Chart Function ---
