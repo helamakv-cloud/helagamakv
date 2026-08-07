@@ -66,7 +66,8 @@
         .subject-row select { background: #1e293b; border: 1px solid #475569; padding: 8px; font-size: 13px; color:#f8fafc;}
         .subject-row input { flex: 1; font-size: 15px; text-align: center; padding: 8px; margin: 0; border: 1px solid #475569; background: #1e293b;}
 
-        .btn-submit { background: linear-gradient(to right, #38bdf8, #3b82f6); color: white; font-weight: bold; font-size: 15px; margin-top: 20px; padding: 16px; border: none; cursor: pointer; border-radius: 10px; box-shadow: 0 4px 12px rgba(56,189,248,0.3);}
+        .btn-submit { background: linear-gradient(to right, #38bdf8, #3b82f6); color: white; font-weight: bold; font-size: 15px; margin-top: 20px; padding: 16px; border: none; cursor: pointer; border-radius: 10px; box-shadow: 0 4px 12px rgba(56,189,248,0.3); transition: 0.3s;}
+        .btn-submit:hover { opacity: 0.9; }
         .action-buttons { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; justify-content: center;}
         .action-buttons button { flex: 1 1 30%; min-width: 100px; padding: 14px 10px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; border: none;}
         .btn-print { background: linear-gradient(to right, #10b981, #059669); color: white; }
@@ -476,8 +477,8 @@
                         <input type="tel" id="reg_phone" placeholder="භාරකරුගේ දුරකථන අංකය (Guardian Phone)" required>
                         
                         <div class="flex-row" style="margin-top: 20px;">
-                            <button type="submit" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #10b981, #059669); box-shadow: 0 4px 12px rgba(16,185,129,0.3);">ශිෂ්‍යයා ලියාපදිංචි/වෙනස් කරන්න</button>
-                            <button type="reset" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;">Clear</button>
+                            <button type="submit" id="studentSubmitBtn" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #10b981, #059669); box-shadow: 0 4px 12px rgba(16,185,129,0.3);">ශිෂ්‍යයා ලියාපදිංචි/වෙනස් කරන්න</button>
+                            <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetStudentForm()">Clear</button>
                         </div>
                     </form>
                 </div>
@@ -550,8 +551,8 @@
                         </div>
 
                         <div class="flex-row" style="margin-top: 20px;">
-                            <button type="submit" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #8b5cf6, #6d28d9); box-shadow: 0 4px 12px rgba(139,92,246,0.3);">ගුරුවරයා ලියාපදිංචි/වෙනස් කරන්න</button>
-                            <button type="reset" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;">Clear</button>
+                            <button type="submit" id="teacherSubmitBtn" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #8b5cf6, #6d28d9); box-shadow: 0 4px 12px rgba(139,92,246,0.3);">ගුරුවරයා ලියාපදිංචි/වෙනස් කරන්න</button>
+                            <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetTeacherForm()">Clear</button>
                         </div>
                     </form>
                 </div>
@@ -701,6 +702,15 @@
         // ==========================================
         // STUDENT REGISTRATION (Fixed Edit)
         // ==========================================
+        function resetStudentForm() {
+            document.getElementById("studentRegForm").reset();
+            document.getElementById("reg_admNo").readOnly = false;
+            document.getElementById("reg_admNo").style.backgroundColor = "#0f172a";
+            let btn = document.getElementById("studentSubmitBtn");
+            btn.innerText = "ශිෂ්‍යයා ලියාපදිංචි/වෙනස් කරන්න";
+            btn.style.background = "linear-gradient(to right, #10b981, #059669)";
+        }
+
         document.getElementById("studentRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
             let phone = document.getElementById("reg_phone").value.trim();
@@ -730,7 +740,7 @@
             }
 
             db.ref('hkRegStudents').set(registeredStudents);
-            document.getElementById("studentRegForm").reset();
+            resetStudentForm();
             loadStudentsForMarks(); 
         });
 
@@ -752,7 +762,7 @@
                         <td>${scholBadge}</td>
                         <td>${s.phone}</td>
                         <td>
-                            <button onclick="editStudent('${s.admissionNo}')" style="background:#f59e0b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Edit</button>
+                            <button type="button" onclick="editStudent('${s.admissionNo}')" style="background:#f59e0b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Edit</button>
                         </td>
                     </tr>
                 `;
@@ -764,14 +774,21 @@
             let s = registeredStudents.find(x => x.admissionNo === admNo);
             if(s) {
                 document.getElementById("reg_admNo").value = s.admissionNo;
+                document.getElementById("reg_admNo").readOnly = true;
+                document.getElementById("reg_admNo").style.backgroundColor = "rgba(255,255,255,0.1)";
+                
                 document.getElementById("reg_fullName").value = s.fullName;
                 document.getElementById("reg_initialName").value = s.nameInitials;
                 document.getElementById("reg_grade").value = s.grade;
                 document.getElementById("reg_dob").value = s.dob;
-                if(s.scholarship === "ඔව්") document.getElementById("reg_scholarship").value = "ඔව්";
-                else document.getElementById("reg_scholarship").value = "නැත";
+                document.getElementById("reg_scholarship").value = s.scholarship === "ඔව්" ? "ඔව්" : "නැත";
                 document.getElementById("reg_address").value = s.address;
                 document.getElementById("reg_phone").value = s.phone;
+                
+                let btn = document.getElementById("studentSubmitBtn");
+                btn.innerText = "ශිෂ්‍ය තොරතුරු යාවත්කාලීන කරන්න (Update)";
+                btn.style.background = "linear-gradient(to right, #f59e0b, #d97706)";
+                
                 window.scrollTo({ top: document.getElementById("regStudentFormCard").offsetTop, behavior: 'smooth' });
             }
         }
@@ -779,6 +796,15 @@
         // ==========================================
         // TEACHER REGISTRATION (Fixed Edit)
         // ==========================================
+        function resetTeacherForm() {
+            document.getElementById("teacherRegForm").reset();
+            document.getElementById("treg_id").readOnly = false;
+            document.getElementById("treg_id").style.backgroundColor = "#0f172a";
+            let btn = document.getElementById("teacherSubmitBtn");
+            btn.innerText = "ගුරුවරයා ලියාපදිංචි/වෙනස් කරන්න";
+            btn.style.background = "linear-gradient(to right, #8b5cf6, #6d28d9)";
+        }
+
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -822,7 +848,7 @@
                 .then(() => {
                     if (isUpdate) { alert("ගුරු තොරතුරු සාර්ථකව යාවත්කාලීන (Update) කරන ලදී!"); } 
                     else { alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!"); }
-                    document.getElementById("teacherRegForm").reset();
+                    resetTeacherForm();
                     renderTeachersTable(); 
                 })
                 .catch((error) => {
@@ -845,7 +871,7 @@
                         <td>${t.appointDate || '-'}</td>
                         <td>${t.phone}</td>
                         <td>
-                            <button onclick="editTeacher('${t.id}')" style="background:#f59e0b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Edit</button>
+                            <button type="button" onclick="editTeacher('${t.id}')" style="background:#f59e0b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Edit</button>
                         </td>
                     </tr>
                 `;
@@ -857,6 +883,9 @@
             let t = registeredTeachers.find(x => x && x.id === id);
             if(t) {
                 document.getElementById("treg_id").value = t.id;
+                document.getElementById("treg_id").readOnly = true;
+                document.getElementById("treg_id").style.backgroundColor = "rgba(255,255,255,0.1)";
+                
                 document.getElementById("treg_name").value = t.name;
                 document.getElementById("treg_nic").value = t.nic;
                 document.getElementById("treg_address").value = t.address;
@@ -866,6 +895,11 @@
                 document.getElementById("treg_school_appoint_date").value = t.schoolAppointDate;
                 document.getElementById("treg_timetable_date").value = t.timetableDate;
                 document.getElementById("treg_phone").value = t.phone;
+                
+                let btn = document.getElementById("teacherSubmitBtn");
+                btn.innerText = "ගුරු තොරතුරු යාවත්කාලීන කරන්න (Update)";
+                btn.style.background = "linear-gradient(to right, #f59e0b, #d97706)";
+                
                 window.scrollTo({ top: document.getElementById("regTeacherFormCard").offsetTop, behavior: 'smooth' });
             }
         }
@@ -903,7 +937,7 @@
                     studentsInGrade.forEach(s => {
                         tableHTML += `<tr onclick="selectStudentForMarks('${s.admissionNo}', '${s.nameInitials}')">
                             <td style="text-align: center; color: #94a3b8;">${index++}</td>
-                            <td style="font-weight: bold; color: #38bdf8;">${s.admissionNo}</td>
+                            <td style="font-weight: bold; color: #38bdf8; text-align: center;">${s.admissionNo}</td>
                             <td style="text-align: left;">${s.nameInitials}</td>
                         </tr>`;
                     });
@@ -1015,7 +1049,7 @@
         });
 
         // ==========================================
-        // RANK BOARD (Clean Marks Only)
+        // RANK BOARD (Clean Marks Only, Left Aligned Subjects)
         // ==========================================
         function applySubjectFilter() { updateTable(true); }
 
@@ -1064,7 +1098,8 @@
             let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>වාරය</th>`;
             displaySubjects.forEach(sub => {
                 let isFiltered = (filterSub === sub);
-                let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold;' : '';
+                // Subjects headers left aligned
+                let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
             headHtml += `<th>එකතුව</th><th>සාමාන්‍යය</th>`;
@@ -1100,7 +1135,8 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
+                    // Subject marks left aligned
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
 
@@ -1119,7 +1155,8 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa;' : '';
+                    // Subject marks left aligned
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
 
@@ -1147,7 +1184,9 @@
             let displaySubjects = Array.from(uniqueSubjects);
 
             let headHtml = `<th>No</th><th style="text-align:left;">නම</th>`;
-            displaySubjects.forEach(sub => { headHtml += `<th>${sub}</th>`; });
+            displaySubjects.forEach(sub => { 
+                headHtml += `<th style="text-align: left; padding-left: 10px;">${sub}</th>`; 
+            });
             headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th><th>එකතුව</th><th>සාමාන්‍යය</th><th>ස්ථානය</th>`;
             
             tableHeadRow.innerHTML = headHtml;
@@ -1185,7 +1224,7 @@
                         displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #f8fafc;">${mark}</div><div style="font-size: 12px; color: #facc15; font-weight: 800;">${g}</div>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
-                    row += `<td style="padding: 6px;">${displayHtml}</td>`;
+                    row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
                 });
 
                 let gradesSummaryArray = [];
@@ -1215,7 +1254,7 @@
                         displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #94a3b8;">${mark}</div><div style="font-size: 12px; color: #94a3b8; font-weight: 800;">${g}</div>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
-                    row += `<td style="padding: 6px;">${displayHtml}</td>`;
+                    row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
                 });
 
                 let gradesSummaryArray = [];
@@ -1321,7 +1360,8 @@
                     html += `<tr><td style="text-align:left; white-space: normal;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `
+                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right;">එකතුව (Total):</th>
                             <th style="font-size:15px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
