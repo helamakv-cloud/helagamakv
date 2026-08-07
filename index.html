@@ -23,8 +23,8 @@
         .login-box { margin: auto; background: rgba(30, 41, 59, 0.95); padding: 40px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 450px; backdrop-filter: blur(10px);}
         .login-box h2 { margin: 0 0 10px; color: #f8fafc; font-size: 24px; font-weight: 700;}
         .login-box p { color: #94a3b8; margin-bottom: 30px; font-size: 14px;}
-        .login-box input { width: 100%; padding: 14px 15px; margin: 10px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-size: 16px; text-align: center; transition: 0.3s;}
-        .login-box input:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); outline: none;}
+        .login-box input, .login-box select { width: 100%; padding: 14px 15px; margin: 10px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-size: 16px; text-align: center; transition: 0.3s;}
+        .login-box input:focus, .login-box select:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); outline: none;}
         .btn-login { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s;}
         .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
         .login-error { color: #ef4444; font-size: 13px; display: none; margin-top: 10px;}
@@ -199,7 +199,7 @@
             
             <hr style="border: 1px solid #334155; margin: 25px 0 15px 0;">
             <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
-            <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ශිෂ්‍ය ප්‍රතිඵල බලන්න</button>
+            <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
                 Developer - Kelum Konara | 0714469232
@@ -210,6 +210,15 @@
         <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px; padding-bottom: 20px;">
             <h2 style="color: #38bdf8;">Helagama K.V.</h2>
             <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
+
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">වාරය තෝරන්න (Select Term):</label>
+                <select id="portalTermSelect" style="border-width: 2px; border-color: #3b82f6;">
+                    <option value="පළමු වාරය" selected>පළමු වාරය</option>
+                    <option value="දෙවන වාරය">දෙවන වාරය</option>
+                    <option value="තෙවන වාරය">තෙවන වාරය</option>
+                </select>
+            </div>
             
             <div style="text-align: left; margin-bottom: 15px;">
                 <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">ඔබගේ ඇතුළත්වීමේ අංකය (Admission No):</label>
@@ -1187,13 +1196,13 @@
             displaySubjects.forEach(sub => { 
                 headHtml += `<th style="text-align: left; padding-left: 10px;">${sub}</th>`; 
             });
-            headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th><th>එකතුව</th><th>සාමාන්‍යය</th><th>ස්ථානය</th>`;
+            headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th>`;
             
             tableHeadRow.innerHTML = headHtml;
             tableBody.innerHTML = ""; 
 
             if(filteredData.length === 0) {
-                let totalCols = 6 + displaySubjects.length;
+                let totalCols = 3 + displaySubjects.length;
                 tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">මෙම වාරය සහ ශ්‍රේණිය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
@@ -1234,8 +1243,6 @@
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
                 row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
-                row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
-                row += `<td class="rank-col">${currentRank} <span class="hide-print">🔒</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
 
@@ -1264,8 +1271,6 @@
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
                 row += `<td style="font-weight:bold; color:#64748b; font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
-                row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
-                row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending <span class="hide-print">⏳</span></td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
         }
@@ -1360,8 +1365,7 @@
                     html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                html += `
-                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right; padding-right: 10px;">එකතුව (Total):</th>
                             <th style="font-size:15px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
@@ -1415,6 +1419,7 @@
 
         function searchInPortal() {
             let searchId = document.getElementById("portalSearchInput").value.trim();
+            let selectedTerm = document.getElementById("portalTermSelect").value;
             let resultsContainer = document.getElementById("portalSearchResults");
             
             if(!searchId) { 
@@ -1422,15 +1427,12 @@
                 return; 
             }
 
-            let foundRecords = studentsData.filter(s => s && s.id === searchId);
+            let foundRecords = studentsData.filter(s => s && s.id === searchId && s.term === selectedTerm);
             
             if(foundRecords.length === 0) { 
-                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය පරීක්ෂා කරන්න.</p>"; 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා කරන්න.</p>"; 
                 return; 
             }
-
-            const termOrder = { "පළමු වාරය": 1, "දෙවන වාරය": 2, "තෙවන වාරය": 3 };
-            foundRecords.sort((a, b) => (termOrder[a.term] || 99) - (termOrder[b.term] || 99));
 
             let html = "";
             
