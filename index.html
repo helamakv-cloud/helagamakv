@@ -375,27 +375,31 @@
                         <h2>Helagama K.V.</h2>
                         <h4>ශිෂ්‍ය ප්‍රතිඵල ලේඛනය (Master Sheet)</h4>
                         <h4 id="analysisPrintSubHeader" style="font-weight: bold; color: #000;"></h4>
+                        <h4 id="analysisPrintTeacherHeader" style="font-weight: normal; color: #333;"></h4>
                         <hr>
                     </div>
 
                     <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; gap: 15px;">
                         <h3 class="section-title" style="border: none; padding: 0; width: 100%;">විභාග ප්‍රතිඵල විශ්ලේෂණය</h3>
                         
-                        <div class="table-filters">
-                            <select id="analysisTermSelect" onchange="updateAnalysisTable()">
-                                <option value="all">සියලුම වාර</option>
-                                <option value="පළමු වාරය" selected>පළමු වාරය</option>
-                                <option value="දෙවන වාරය">දෙවන වාරය</option>
-                                <option value="තෙවන වාරය">තෙවන වාරය</option>
-                            </select>
-                            <select id="analysisGradeSelect" onchange="updateAnalysisTable()">
-                                <option value="6">6 ශ්‍රේණිය</option>
-                                <option value="7">7 ශ්‍රේණිය</option>
-                                <option value="8">8 ශ්‍රේණිය</option>
-                                <option value="9">9 ශ්‍රේණිය</option>
-                                <option value="10">10 ශ්‍රේණිය</option>
-                                <option value="11" selected>11 ශ්‍රේණිය</option>
-                            </select>
+                        <div class="table-filters" style="flex-direction: column; align-items: center;">
+                            <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap; justify-content: center;">
+                                <select id="analysisTermSelect" onchange="updateAnalysisTable()" style="flex: 1; min-width: 150px;">
+                                    <option value="all">සියලුම වාර</option>
+                                    <option value="පළමු වාරය" selected>පළමු වාරය</option>
+                                    <option value="දෙවන වාරය">දෙවන වාරය</option>
+                                    <option value="තෙවන වාරය">තෙවන වාරය</option>
+                                </select>
+                                <select id="analysisGradeSelect" onchange="updateAnalysisTable()" style="flex: 1; min-width: 150px;">
+                                    <option value="6">6 ශ්‍රේණිය</option>
+                                    <option value="7">7 ශ්‍රේණිය</option>
+                                    <option value="8">8 ශ්‍රේණිය</option>
+                                    <option value="9">9 ශ්‍රේණිය</option>
+                                    <option value="10">10 ශ්‍රේණිය</option>
+                                    <option value="11" selected>11 ශ්‍රේණිය</option>
+                                </select>
+                            </div>
+                            <input type="text" id="analysisTeacherInput" placeholder="විෂයභාර ගුරුවරයාගේ නම (Teacher Name)" oninput="updateAnalysisTable()" style="width: 100%; margin-top: 10px;">
                         </div>
                     </div>
 
@@ -665,7 +669,7 @@
         });
 
         // ==========================================
-        // STUDENT REGISTRATION
+        // STUDENT REGISTRATION (Fixed Edit)
         // ==========================================
         document.getElementById("studentRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
@@ -726,6 +730,7 @@
         }
 
         function editStudent(admNo) {
+            openTab('students'); // Ensure tab is active so element is visible for scrolling
             let s = registeredStudents.find(x => x.admissionNo === admNo);
             if(s) {
                 document.getElementById("reg_admNo").value = s.admissionNo;
@@ -742,7 +747,7 @@
         }
 
         // ==========================================
-        // TEACHER REGISTRATION
+        // TEACHER REGISTRATION (Fixed Edit)
         // ==========================================
         document.getElementById("teacherRegForm").addEventListener("submit", function(e) {
             e.preventDefault();
@@ -772,7 +777,7 @@
 
             let newTeacher = {
                 id: id, name: name, nic: nic, address: address, qualifications: qual, salaryNo: salaryNo,
-                appointDate: appDate, schoolAppointDate: schoolAppDate, timetableDate: timeTableDate, phone: phone
+                appointDate: appDate, schoolAppointDate: schoolAppointDate, timetableDate: timeTableDate, phone: phone
             };
 
             let existingIdx = registeredTeachers.findIndex(t => t && t.id === newTeacher.id);
@@ -818,6 +823,7 @@
         }
 
         function editTeacher(id) {
+            openTab('teachers'); // Ensure tab is active so element is visible for scrolling
             let t = registeredTeachers.find(x => x && x.id === id);
             if(t) {
                 document.getElementById("treg_id").value = t.id;
@@ -1078,9 +1084,11 @@
             let tableBody = document.getElementById("analysisTableBody");
             let selectedTerm = document.getElementById("analysisTermSelect").value;
             let selectedGrade = document.getElementById("analysisGradeSelect").value;
+            let teacherName = document.getElementById("analysisTeacherInput").value.trim();
             
             let printSubText = "වාරය: " + selectedTerm + " | ශ්‍රේණිය: " + selectedGrade;
             document.getElementById("analysisPrintSubHeader").innerText = printSubText;
+            document.getElementById("analysisPrintTeacherHeader").innerText = teacherName ? "විෂයභාර ගුරුවරයා: " + teacherName : "";
 
             let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
             let uniqueSubjects = new Set();
@@ -1262,8 +1270,7 @@
                     html += `<tr><td style="text-align:left; white-space: normal;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                html += `
-                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right;">එකතුව (Total):</th>
                             <th style="font-size:15px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
