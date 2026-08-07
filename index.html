@@ -18,16 +18,16 @@
         html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 10px; font-size: 16px; }
 
-        /* --- Login & Portal Interface - PERFECTLY CENTERED --- */
-        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); z-index: 1000; padding: 20px; display: flex; align-items: center; justify-content: center; }
-        .login-box { margin: auto; background: rgba(30, 41, 59, 0.95); padding: 40px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 450px; backdrop-filter: blur(10px); max-height: 100%; overflow-y: auto; }
-        .login-box h2 { margin: 0 0 10px; color: #f8fafc; font-size: 26px; font-weight: 700;}
-        .login-box p { color: #94a3b8; margin-bottom: 30px; font-size: 16px;}
-        .login-box input, .login-box select { width: 100%; padding: 15px; margin: 10px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-size: 17px; text-align: center; transition: 0.3s;}
+        /* --- Login & Portal Interface - PERFECTLY CENTERED / NO PAGE SCROLL --- */
+        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); z-index: 1000; padding: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-sizing: border-box; }
+        .login-box { background: rgba(30, 41, 59, 0.95); padding: 35px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 420px; backdrop-filter: blur(10px); display: flex; flex-direction: column; max-height: 95vh; }
+        .login-box h2 { margin: 0 0 10px; color: #f8fafc; font-size: 26px; font-weight: 700; flex-shrink: 0;}
+        .login-box p { color: #94a3b8; margin-bottom: 25px; font-size: 16px; flex-shrink: 0;}
+        .login-box input, .login-box select { width: 100%; padding: 15px; margin: 10px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-size: 17px; text-align: center; transition: 0.3s; flex-shrink: 0;}
         .login-box input:focus, .login-box select:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); outline: none;}
-        .btn-login { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s;}
+        .btn-login { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; flex-shrink: 0;}
         .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
-        .login-error { color: #ef4444; font-size: 14px; display: none; margin-top: 10px;}
+        .login-error { color: #ef4444; font-size: 14px; display: none; margin-top: 10px; flex-shrink: 0;}
 
         /* --- Main App Container --- */
         #mainApp { display: none; width: 100%; max-width: 100%; margin: 0 auto; padding: 5px; padding-bottom: 30px; }
@@ -98,7 +98,7 @@
         .search-result-box { background:#0f172a; border-radius:12px; padding:15px; margin-top:20px; text-align:left; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;}
         .search-result-box h4 { margin: 0 0 15px 0; color: #38bdf8; font-size: 20px;}
         .search-table { width: 100%; border-collapse: collapse;}
-        .search-table th, .search-table td { border: 1px solid #334155; padding: 10px; font-size: 15px; text-align: center; color: #e2e8f0; word-wrap: break-word;}
+        .search-table th, .search-table td { border: 1px solid #334155; padding: 8px; font-size: 15px; text-align: center; color: #e2e8f0; word-wrap: break-word;}
         .print-only-header { display: none; }
         .hint-text { font-size: 13px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
@@ -106,6 +106,9 @@
         .scrollable-results::-webkit-scrollbar, .dropdown-list::-webkit-scrollbar { width: 6px; height: 6px; }
         .scrollable-results::-webkit-scrollbar-track, .dropdown-list::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 8px; }
         .scrollable-results::-webkit-scrollbar-thumb, .dropdown-list::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 8px; }
+
+        /* Ensure Portal Results div scrolls properly inside the centered login box */
+        #portalSearchResults { overflow-y: auto; overflow-x: hidden; flex-grow: 1; }
 
         /* PDF Export Mode CSS */
         .pdf-mode { background: white !important; color: black !important; padding: 20px; }
@@ -136,9 +139,11 @@
             .subject-row { flex-direction: column; align-items: stretch; }
             .subject-row label, .subject-row select, .subject-row input { text-align: center; width: 100%; }
             .flex-row { flex-direction: column; }
-            .login-box { padding: 30px 20px; margin: 15px; }
             th, td { padding: 8px; font-size: 14px; }
             h3.section-title { font-size: 18px; }
+            
+            /* Tighten login box on very small screens */
+            .login-box { padding: 25px 20px; }
         }
 
         @media (min-width: 769px) {
@@ -175,8 +180,7 @@
 
             .search-table th, .search-table td { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 13px; color: #000; }
             .rank-col, .term-badge { background-color: transparent !important; color: #000 !important; border: none !important;}
-            .dev-footer { position: fixed; bottom: 0; width: 100%; border-top: 1px dashed #ccc; padding-top: 5px; color: #000;}
-            .dev-footer span { color: #000; }
+            .dev-footer { display: none !important; }
         }
     </style>
     <link rel="manifest" href="manifest.json">
@@ -202,18 +206,18 @@
             <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
             <button class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
-            <div style="margin-top: 25px; font-size: 14px; color: #94a3b8;">
+            <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
                 Developer - Kelum Konara | 0714469232
             </div>
         </div>
 
         <!-- Student Search Box -->
-        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px; padding-bottom: 20px;">
+        <div class="login-box" id="studentSearchBox" style="display: none;">
             <h2 style="color: #38bdf8;">මො/හෙළගම කනිටු විදුහල</h2>
-            <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
+            <p style="margin-bottom: 15px;">ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
 
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 15px; font-weight: bold; color: #94a3b8;">වාරය තෝරන්න (Select Term):</label>
+            <div style="text-align: left; margin-bottom: 10px;">
+                <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">වාරය තෝරන්න (Select Term):</label>
                 <select id="portalTermSelect" style="border-width: 2px; border-color: #3b82f6;">
                     <option value="පළමු වාරය" selected>පළමු වාරය</option>
                     <option value="දෙවන වාරය">දෙවන වාරය</option>
@@ -221,17 +225,19 @@
                 </select>
             </div>
             
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 15px; font-weight: bold; color: #94a3b8;">ඔබගේ ඇතුළත්වීමේ අංකය (Admission No):</label>
+            <div style="text-align: left; margin-bottom: 10px;">
+                <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">ඇතුළත්වීමේ අංකය (Admission No):</label>
                 <input type="text" id="portalSearchInput" placeholder="උදා: 1234">
             </div>
             
-            <button class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
-            <button type="button" class="btn-clear" style="width: 100%; padding: 15px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <button class="btn-login" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #38bdf8, #3b82f6);" onclick="searchInPortal()">සොයන්න</button>
+                <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ Back</button>
+            </div>
             
-            <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 50vh; overflow-y: auto;"></div>
+            <div id="portalSearchResults" class="scrollable-results"></div>
             
-            <div style="margin-top: 25px; font-size: 14px; color: #94a3b8;">
+            <div style="margin-top: 20px; font-size: 13px; color: #94a3b8; flex-shrink: 0;">
                 Developer - Kelum Konara | 0714469232
             </div>
         </div>
@@ -786,7 +792,7 @@
         });
 
         // ==========================================
-        // STUDENT REGISTRATION
+        // STUDENT REGISTRATION (Fixed Edit)
         // ==========================================
         function resetStudentForm() {
             document.getElementById("studentRegForm").reset();
@@ -888,7 +894,7 @@
         }
 
         // ==========================================
-        // TEACHER REGISTRATION
+        // TEACHER REGISTRATION (Fixed Edit)
         // ==========================================
         function resetTeacherForm() {
             document.getElementById("teacherRegForm").reset();
@@ -916,7 +922,6 @@
             let qual = document.getElementById("treg_qualifications").value.trim();
             let salaryNo = document.getElementById("treg_salary_no").value.trim();
             let appDate = document.getElementById("treg_appoint_date").value;
-            let schoolAppDate = document.getElementById("treg_school_appoint_date").value;
             let timeTableDate = document.getElementById("treg_timetable_date").value;
             
             let classTeacher = document.getElementById("treg_class").value;
@@ -937,7 +942,7 @@
 
             let newTeacher = {
                 id: id, name: name, nic: nic, address: address, qualifications: qual, salaryNo: salaryNo,
-                appointDate: appDate, schoolAppointDate: schoolAppDate, timetableDate: timeTableDate, phone: phone, 
+                appointDate: appDate, timetableDate: timeTableDate, phone: phone, 
                 classTeacher: classTeacher, subjects: selectedSubjects
             };
 
@@ -1004,7 +1009,6 @@
                 document.getElementById("treg_qualifications").value = t.qualifications || "";
                 document.getElementById("treg_salary_no").value = t.salaryNo || "";
                 document.getElementById("treg_appoint_date").value = t.appointDate || "";
-                document.getElementById("treg_school_appoint_date").value = t.schoolAppointDate || "";
                 document.getElementById("treg_timetable_date").value = t.timetableDate || "";
                 document.getElementById("treg_phone").value = t.phone || "";
                 
@@ -1027,7 +1031,7 @@
         }
 
         // ==========================================
-        // MARKS MANAGEMENT
+        // MARKS MANAGEMENT (Custom Dropdown)
         // ==========================================
         function toggleStudentDropdown() {
             let list = document.getElementById("studentDropdownList");
@@ -1176,7 +1180,7 @@
         });
 
         // ==========================================
-        // RANK BOARD
+        // RANK BOARD (Clean Marks Only, Left Aligned Subjects)
         // ==========================================
         function applySubjectFilter() { updateTable(true); }
 
@@ -1225,6 +1229,7 @@
             let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>වාරය</th>`;
             displaySubjects.forEach(sub => {
                 let isFiltered = (filterSub === sub);
+                // Subjects headers left aligned
                 let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
@@ -1261,6 +1266,7 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
+                    // Subject marks left aligned
                     let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
@@ -1280,6 +1286,7 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
+                    // Subject marks left aligned
                     let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
@@ -1355,7 +1362,7 @@
                 });
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#a78bfa; font-size:14px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
 
@@ -1383,7 +1390,7 @@
                 });
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#64748b; font-size:14px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#64748b; font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
         }
@@ -1478,7 +1485,8 @@
                     html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
-                html += `<tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                html += `
+                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
                             <th style="text-align:right; padding-right: 10px;">එකතුව (Total):</th>
                             <th style="font-size:16px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
