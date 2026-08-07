@@ -1176,7 +1176,7 @@
         }
 
         // ==========================================
-        // ANALYSIS REPORT (Master Sheet)
+        // ANALYSIS REPORT (Master Sheet - Grades ONLY, NO Totals/Rank)
         // ==========================================
         function updateAnalysisTable() {
             let tableHeadRow = document.getElementById("analysisTableHeadRow");
@@ -1214,11 +1214,9 @@
             completeStudents.sort((a, b) => b.total - a.total);
             pendingStudents.sort((a, b) => b.total - a.total);
 
-            let currentRank = 1; let previousTotal = -1; let serialNoCounter = 1;
+            let serialNoCounter = 1;
 
-            completeStudents.forEach((student, index) => {
-                if (index > 0 && student.total < previousTotal) { currentRank = index + 1; }
-                previousTotal = student.total;
+            completeStudents.forEach((student) => {
                 let row = `<tr>
                     <td class="serial-col">${serialNoCounter++}</td>
                     <td style="text-align:left; white-space:nowrap; font-weight:600;">${student.name}</td>`;
