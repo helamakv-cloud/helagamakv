@@ -478,7 +478,7 @@
                         
                         <div class="flex-row" style="margin-top: 20px;">
                             <button type="submit" id="studentSubmitBtn" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #10b981, #059669); box-shadow: 0 4px 12px rgba(16,185,129,0.3);">ශිෂ්‍යයා ලියාපදිංචි/වෙනස් කරන්න</button>
-                            <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetStudentForm()">Clear</button>
+                            <button type="reset" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetStudentForm()">Clear</button>
                         </div>
                     </form>
                 </div>
@@ -552,7 +552,7 @@
 
                         <div class="flex-row" style="margin-top: 20px;">
                             <button type="submit" id="teacherSubmitBtn" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #8b5cf6, #6d28d9); box-shadow: 0 4px 12px rgba(139,92,246,0.3);">ගුරුවරයා ලියාපදිංචි/වෙනස් කරන්න</button>
-                            <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetTeacherForm()">Clear</button>
+                            <button type="reset" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetTeacherForm()">Clear</button>
                         </div>
                     </form>
                 </div>
@@ -1221,7 +1221,7 @@
                     let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #f8fafc;">${mark}</div><div style="font-size: 12px; color: #facc15; font-weight: 800;">${g}</div>`;
+                        displayHtml = `<span style="font-size: 15px; font-weight: bold; color: #facc15;">${g}</span>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
@@ -1251,7 +1251,7 @@
                     let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        displayHtml = `<div style="font-size: 14px; font-weight: bold; color: #94a3b8;">${mark}</div><div style="font-size: 12px; color: #94a3b8; font-weight: 800;">${g}</div>`;
+                        displayHtml = `<span style="font-size: 15px; font-weight: bold; color: #94a3b8;">${g}</span>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
@@ -1350,34 +1350,34 @@
                             <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
                                 <table class="search-table" style="width: 100%; min-width: unset;">
                                     <tr>
-                                        <th style="text-align: left; white-space: normal;">විෂය (Subject)</th>
+                                        <th style="text-align: left; white-space: normal; padding-left: 10px;">විෂය (Subject)</th>
                                         <th style="text-align: center; white-space: normal;">ලකුණු (Marks)</th>
                                         <th style="text-align: center; white-space: normal;">සාමාර්ථය (Grade)</th>
                                     </tr>`;
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
-                    html += `<tr><td style="text-align:left; white-space: normal;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
+                    html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
                 }
 
                 html += `
                          <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
-                            <th style="text-align:right;">එකතුව (Total):</th>
+                            <th style="text-align:right; padding-right: 10px;">එකතුව (Total):</th>
                             <th style="font-size:15px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;">
-                            <th style="text-align:right;">සාමාන්‍යය (Average):</th>
+                            <th style="text-align:right; padding-right: 10px;">සාමාන්‍යය (Average):</th>
                             <th style="font-size:15px; text-align: center;">${record.average}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;">
-                            <th style="text-align:right;">ස්ථානය (Rank):</th>
+                            <th style="text-align:right; padding-right: 10px;">ස්ථානය (Rank):</th>
                             <th style="font-size:16px; text-align: center;">${classRankDisplay}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
                          <tr style="background: rgba(236, 72, 153, 0.2); color:#f472b6;">
-                            <th style="text-align:right;">පන්තියේ සිසුන් ගණන:</th>
+                            <th style="text-align:right; padding-right: 10px;">පන්තියේ සිසුන් ගණන:</th>
                             <th style="font-size:16px; text-align: center;">${totalStudentsInClass}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
@@ -1448,7 +1448,7 @@
                     <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent; min-width: 300px;">
                         <tr>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: normal;">විෂය</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: normal; padding-left: 10px;">විෂය</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">ලකුණු</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">සාමාර්ථය</th>
                         </tr>`;
@@ -1457,7 +1457,7 @@
                     let grade = getGrade(mark);
                     html += `
                         <tr>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal;">${sub}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal; padding-left: 10px;">${sub}</td>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8; white-space: normal;">${mark}</td>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15; white-space: normal;">${grade}</td>
                         </tr>`; 
@@ -1465,22 +1465,22 @@
                 
                 html += `
                         <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">එකතුව (Total):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">එකතුව (Total):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.total}</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                         <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">සාමාන්‍යය (Average):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">සාමාන්‍යය (Average):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.average}</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                         <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">ස්ථානය (Rank):</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">ස්ථානය (Rank):</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${classRankDisplay}</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                         <tr style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal;">පන්තියේ සිසුන් ගණන:</th>
+                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">පන්තියේ සිසුන් ගණන:</th>
                             <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${totalStudentsInClass}</th>
                             <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
