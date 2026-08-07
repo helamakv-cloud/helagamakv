@@ -50,6 +50,16 @@
         input:focus, select:focus, textarea:focus { border-color: #38bdf8; outline: none; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         input[type="text"], input[type="number"], select { text-align: center; text-align-last: center; }
         
+        /* --- CUSTOM TABLE DROPDOWN --- */
+        .custom-dropdown { position: relative; width: 100%; background: #0f172a; border: 1px solid #3b82f6; border-radius: 8px; font-size: 15px; text-align: left; margin: 8px 0;}
+        .dropdown-header { padding: 14px 15px; color: #38bdf8; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
+        .dropdown-list { position: absolute; top: 100%; left: 0; width: 100%; background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; max-height: 250px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.8); margin-top: 5px;}
+        .dropdown-table { width: 100%; border-collapse: collapse; }
+        .dropdown-table th { background: #0f172a; position: sticky; top: 0; padding: 10px; font-size: 13px; color: #94a3b8; border-bottom: 1px solid #334155; text-align: center; z-index: 2;}
+        .dropdown-table td { padding: 10px; border-bottom: 1px solid #334155; color: #f8fafc; font-size: 14px; cursor: pointer;}
+        .dropdown-table tr:hover td { background: rgba(56, 189, 248, 0.15); color: #fff;}
+        .dropdown-table tr:last-child td { border-bottom: none; }
+
         .flex-row { display: flex; gap: 12px; width: 100%; flex-direction: column; } 
         .subject-row { display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #0f172a; padding: 10px 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 10px; gap: 8px; width: 100%;}
         .subject-row label, .subject-row select { flex: 1; font-size: 13px; font-weight: 600; color: #cbd5e1; text-align: left; margin: 0; border: none; background: transparent; padding: 0;}
@@ -92,9 +102,9 @@
         .hint-text { font-size: 12px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
         /* Custom Scrollbar for Results */
-        .scrollable-results::-webkit-scrollbar { width: 6px; height: 6px; }
-        .scrollable-results::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 8px; }
-        .scrollable-results::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 8px; }
+        .scrollable-results::-webkit-scrollbar, .dropdown-list::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scrollable-results::-webkit-scrollbar-track, .dropdown-list::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 8px; }
+        .scrollable-results::-webkit-scrollbar-thumb, .dropdown-list::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 8px; }
 
         /* PDF Export Mode CSS */
         .pdf-mode { background: white !important; color: black !important; padding: 20px; }
@@ -259,10 +269,21 @@
 
                         <div style="margin-top: 20px; padding: 15px; background: #0f172a; border-radius: 12px; border: 1px solid #3b82f6;">
                             <label style="font-size: 15px; font-weight: bold; color: #38bdf8; display: block; margin-bottom: 8px; text-align: center;">ශිෂ්‍යයා තෝරන්න (Select Student):</label>
-                            <select id="selectedStudentDrop" required onchange="populateStudentHiddenFields()">
-                                <option value="" disabled selected>පළමුව ශ්‍රේණිය තෝරන්න</option>
-                            </select>
-                            <span class="hint-text" style="margin-top: 8px;">ළමුන් නොපෙන්වයි නම් පළමුව "ශිෂ්‍ය ලියාපදිංචිය" මගින් ළමුන් ඇතුළත් කරන්න.</span>
+                            
+                            <!-- Custom Table Dropdown -->
+                            <div class="custom-dropdown" id="studentCustomDropdown">
+                                <div class="dropdown-header" onclick="toggleStudentDropdown()">
+                                    <span id="selectedStudentText">පළමුව ශ්‍රේණිය තෝරන්න</span>
+                                    <span style="font-size: 12px; color: #94a3b8;">▼</span>
+                                </div>
+                                <div class="dropdown-list" id="studentDropdownList" style="display:none;">
+                                    <!-- Table injected via JS -->
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedStudentDropValue" required>
+                            <!-- Custom Dropdown End -->
+
+                            <span class="hint-text" style="margin-top: 12px;">ළමුන් නොපෙන්වයි නම් පළමුව "ශිෂ්‍ය ලියාපදිංචිය" මගින් ළමුන් ඇතුළත් කරන්න.</span>
                             <input type="hidden" id="studentId" required>
                             <input type="hidden" id="studentName" required>
                         </div>
@@ -375,7 +396,6 @@
                         <h2>Helagama K.V.</h2>
                         <h4>ශිෂ්‍ය ප්‍රතිඵල ලේඛනය (Master Sheet)</h4>
                         <h4 id="analysisPrintSubHeader" style="font-weight: bold; color: #000;"></h4>
-                        <h4 id="analysisPrintTeacherHeader" style="font-weight: normal; color: #333;"></h4>
                         <hr>
                     </div>
 
@@ -399,7 +419,6 @@
                                     <option value="11" selected>11 ශ්‍රේණිය</option>
                                 </select>
                             </div>
-                            <input type="text" id="analysisTeacherInput" placeholder="විෂයභාර ගුරුවරයාගේ නම (Teacher Name)" oninput="updateAnalysisTable()" style="width: 100%; margin-top: 10px;">
                         </div>
                     </div>
 
@@ -592,6 +611,15 @@
             document.getElementById("subjectsContainer").innerHTML = ""; 
             
             document.querySelectorAll('#teacherRegForm input').forEach(inp => inp.removeAttribute('required'));
+            
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function(event) {
+                let customDropdown = document.getElementById('studentCustomDropdown');
+                let dropdownList = document.getElementById('studentDropdownList');
+                if (customDropdown && !customDropdown.contains(event.target)) {
+                    dropdownList.style.display = 'none';
+                }
+            });
         };
 
         // --- Grade Calculation Helper ---
@@ -625,7 +653,9 @@
 
         function clearMarksInputs() {
             document.querySelectorAll(".mark-input, input[id^='m_']").forEach(inp => inp.value = "");
-            document.getElementById("selectedStudentDrop").value = "";
+            document.getElementById("selectedStudentDropValue").value = "";
+            let grade = document.getElementById("gradeSelect").value;
+            document.getElementById("selectedStudentText").innerText = grade ? "ශිෂ්‍යයා තෝරන්න (Select Student)" : "පළමුව ශ්‍රේණිය තෝරන්න";
             document.getElementById("studentId").value = "";
             document.getElementById("studentName").value = "";
         }
@@ -730,7 +760,7 @@
         }
 
         function editStudent(admNo) {
-            openTab('students'); // Ensure tab is active so element is visible for scrolling
+            openTab('students'); 
             let s = registeredStudents.find(x => x.admissionNo === admNo);
             if(s) {
                 document.getElementById("reg_admNo").value = s.admissionNo;
@@ -777,7 +807,7 @@
 
             let newTeacher = {
                 id: id, name: name, nic: nic, address: address, qualifications: qual, salaryNo: salaryNo,
-                appointDate: appDate, schoolAppointDate: schoolAppointDate, timetableDate: timeTableDate, phone: phone
+                appointDate: appDate, schoolAppointDate: schoolAppDate, timetableDate: timeTableDate, phone: phone
             };
 
             let existingIdx = registeredTeachers.findIndex(t => t && t.id === newTeacher.id);
@@ -823,7 +853,7 @@
         }
 
         function editTeacher(id) {
-            openTab('teachers'); // Ensure tab is active so element is visible for scrolling
+            openTab('teachers'); 
             let t = registeredTeachers.find(x => x && x.id === id);
             if(t) {
                 document.getElementById("treg_id").value = t.id;
@@ -841,33 +871,56 @@
         }
 
         // ==========================================
-        // MARKS MANAGEMENT
+        // MARKS MANAGEMENT (Custom Dropdown)
         // ==========================================
+        function toggleStudentDropdown() {
+            let list = document.getElementById("studentDropdownList");
+            if(list.innerHTML.trim() !== "") {
+                list.style.display = list.style.display === "none" ? "block" : "none";
+            }
+        }
+
         function loadStudentsForMarks() {
             let grade = document.getElementById("gradeSelect").value;
-            let drop = document.getElementById("selectedStudentDrop");
-            drop.innerHTML = '<option value="" disabled selected>පළමුව ශ්‍රේණිය තෝරන්න</option>';
+            let dropValueHidden = document.getElementById("selectedStudentDropValue");
+            let dropText = document.getElementById("selectedStudentText");
+            let dropList = document.getElementById("studentDropdownList");
+
+            dropValueHidden.value = "";
+            dropText.innerText = "පළමුව ශ්‍රේණිය තෝරන්න";
+            dropList.innerHTML = "";
             document.getElementById("studentId").value = "";
             document.getElementById("studentName").value = "";
 
             if(grade) {
                 let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
                 if(studentsInGrade.length > 0) {
-                    drop.innerHTML = '<option value="" disabled selected>ශිෂ්‍යයා තෝරන්න (Select Student)</option>';
-                    studentsInGrade.forEach(s => { drop.innerHTML += `<option value="${s.admissionNo}">${s.admissionNo} - ${s.nameInitials}</option>`; });
+                    dropText.innerText = "ශිෂ්‍යයා තෝරන්න (Select Student)";
+                    let tableHTML = `<table class="dropdown-table">
+                        <thead><tr><th>අනු අංකය</th><th>Admission No</th><th>නම</th></tr></thead>
+                        <tbody>`;
+                    let index = 1;
+                    studentsInGrade.forEach(s => {
+                        tableHTML += `<tr onclick="selectStudentForMarks('${s.admissionNo}', '${s.nameInitials}')">
+                            <td style="text-align: center; color: #94a3b8;">${index++}</td>
+                            <td style="font-weight: bold; color: #38bdf8;">${s.admissionNo}</td>
+                            <td style="text-align: left;">${s.nameInitials}</td>
+                        </tr>`;
+                    });
+                    tableHTML += `</tbody></table>`;
+                    dropList.innerHTML = tableHTML;
                 } else {
-                    drop.innerHTML = '<option value="" disabled selected>මෙම ශ්‍රේණිය සඳහා ළමුන් ලියාපදිංචි කර නොමැත</option>';
+                    dropText.innerText = "මෙම ශ්‍රේණිය සඳහා ළමුන් ලියාපදිංචි කර නොමැත";
                 }
             }
         }
 
-        function populateStudentHiddenFields() {
-            let selectedAdmNo = document.getElementById("selectedStudentDrop").value;
-            let student = registeredStudents.find(s => s && s.admissionNo === selectedAdmNo);
-            if(student) {
-                document.getElementById("studentId").value = student.admissionNo;
-                document.getElementById("studentName").value = student.nameInitials;
-            }
+        function selectStudentForMarks(admNo, nameInitials) {
+            document.getElementById("selectedStudentDropValue").value = admNo;
+            document.getElementById("selectedStudentText").innerText = admNo + " - " + nameInitials;
+            document.getElementById("studentDropdownList").style.display = "none";
+            document.getElementById("studentId").value = admNo;
+            document.getElementById("studentName").value = nameInitials;
         }
 
         const juniorSubjects = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "තොරතුරු හා සන්නිවේදන තාක්ෂණය", "PTS"];
@@ -910,7 +963,7 @@
             event.preventDefault();
             let id = document.getElementById("studentId").value;
             let name = document.getElementById("studentName").value;
-            let dropValue = document.getElementById("selectedStudentDrop").value;
+            let dropValue = document.getElementById("selectedStudentDropValue").value;
             if(!id || !name || dropValue === "") { alert("කරුණාකර පළමුව ලැයිස්තුවෙන් ශිෂ්‍යයාව තෝරන්න!"); return; }
 
             let term = document.getElementById("termSelect").value;
@@ -1084,11 +1137,9 @@
             let tableBody = document.getElementById("analysisTableBody");
             let selectedTerm = document.getElementById("analysisTermSelect").value;
             let selectedGrade = document.getElementById("analysisGradeSelect").value;
-            let teacherName = document.getElementById("analysisTeacherInput").value.trim();
             
             let printSubText = "වාරය: " + selectedTerm + " | ශ්‍රේණිය: " + selectedGrade;
             document.getElementById("analysisPrintSubHeader").innerText = printSubText;
-            document.getElementById("analysisPrintTeacherHeader").innerText = teacherName ? "විෂයභාර ගුරුවරයා: " + teacherName : "";
 
             let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
             let uniqueSubjects = new Set();
