@@ -156,7 +156,6 @@
             body.print-search-mode @page { size: A4 portrait; margin: 1cm; }
             body.print-search-mode .card { display: none !important; }
             body.print-search-mode #searchCard { display: block !important; box-shadow: none; border: none; padding: 0; margin: 0;}
-            /* Keep only the search results in print search mode */
             body.print-search-mode #searchCard > *:not(#searchResults) { display: none !important; }
             body.print-search-mode .search-result-box { border: 1px solid #000; background: #fff; box-shadow: none; page-break-inside: avoid; margin-top: 0;}
             body.print-search-mode .search-result-box h4 { color: #000; }
@@ -378,7 +377,7 @@
                 </div>
 
                 <div class="card" id="chartCard">
-                    <h3 class="section-title">ශ්‍රේණියේ විෂ සාමාන්‍යයන් (Subject Averages)</h3>
+                    <h3 class="section-title">ශ්‍රේණියේ විෂය සාමාන්‍යයන් (Subject Averages)</h3>
                     <div class="flex-row" style="margin-bottom: 15px; margin-top: 15px;">
                         <div style="width: 100%;">
                             <select id="chartTermSelect" onchange="updateChart()">
@@ -488,7 +487,7 @@
                         
                         <div class="flex-row" style="margin-top: 20px;">
                             <button type="submit" id="studentSubmitBtn" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #10b981, #059669); box-shadow: 0 4px 12px rgba(16,185,129,0.3);">ශිෂ්‍යයා ලියාපදිංචි/වෙනස් කරන්න</button>
-                            <button type="reset" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetStudentForm()">Clear</button>
+                            <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="resetStudentForm()">Clear</button>
                         </div>
                     </form>
                 </div>
@@ -695,6 +694,9 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
             document.getElementById('btn-' + tabName).classList.add('active');
+            if(tabName === 'marks' || tabName === 'analysis') {
+                setTimeout(updateChart, 50);
+            }
         }
 
         document.getElementById("loginForm").addEventListener("submit", function(e) {
@@ -704,6 +706,7 @@
             if(user === "admin" && pass === "22166") {
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("mainApp").style.display = "block";
+                setTimeout(updateChart, 50);
             } else {
                 document.getElementById("loginError").style.display = "block";
             }
@@ -740,18 +743,25 @@
                 phone: phone
             };
 
-            let existingIdx = registeredStudents.findIndex(s => s.admissionNo === newStudent.admissionNo);
-            if(existingIdx !== -1) {
-                registeredStudents[existingIdx] = newStudent;
-                alert("ශිෂ්‍ය තොරතුරු සාර්ථකව Update කරන ලදී!");
-            } else {
+            let isUpdate = false;
+            for(let i=0; i < registeredStudents.length; i++) {
+                if(registeredStudents[i] && registeredStudents[i].admissionNo === newStudent.admissionNo) {
+                    registeredStudents[i] = newStudent;
+                    isUpdate = true;
+                    break;
+                }
+            }
+            
+            if(!isUpdate) {
                 registeredStudents.push(newStudent);
-                alert("ශිෂ්‍ය තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
             }
 
-            db.ref('hkRegStudents').set(registeredStudents);
-            resetStudentForm();
-            loadStudentsForMarks(); 
+            registeredStudents = registeredStudents.filter(s => s !== null && s !== undefined);
+            db.ref('hkRegStudents').set(registeredStudents).then(() => {
+                alert(isUpdate ? "ශිෂ්‍ය තොරතුරු සාර්ථකව Update කරන ලදී!" : "ශිෂ්‍ය තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
+                resetStudentForm();
+                loadStudentsForMarks(); 
+            });
         });
 
         function renderStudentsTable() {
@@ -759,9 +769,10 @@
             let tbody = document.getElementById("studentsRegTableBody");
             tbody.innerHTML = "";
             let filtered = registeredStudents;
-            if(filterGrade !== "all") filtered = filtered.filter(s => s.grade === filterGrade);
+            if(filterGrade !== "all") filtered = filtered.filter(s => s && s.grade === filterGrade);
 
             filtered.forEach(s => {
+                if(!s) return;
                 let scholBadge = s.scholarship === "ඔව්" ? '<span style="color:#10b981; font-weight:bold;">ඔව්</span>' : '<span style="color:#94a3b8;">නැත</span>';
                 tbody.innerHTML += `
                     <tr>
@@ -781,7 +792,7 @@
 
         function editStudent(admNo) {
             openTab('students'); 
-            let s = registeredStudents.find(x => x.admissionNo === admNo);
+            let s = registeredStudents.find(x => x && x.admissionNo === admNo);
             if(s) {
                 document.getElementById("reg_admNo").value = s.admissionNo;
                 document.getElementById("reg_admNo").readOnly = true;
@@ -846,25 +857,29 @@
                 appointDate: appDate, schoolAppointDate: schoolAppDate, timetableDate: timeTableDate, phone: phone
             };
 
-            let existingIdx = registeredTeachers.findIndex(t => t && t.id === newTeacher.id);
-            let isUpdate = existingIdx !== -1;
+            let isUpdate = false;
+            for(let i=0; i < registeredTeachers.length; i++) {
+                if(registeredTeachers[i] && registeredTeachers[i].id === newTeacher.id) {
+                    registeredTeachers[i] = newTeacher;
+                    isUpdate = true;
+                    break;
+                }
+            }
+            
+            if(!isUpdate) {
+                registeredTeachers.push(newTeacher);
+            }
 
             registeredTeachers = registeredTeachers.filter(t => t !== null && t !== undefined);
 
-            if (isUpdate) { registeredTeachers[existingIdx] = newTeacher; } 
-            else { registeredTeachers.push(newTeacher); }
-
-            db.ref('hkRegTeachers').set(registeredTeachers)
-                .then(() => {
-                    if (isUpdate) { alert("ගුරු තොරතුරු සාර්ථකව යාවත්කාලීන (Update) කරන ලදී!"); } 
-                    else { alert("ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!"); }
-                    resetTeacherForm();
-                    renderTeachersTable(); 
-                })
-                .catch((error) => {
-                    console.error("Firebase Error: ", error);
-                    alert("දත්ත සමුදායට ඇතුළත් කිරීමේදී දෝෂයක් ඇති විය: " + error.message);
-                });
+            db.ref('hkRegTeachers').set(registeredTeachers).then(() => {
+                alert(isUpdate ? "ගුරු තොරතුරු සාර්ථකව යාවත්කාලීන (Update) කරන ලදී!" : "ගුරු තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
+                resetTeacherForm();
+                renderTeachersTable(); 
+            }).catch((error) => {
+                console.error("Firebase Error: ", error);
+                alert("දත්ත සමුදායට ඇතුළත් කිරීමේදී දෝෂයක් ඇති විය: " + error.message);
+            });
         });
 
         function renderTeachersTable() {
@@ -1034,19 +1049,24 @@
 
             let average = subjectCount > 0 ? parseFloat((total / subjectCount).toFixed(2)) : 0;
             let studentRecord = { id: id, name: name, term: term, grade: grade.toString(), fullClassName: "Grade " + grade, marks: studentMarks, total: total, average: average };
-            let existingIndex = studentsData.findIndex(s => s && s.id === id && s.term === term);
             
-            if (existingIndex !== -1) {
-                let existingStudent = studentsData[existingIndex];
-                let mergedMarks = { ...existingStudent.marks, ...studentMarks };
-                let newTotal = 0; let newSubjectCount = 0;
-                for (let sub in mergedMarks) { newTotal += mergedMarks[sub]; newSubjectCount++; }
-                let newAverage = newSubjectCount > 0 ? parseFloat((newTotal / newSubjectCount).toFixed(2)) : 0;
-                studentRecord.marks = mergedMarks; studentRecord.total = newTotal; studentRecord.average = newAverage; studentRecord.serialNo = existingStudent.serialNo;
-                studentsData[existingIndex] = studentRecord;
-            } else {
+            let isUpdate = false;
+            for(let i=0; i < studentsData.length; i++) {
+                if(studentsData[i] && studentsData[i].id === id && studentsData[i].term === term) {
+                    let mergedMarks = { ...studentsData[i].marks, ...studentMarks };
+                    let newTotal = 0; let newSubjectCount = 0;
+                    for (let sub in mergedMarks) { newTotal += mergedMarks[sub]; newSubjectCount++; }
+                    let newAverage = newSubjectCount > 0 ? parseFloat((newTotal / newSubjectCount).toFixed(2)) : 0;
+                    studentRecord.marks = mergedMarks; studentRecord.total = newTotal; studentRecord.average = newAverage; studentRecord.serialNo = studentsData[i].serialNo;
+                    studentsData[i] = studentRecord;
+                    isUpdate = true;
+                    break;
+                }
+            }
+
+            if(!isUpdate) {
                 studentRecord.serialNo = studentsData.length + 1;
-                studentsData.push(studentRecord); 
+                studentsData.push(studentRecord);
             }
             
             studentsData = studentsData.filter(s => s !== null && s !== undefined);
@@ -1108,7 +1128,6 @@
             let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>වාරය</th>`;
             displaySubjects.forEach(sub => {
                 let isFiltered = (filterSub === sub);
-                // Subjects headers left aligned
                 let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
@@ -1145,7 +1164,6 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    // Subject marks left aligned
                     let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
@@ -1165,7 +1183,6 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    // Subject marks left aligned
                     let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
@@ -1311,6 +1328,59 @@
             });
         }
 
+        // --- Chart Function ---
+        function updateChart() {
+            if(!studentsData || studentsData.length === 0) return;
+            let filteredChartData = studentsData.filter(s => s && s.term === document.getElementById("chartTermSelect").value && s.grade === document.getElementById("chartGradeSelect").value);
+            
+            let uniqueSubjects = new Set();
+            filteredChartData.forEach(s => {
+                if (s.marks) {
+                    Object.keys(s.marks).forEach(sub => uniqueSubjects.add(sub));
+                }
+            });
+            let displaySubjects = Array.from(uniqueSubjects);
+            
+            let subjectAverages = displaySubjects.map(subject => {
+                let count = 0; let sum = 0;
+                filteredChartData.forEach(s => {
+                    if (s.marks && s.marks[subject] !== undefined) { sum += s.marks[subject]; count++; }
+                });
+                return count === 0 ? 0 : parseFloat((sum / count).toFixed(2));
+            });
+
+            let barColors = displaySubjects.map((_, i) => {
+                const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#14b8a6', '#0ea5e9'];
+                return colors[i % colors.length];
+            });
+
+            let chartDatasets = [{
+                label: 'Grade ' + document.getElementById("chartGradeSelect").value + ' - Subject Averages',
+                data: subjectAverages,
+                backgroundColor: barColors,
+                borderRadius: 6
+            }];
+
+            if (myChart !== null) { myChart.destroy(); }
+            let canvas = document.getElementById('marksChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = '#334155';
+
+            myChart = new Chart(ctx, { 
+                type: 'bar', 
+                data: { labels: displaySubjects, datasets: chartDatasets }, 
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    scales: { 
+                        y: { beginAtZero: true, max: 100, grid: { color: '#334155' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                } 
+            });
+        }
+
         function calculateRankIfComplete(cohort, recordId, reqCount) {
             let completeCohort = cohort.filter(s => Object.keys(s.marks).length >= reqCount);
             completeCohort.sort((a, b) => b.total - a.total);
@@ -1394,7 +1464,7 @@
         function printStudentSearch() {
             let printStyle = document.createElement('style');
             printStyle.id = 'search-print-style';
-            printStyle.innerHTML = '@media print { @page { size: A4 portrait !important; margin: 1cm; } #searchCard > *:not(#searchResults) { display: none !important; } }';
+            printStyle.innerHTML = '@media print { @page { size: A4 portrait !important; margin: 1cm; } #searchCard > *:not(#searchResults) { display: none !important; } #searchResults { max-height: none !important; overflow: visible !important; } }';
             document.head.appendChild(printStyle);
             document.body.classList.add('print-search-mode');
             window.print();
