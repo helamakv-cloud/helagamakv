@@ -207,7 +207,7 @@
         </div>
 
         <!-- Student Search Box -->
-        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 500px; padding-bottom: 20px;">
+        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 800px; width: 95%; padding-bottom: 20px;">
             <h2 style="color: #38bdf8;">මො/හෙළගම කනිටු විදුහල</h2>
             <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
 
@@ -228,7 +228,7 @@
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
             <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
             
-            <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 50vh; overflow-y: auto;"></div>
+            <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 70vh; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
                 Developer - Kelum Konara | 0714469232
@@ -373,7 +373,7 @@
                         </div>
                     </div>
                     <!-- Scrollable Container -->
-                    <div id="searchResults" class="scrollable-results" style="margin-top: 15px; max-height: 50vh; overflow-y: auto;"></div>
+                    <div id="searchResults" class="scrollable-results" style="margin-top: 15px; max-height: 70vh; overflow-y: auto;"></div>
                 </div>
 
                 <div class="card" id="chartCard">
@@ -1700,7 +1700,7 @@
             };
             
             html2pdf().set(opt).from(element).save().then(() => {
-                element.style.maxHeight = '50vh';
+                element.style.maxHeight = '70vh';
                 element.style.overflow = 'auto';
                 searchInPortal(); 
             });
