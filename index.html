@@ -220,7 +220,7 @@
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
 
@@ -249,7 +249,7 @@
             <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 70vh; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -587,7 +587,7 @@
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="භූගෝල විද්‍යාව" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> භූගෝල විද්‍යාව</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="පුරවැසි අධ්‍යාපනය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> පුරවැසි අධ්‍යාපනය</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="සෞඛ්‍යය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සෞඛ්‍යය</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="තොරතුරු තාක්ෂණය (ICT)" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> තොරතුරු තාක්ෂණය (ICT)</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ICT" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ICT</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="චිත්‍ර" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> චිත්‍ර</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="නැටුම්" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> නැටුම්</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="සංගීතය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සංගීතය</label>
@@ -650,7 +650,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Konara</span> | 0714469232
+            Developer - <span>Kelum Koonara</span> | 0714469232
         </div>
     </div>
 
@@ -1100,7 +1100,7 @@
             document.getElementById("studentName").value = nameInitials;
         }
 
-        const juniorSubjects = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "තොරතුරු හා සන්නිවේදන තාක්ෂණය", "PTS"];
+        const juniorSubjects = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
         const aestheticSubjects = ["චිත්‍ර", "නැටුම්"];
         const seniorCore = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය"];
         const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය"]; 
@@ -1456,9 +1456,9 @@
             for(let i=0; i<completeCohort.length; i++){
                 if(i > 0 && completeCohort[i].total < prevTotal) rank = i + 1;
                 prevTotal = completeCohort[i].total;
-                if(completeCohort[i].id === recordId) return rank + ' <span class="hide-print">🔒</span>';
+                if(completeCohort[i].id === recordId) return rank;
             }
-            return 'Pending <span class="hide-print">⏳</span>';
+            return 'Pending';
         }
 
         // ==========================================
