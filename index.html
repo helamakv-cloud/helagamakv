@@ -739,6 +739,7 @@
 
         // --- Grade Calculation Helper ---
         function getGrade(mark) {
+            if (mark === 'AB') return 'AB';
             if (mark >= 75) return 'A';
             if (mark >= 65) return 'B';
             if (mark >= 50) return 'C';
@@ -1190,15 +1191,15 @@
             if (isNaN(grade)) return;
             if (grade <= 9) {
                 juniorSubjects.forEach(subject => {
-                    container.innerHTML += `<div class="subject-row"><label>${subject}</label><input type="number" class="mark-input" data-subject="${subject}" placeholder="0-100" min="0" max="100"></div>`;
+                    container.innerHTML += `<div class="subject-row"><label>${subject}</label><input type="text" class="mark-input" data-subject="${subject}" placeholder="0-100 හෝ ab"></div>`;
                 });
                 let aesSelect = `<select id="aesSubject"><option value="" disabled selected>සෞන්දර්ය විෂය</option>`;
                 aestheticSubjects.forEach(opt => aesSelect += `<option value="${opt}">${opt}</option>`);
                 aesSelect += `</select>`;
-                container.innerHTML += `<div class="subject-row">${aesSelect}<input type="number" id="m_aes" placeholder="ලකුණු" min="0" max="100"></div>`;
+                container.innerHTML += `<div class="subject-row">${aesSelect}<input type="text" id="m_aes" placeholder="ලකුණු හෝ ab"></div>`;
             } else if (grade === 10 || grade === 11) {
                 seniorCore.forEach(subject => {
-                    container.innerHTML += `<div class="subject-row"><label>${subject}</label><input type="number" class="mark-input" data-subject="${subject}" placeholder="0-100" min="0" max="100"></div>`;
+                    container.innerHTML += `<div class="subject-row"><label>${subject}</label><input type="text" class="mark-input" data-subject="${subject}" placeholder="0-100 හෝ ab"></div>`;
                 });
                 const createBucket = (bucketName, options, bucketId) => {
                     let selectHtml = `<select id="${bucketId}"><option value="" disabled selected>${bucketName}</option>`;
@@ -1206,9 +1207,9 @@
                     selectHtml += `</select>`;
                     return selectHtml;
                 };
-                container.innerHTML += `<div class="subject-row">${createBucket("කාණ්ඩය I", bucket1, "b1")}<input type="number" id="m_b1" placeholder="ලකුණු" min="0" max="100"></div>`;
-                container.innerHTML += `<div class="subject-row">${createBucket("කාණ්ඩය II", bucket2, "b2")}<input type="number" id="m_b2" placeholder="ලකුණු" min="0" max="100"></div>`;
-                container.innerHTML += `<div class="subject-row">${createBucket("කාණ්ඩය III", bucket3, "b3")}<input type="number" id="m_b3" placeholder="ලකුණු" min="0" max="100"></div>`;
+                container.innerHTML += `<div class="subject-row">${createBucket("කාණ්ඩය I", bucket1, "b1")}<input type="text" id="m_b1" placeholder="ලකුණු හෝ ab"></div>`;
+                container.innerHTML += `<div class="subject-row">${createBucket("කාණ්ඩය II", bucket2, "b2")}<input type="text" id="m_b2" placeholder="ලකුණු හෝ ab"></div>`;
+                container.innerHTML += `<div class="subject-row">${createBucket("කාණ්ඩය III", bucket3, "b3")}<input type="text" id="m_b3" placeholder="ලකුණු හෝ ab"></div>`;
             }
         }
 
@@ -1225,19 +1226,46 @@
 
             document.querySelectorAll(".mark-input").forEach(input => {
                 let subject = input.getAttribute("data-subject");
-                let mark = parseFloat(input.value);
-                if (!isNaN(mark)) { studentMarks[subject] = mark; total += mark; subjectCount++; }
+                let rawVal = input.value.trim().toUpperCase();
+                if (rawVal === "AB") {
+                    studentMarks[subject] = "AB"; 
+                    subjectCount++; // Count for average
+                } else {
+                    let mark = parseFloat(rawVal);
+                    if (!isNaN(mark)) { 
+                        studentMarks[subject] = mark; 
+                        total += mark; 
+                        subjectCount++; 
+                    }
+                }
             });
 
             if (grade <= 9) {
                 let aesSub = document.getElementById('aesSubject') ? document.getElementById('aesSubject').value : "";
-                let aesMark = document.getElementById('m_aes') ? parseFloat(document.getElementById('m_aes').value) : NaN;
-                if(aesSub && !isNaN(aesMark)) { studentMarks[aesSub] = aesMark; total += aesMark; subjectCount++; }
+                let aesRaw = document.getElementById('m_aes') ? document.getElementById('m_aes').value.trim().toUpperCase() : "";
+                if(aesSub && aesRaw === "AB") { 
+                    studentMarks[aesSub] = "AB"; 
+                    subjectCount++; 
+                } else if(aesSub && !isNaN(parseFloat(aesRaw))) { 
+                    let m = parseFloat(aesRaw); 
+                    studentMarks[aesSub] = m; 
+                    total += m; 
+                    subjectCount++; 
+                }
             } else if (grade === 10 || grade === 11) {
                 for (let i = 1; i <= 3; i++) {
                     let bucketSubject = document.getElementById(`b${i}`) ? document.getElementById(`b${i}`).value : "";
-                    let mark = document.getElementById(`m_b${i}`) ? parseFloat(document.getElementById(`m_b${i}`).value) : NaN;
-                    if (bucketSubject && !isNaN(mark)) { studentMarks[bucketSubject] = mark; total += mark; subjectCount++; }
+                    let bRaw = document.getElementById(`m_b${i}`) ? document.getElementById(`m_b${i}`).value.trim().toUpperCase() : "";
+                    
+                    if (bucketSubject && bRaw === "AB") { 
+                        studentMarks[bucketSubject] = "AB"; 
+                        subjectCount++; 
+                    } else if (bucketSubject && !isNaN(parseFloat(bRaw))) { 
+                        let m = parseFloat(bRaw); 
+                        studentMarks[bucketSubject] = m; 
+                        total += m; 
+                        subjectCount++; 
+                    }
                 }
             }
 
@@ -1249,7 +1277,14 @@
                 if(studentsData[i] && studentsData[i].id === id && studentsData[i].term === term) {
                     let mergedMarks = { ...studentsData[i].marks, ...studentMarks };
                     let newTotal = 0; let newSubjectCount = 0;
-                    for (let sub in mergedMarks) { newTotal += mergedMarks[sub]; newSubjectCount++; }
+                    for (let sub in mergedMarks) { 
+                        if (mergedMarks[sub] === "AB") {
+                            newSubjectCount++;
+                        } else {
+                            newTotal += mergedMarks[sub]; 
+                            newSubjectCount++; 
+                        }
+                    }
                     let newAverage = newSubjectCount > 0 ? parseFloat((newTotal / newSubjectCount).toFixed(2)) : 0;
                     studentRecord.marks = mergedMarks; studentRecord.total = newTotal; studentRecord.average = newAverage; studentRecord.serialNo = studentsData[i].serialNo;
                     studentsData[i] = studentRecord;
@@ -1314,7 +1349,7 @@
                     if (filterCond === "65_74") return mark >= 65 && mark <= 74;
                     if (filterCond === "50_64") return mark >= 50 && mark <= 64;
                     if (filterCond === "35_49") return mark >= 35 && mark <= 49; 
-                    if (filterCond === "0_34") return mark >= 0 && mark <= 34;
+                    if (filterCond === "0_34") return (mark >= 0 && mark <= 34) || mark === "AB";
                     return true;
                 });
             }
@@ -1359,8 +1394,8 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    // Subject marks left aligned
                     let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
+                    if(mark === "AB") style += "color:#ef4444;";
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
 
@@ -1379,8 +1414,8 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    // Subject marks left aligned
                     let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
+                    if(mark === "AB") style += "color:#ef4444;";
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
 
@@ -1457,7 +1492,8 @@
                     let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        displayHtml = `<span style="font-size: 15px; font-weight: bold; color: #facc15;">${g}</span>`;
+                        let color = g === 'AB' ? '#ef4444' : '#facc15';
+                        displayHtml = `<span style="font-size: 15px; font-weight: bold; color: ${color};">${g}</span>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
@@ -1485,7 +1521,8 @@
                     let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        displayHtml = `<span style="font-size: 15px; font-weight: bold; color: #94a3b8;">${g}</span>`;
+                        let color = g === 'AB' ? '#ef4444' : '#94a3b8';
+                        displayHtml = `<span style="font-size: 15px; font-weight: bold; color: ${color};">${g}</span>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
@@ -1589,7 +1626,9 @@
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
-                    html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:#38bdf8;">${mark}</td><td style="font-weight:bold; color:#facc15;">${grade}</td></tr>`; 
+                    let color = grade === 'AB' ? '#ef4444' : '#38bdf8';
+                    let gradeColor = grade === 'AB' ? '#ef4444' : '#facc15';
+                    html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:${color};">${mark}</td><td style="font-weight:bold; color:${gradeColor};">${grade}</td></tr>`; 
                 }
 
                 html += `
@@ -1658,7 +1697,7 @@
             let foundRecords = studentsData.filter(s => s && s.id === searchId && s.term === selectedTerm);
             
             if(foundRecords.length === 0) { 
-                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා কানা.</p>"; 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා කරන්න.</p>"; 
                 return; 
             }
 
@@ -1685,11 +1724,13 @@
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
+                    let color = grade === 'AB' ? '#ef4444' : '#38bdf8';
+                    let gradeColor = grade === 'AB' ? '#ef4444' : '#facc15';
                     html += `
                         <tr>
                             <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal; padding-left: 10px;">${sub}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #38bdf8; white-space: normal;">${mark}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: #facc15; white-space: normal;">${grade}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: ${color}; white-space: normal;">${mark}</td>
+                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: ${gradeColor}; white-space: normal;">${grade}</td>
                         </tr>`; 
                 }
                 
@@ -1830,7 +1871,14 @@
             let subjectAverages = displaySubjects.map(subject => {
                 let count = 0; let sum = 0;
                 filteredChartData.forEach(s => {
-                    if (s.marks && s.marks[subject] !== undefined) { sum += s.marks[subject]; count++; }
+                    if (s.marks && s.marks[subject] !== undefined) { 
+                        if (s.marks[subject] === "AB") {
+                            count++; // count absent for average
+                        } else {
+                            sum += s.marks[subject]; 
+                            count++; 
+                        }
+                    }
                 });
                 return count === 0 ? 0 : parseFloat((sum / count).toFixed(2));
             });
