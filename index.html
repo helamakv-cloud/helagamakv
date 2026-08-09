@@ -249,7 +249,7 @@
             <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 70vh; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Koonara | 0714469232
+                Developer - Kelum Konara | 0714469232
             </div>
         </div>
     </div>
@@ -485,9 +485,18 @@
                             </select>
                         </div>
                         
+                        <!-- Gender, DOB, Scholarship Options -->
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">උපන් දිනය (Date of Birth)</label>
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">ස්ත්‍රී/පුරුෂ (Gender)</label>
+                                <select id="reg_gender" required style="width: 100%; margin-top: 2px;">
+                                    <option value="" disabled selected>තෝරන්න</option>
+                                    <option value="පිරිමි">පිරිමි (Male)</option>
+                                    <option value="ගැහැණු">ගැහැණු (Female)</option>
+                                </select>
+                            </div>
+                            <div style="width: 100%; text-align: left;">
+                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">උපන් දිනය (DOB)</label>
                                 <input type="text" id="reg_dob" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
@@ -525,6 +534,7 @@
                                 <tr>
                                     <th>අංකය</th>
                                     <th style="text-align: left;">මුලකුරු සමග නම</th>
+                                    <th>ස්ත්‍රී/පුරුෂ</th>
                                     <th>ශ්‍රේණිය</th>
                                     <th>උපන් දිනය</th>
                                     <th>ශිෂ්‍යත්වය</th>
@@ -650,7 +660,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Koonara</span> | 0714469232
+            Developer - <span>Kelum Konara</span> | 0714469232
         </div>
     </div>
 
@@ -807,7 +817,7 @@
         });
 
         // ==========================================
-        // STUDENT REGISTRATION (Fixed Edit)
+        // STUDENT REGISTRATION (Fixed Edit + Gender)
         // ==========================================
         function resetStudentForm() {
             document.getElementById("studentRegForm").reset();
@@ -826,11 +836,14 @@
                 return;
             }
             let scholarshipStatus = document.getElementById("reg_scholarship").value;
+            let genderStatus = document.getElementById("reg_gender").value;
+            
             let newStudent = {
                 admissionNo: document.getElementById("reg_admNo").value.trim(),
                 fullName: document.getElementById("reg_fullName").value.trim(),
                 nameInitials: document.getElementById("reg_initialName").value.trim(),
                 grade: document.getElementById("reg_grade").value,
+                gender: genderStatus,
                 dob: document.getElementById("reg_dob").value,
                 scholarship: scholarshipStatus,
                 address: document.getElementById("reg_address").value.trim(),
@@ -862,16 +875,26 @@
             let filterGrade = document.getElementById("filterRegGrade").value;
             let tbody = document.getElementById("studentsRegTableBody");
             tbody.innerHTML = "";
-            let filtered = registeredStudents;
-            if(filterGrade !== "all") filtered = filtered.filter(s => s && s.grade === filterGrade);
+            let filtered = registeredStudents.filter(s => s !== null && s !== undefined);
+            if(filterGrade !== "all") filtered = filtered.filter(s => s.grade === filterGrade);
+
+            // Sorting by Gender (Male first) then alphabetically by name
+            filtered.sort((a, b) => {
+                let gA = a.gender || 'පිරිමි';
+                let gB = b.gender || 'පිරිමි';
+                if (gA !== gB) return gA === 'පිරිමි' ? -1 : 1;
+                return (a.nameInitials || '').localeCompare(b.nameInitials || '');
+            });
 
             filtered.forEach(s => {
-                if(!s) return;
                 let scholBadge = s.scholarship === "ඔව්" ? '<span style="color:#10b981; font-weight:bold;">ඔව්</span>' : '<span style="color:#94a3b8;">නැත</span>';
+                let genderBadge = (s.gender || 'පිරිමි') === "පිරිමි" ? '<span style="color:#38bdf8;">පිරිමි</span>' : '<span style="color:#ec4899;">ගැහැණු</span>';
+                
                 tbody.innerHTML += `
                     <tr>
                         <td style="font-weight:bold; color:#38bdf8;">${s.admissionNo}</td>
                         <td style="text-align:left;">${s.nameInitials}</td>
+                        <td>${genderBadge}</td>
                         <td>${s.grade}</td>
                         <td>${s.dob || '-'}</td>
                         <td>${scholBadge}</td>
@@ -895,6 +918,7 @@
                 document.getElementById("reg_fullName").value = s.fullName;
                 document.getElementById("reg_initialName").value = s.nameInitials;
                 document.getElementById("reg_grade").value = s.grade;
+                document.getElementById("reg_gender").value = s.gender || "පිරිමි";
                 document.getElementById("reg_dob").value = s.dob;
                 document.getElementById("reg_scholarship").value = s.scholarship === "ඔව්" ? "ඔව්" : "නැත";
                 document.getElementById("reg_address").value = s.address;
@@ -1071,6 +1095,15 @@
 
             if(grade) {
                 let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
+                
+                // Sort dropdown by Gender (Male first) then alphabetically
+                studentsInGrade.sort((a, b) => {
+                    let gA = a.gender || 'පිරිමි';
+                    let gB = b.gender || 'පිරිමි';
+                    if (gA !== gB) return gA === 'පිරිමි' ? -1 : 1;
+                    return (a.nameInitials || '').localeCompare(b.nameInitials || '');
+                });
+
                 if(studentsInGrade.length > 0) {
                     dropText.innerText = "ශිෂ්‍යයා තෝරන්න (Select Student)";
                     let tableHTML = `<table class="dropdown-table">
@@ -1315,7 +1348,7 @@
         }
 
         // ==========================================
-        // ANALYSIS REPORT (Master Sheet)
+        // ANALYSIS REPORT (Master Sheet) Sorted By Gender -> Name
         // ==========================================
         function updateAnalysisTable() {
             let tableHeadRow = document.getElementById("analysisTableHeadRow");
@@ -1327,6 +1360,13 @@
             document.getElementById("analysisPrintSubHeader").innerText = printSubText;
 
             let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
+            
+            // Assign Gender from registration data to sort the Master Sheet
+            filteredData.forEach(s => {
+                let reg = registeredStudents.find(rs => rs && rs.admissionNo === s.id);
+                s.gender = reg ? (reg.gender || 'පිරිමි') : 'පිරිමි';
+            });
+
             let uniqueSubjects = new Set();
             filteredData.forEach(s => Object.keys(s.marks).forEach(sub => uniqueSubjects.add(sub)));
             let displaySubjects = Array.from(uniqueSubjects);
@@ -1350,8 +1390,15 @@
             let completeStudents = filteredData.filter(s => Object.keys(s.marks).length >= reqCount);
             let pendingStudents = filteredData.filter(s => Object.keys(s.marks).length < reqCount);
 
-            completeStudents.sort((a, b) => b.total - a.total);
-            pendingStudents.sort((a, b) => b.total - a.total);
+            // Master sheet sorting by Gender (Male first) then Alphabetically
+            completeStudents.sort((a, b) => {
+                if (a.gender !== b.gender) return a.gender === 'පිරිමි' ? -1 : 1;
+                return a.name.localeCompare(b.name);
+            });
+            pendingStudents.sort((a, b) => {
+                if (a.gender !== b.gender) return a.gender === 'පිරිමි' ? -1 : 1;
+                return a.name.localeCompare(b.name);
+            });
 
             let serialNoCounter = 1;
 
