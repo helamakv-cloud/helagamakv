@@ -125,20 +125,38 @@
             .scrollable-results { overflow: visible !important; }
         }
 
-        /* Responsive Settings */
+        /* ==============================================================
+           MAXIMIZED MOBILE RESPONSIVE SETTINGS
+           ============================================================== */
         @media (max-width: 768px) {
-            #mainApp { padding: 10px; }
-            .card { padding: 15px; border-radius: 12px; }
-            .tab-btn { flex: 1 1 100%; margin-bottom: 5px; font-size: 15px; padding: 12px;}
-            .table-filters select, .table-filters button { flex: 1 1 100%; }
-            .action-buttons button { flex: 1 1 100%; margin-bottom: 5px; }
-            .chart-container { height: 280px; }
-            .subject-row { flex-direction: column; align-items: stretch; }
+            body { padding: 2px; } /* Reduce outer padding to almost 0 */
+            
+            #loginScreen { padding: 10px; }
+            .login-box { padding: 25px 15px; margin: 0 auto; width: 100%; max-width: 100%; border-radius: 12px; }
+            #studentSearchBox { width: 100%; max-width: 100%; }
+            
+            #mainApp { padding: 2px; padding-bottom: 20px; }
+            .school-header { padding: 15px 5px; border-radius: 8px; margin-bottom: 10px; }
+            .card { padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+            
+            /* Tabs side by side to save vertical space */
+            .tab-btn { flex: 1 1 48%; margin-bottom: 5px; font-size: 13px; padding: 10px 5px; min-width: 45%; }
+            
+            .table-filters { padding: 10px; }
+            .table-filters select, .table-filters button { flex: 1 1 100%; padding: 10px; font-size: 14px;}
+            .action-buttons button { flex: 1 1 100%; margin-bottom: 5px; padding: 12px;}
+            
+            input, select, button, textarea { padding: 10px; font-size: 14px; }
+            
+            th, td { padding: 6px 4px; font-size: 12px; } /* Smaller padding inside tables */
+            h3.section-title { font-size: 15px; padding-bottom: 8px; margin-bottom: 10px; }
+            
+            .subject-row { padding: 8px; gap: 5px; }
             .subject-row label, .subject-row select, .subject-row input { text-align: center; width: 100%; }
-            .flex-row { flex-direction: column; }
-            .login-box { padding: 30px 20px; margin: 15px; }
-            th, td { padding: 8px; font-size: 13px; }
-            h3.section-title { font-size: 16px; }
+            .flex-row { flex-direction: column; gap: 8px; }
+            .chart-container { height: 260px; }
+            
+            .search-result-box { padding: 10px; }
         }
 
         @media (min-width: 769px) {
@@ -207,7 +225,7 @@
         </div>
 
         <!-- Student Search Box -->
-        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 800px; width: 95%; padding-bottom: 20px;">
+        <div class="login-box" id="studentSearchBox" style="display: none; max-width: 100%; width: 100%; padding-bottom: 20px;">
             <h2 style="color: #38bdf8;">මො/හෙළගම කනිටු විදුහල</h2>
             <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
 
