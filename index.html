@@ -220,7 +220,7 @@
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
 
@@ -249,7 +249,7 @@
             <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 70vh; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
-                Developer - Kelum Konara | 0714469232
+                Developer - Kelum Koonara | 0714469232
             </div>
         </div>
     </div>
@@ -589,6 +589,7 @@
                                     </div>
                                     <div class="dropdown-list" id="teacherSubjectList" style="display:none; padding: 10px; max-height: 200px; overflow-y: auto;">
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="සිංහල" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සිංහල</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="දෙමළ" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> දෙමළ</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ආගම" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ආගම</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ගණිතය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ගණිතය</label>
                                         <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="විද්‍යාව" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> විද්‍යාව</label>
@@ -660,7 +661,7 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Konara</span> | 0714469232
+            Developer - <span>Kelum Koonara</span> | 0714469232
         </div>
     </div>
 
@@ -789,7 +790,7 @@
 
         function getReqSubCount(gradeStr) {
             let grade = parseInt(gradeStr);
-            if (grade <= 9) return 12; 
+            if (grade <= 9) return 13; // Updated to 13 to include Tamil
             return 9; 
         }
 
@@ -1133,10 +1134,10 @@
             document.getElementById("studentName").value = nameInitials;
         }
 
-        const juniorSubjects = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
+        const juniorSubjects = ["සිංහල", "දෙමළ", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
         const aestheticSubjects = ["චිත්‍ර", "නැටුම්"];
         const seniorCore = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය"];
-        const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය"]; 
+        const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය", "දෙමළ"]; 
         const bucket2 = ["චිත්‍ර", "නැටුම්"]; 
         const bucket3 = ["කෘෂි හා ආහාර තාක්ෂණය", "සෞඛ්‍ය හා ශාරිරික අධ්‍යාපනය"]; 
 
