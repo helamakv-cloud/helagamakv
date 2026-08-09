@@ -749,7 +749,31 @@
 
         function loadFromFirebase() {
             db.ref('hkMarksData').on('value', (snapshot) => {
-                studentsData = snapshot.val() || [];
+                let data = snapshot.val() || [];
+                
+                // DATA CLEANUP: Auto-merge old ICT subject names from Firebase DB
+                let needsUpdate = false;
+                data.forEach(s => {
+                    if(s && s.marks) {
+                        if (s.marks["තොරතුරු හා සන්නිවේදන තාක්ෂණය"] !== undefined) {
+                            s.marks["ICT"] = s.marks["තොරතුරු හා සන්නිවේදන තාක්ෂණය"];
+                            delete s.marks["තොරතුරු හා සන්නිවේදන තාක්ෂණය"];
+                            needsUpdate = true;
+                        }
+                        if (s.marks["තොරතුරු තාක්ෂණය (ICT)"] !== undefined) {
+                            s.marks["ICT"] = s.marks["තොරතුරු තාක්ෂණය (ICT)"];
+                            delete s.marks["තොරතුරු තාක්ෂණය (ICT)"];
+                            needsUpdate = true;
+                        }
+                    }
+                });
+                studentsData = data;
+                
+                // If old data was found and fixed, silently save it back to DB to permanently fix the columns
+                if(needsUpdate) {
+                    db.ref('hkMarksData').set(studentsData);
+                }
+
                 updateTable(); 
                 updateAnalysisTable();
                 updateChart();
@@ -761,7 +785,25 @@
             });
 
             db.ref('hkRegTeachers').on('value', (snapshot) => {
-                registeredTeachers = snapshot.val() || [];
+                let tData = snapshot.val() || [];
+                let needsTUpdate = false;
+                tData.forEach(t => {
+                    if(t && t.subjects) {
+                        if(t.subjects.includes("තොරතුරු හා සන්නිවේදන තාක්ෂණය") || t.subjects.includes("තොරතුරු තාක්ෂණය (ICT)")) {
+                            t.subjects = t.subjects.replace(/තොරතුරු හා සන්නිවේදන තාක්ෂණය/g, "ICT");
+                            t.subjects = t.subjects.replace(/තොරතුරු තාක්ෂණය \(ICT\)/g, "ICT");
+                            let subArr = [...new Set(t.subjects.split(', '))];
+                            t.subjects = subArr.join(', ');
+                            needsTUpdate = true;
+                        }
+                    }
+                });
+                registeredTeachers = tData;
+
+                if(needsTUpdate) {
+                    db.ref('hkRegTeachers').set(registeredTeachers);
+                }
+
                 renderTeachersTable();
             });
         }
@@ -790,7 +832,7 @@
 
         function getReqSubCount(gradeStr) {
             let grade = parseInt(gradeStr);
-            if (grade <= 9) return 13; // Updated to 13 to include Tamil
+            if (grade <= 9) return 13; 
             return 9; 
         }
 
@@ -1616,7 +1658,7 @@
             let foundRecords = studentsData.filter(s => s && s.id === searchId && s.term === selectedTerm);
             
             if(foundRecords.length === 0) { 
-                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා කරන්න.</p>"; 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා কানা.</p>"; 
                 return; 
             }
 
