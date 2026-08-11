@@ -1531,13 +1531,19 @@
             displaySubjects.forEach(sub => { 
                 headHtml += `<th style="text-align: left; padding-left: 10px;">${sub}</th>`; 
             });
-            headHtml += `<th>ප්‍රතිඵලය<br>(Grades)</th>`;
+            
+            // සාමාර්ථ සඳහා වෙනම තීරු (Columns) 5ක් එකතු කිරීම
+            headHtml += `<th style="color:#10b981; font-size:14px;">A</th>
+                         <th style="color:#3b82f6; font-size:14px;">B</th>
+                         <th style="color:#f59e0b; font-size:14px;">C</th>
+                         <th style="color:#a855f7; font-size:14px;">S</th>
+                         <th style="color:#ef4444; font-size:14px;">W</th>`;
             
             tableHeadRow.innerHTML = headHtml;
             tableBody.innerHTML = ""; 
 
             if(filteredData.length === 0) {
-                let totalCols = 3 + displaySubjects.length;
+                let totalCols = 7 + displaySubjects.length;
                 tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: var(--text-muted); text-align: center; padding: 30px;">මෙම වාරය සහ ශ්‍රේණිය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
@@ -1578,13 +1584,19 @@
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
                 });
 
-                let gradesSummaryArray = [];
-                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
-                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`<span style="display:inline-block; margin:0 2px;">${gradeCounts[g]}${g}</span>`);
-                });
-                let gradesSummary = gradesSummaryArray.join(' ') || '-';
+                // A, B, C, S, W ප්‍රමාණ වෙනම තීරු වලට ඇතුළත් කිරීම
+                let aCount = gradeCounts['A'] > 0 ? gradeCounts['A'] : '-';
+                let bCount = gradeCounts['B'] > 0 ? gradeCounts['B'] : '-';
+                let cCount = gradeCounts['C'] > 0 ? gradeCounts['C'] : '-';
+                let sCount = gradeCounts['S'] > 0 ? gradeCounts['S'] : '-';
+                let wCount = gradeCounts['W'] > 0 ? gradeCounts['W'] : '-';
 
-                row += `<td style="font-weight:bold; color:#8b5cf6; font-size:13px; white-space:nowrap; background: rgba(139, 92, 246, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#10b981; background: rgba(16, 185, 129, 0.05);">${aCount}</td>`;
+                row += `<td style="font-weight:bold; color:#3b82f6; background: rgba(59, 130, 246, 0.05);">${bCount}</td>`;
+                row += `<td style="font-weight:bold; color:#f59e0b; background: rgba(245, 158, 11, 0.05);">${cCount}</td>`;
+                row += `<td style="font-weight:bold; color:#a855f7; background: rgba(168, 85, 247, 0.05);">${sCount}</td>`;
+                row += `<td style="font-weight:bold; color:#ef4444; background: rgba(239, 68, 68, 0.05);">${wCount}</td>`;
+                
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
 
@@ -1607,13 +1619,19 @@
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
                 });
 
-                let gradesSummaryArray = [];
-                ['A', 'B', 'C', 'S', 'W'].forEach(g => {
-                    if (gradeCounts[g] > 0) gradesSummaryArray.push(`<span style="display:inline-block; margin:0 2px;">${gradeCounts[g]}${g}</span>`);
-                });
-                let gradesSummary = gradesSummaryArray.join(' ') || '-';
+                // Pending ළමුන්ගේ A, B, C, S, W ප්‍රමාණ වෙනම තීරු වලට ඇතුළත් කිරීම (අළු පැහැයෙන් පෙන්වයි)
+                let aCount = gradeCounts['A'] > 0 ? gradeCounts['A'] : '-';
+                let bCount = gradeCounts['B'] > 0 ? gradeCounts['B'] : '-';
+                let cCount = gradeCounts['C'] > 0 ? gradeCounts['C'] : '-';
+                let sCount = gradeCounts['S'] > 0 ? gradeCounts['S'] : '-';
+                let wCount = gradeCounts['W'] > 0 ? gradeCounts['W'] : '-';
 
-                row += `<td style="font-weight:bold; color:var(--text-muted); font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted); background: rgba(100, 116, 139, 0.05);">${aCount}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted); background: rgba(100, 116, 139, 0.05);">${bCount}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted); background: rgba(100, 116, 139, 0.05);">${cCount}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted); background: rgba(100, 116, 139, 0.05);">${sCount}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted); background: rgba(100, 116, 139, 0.05);">${wCount}</td>`;
+                
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
         }
