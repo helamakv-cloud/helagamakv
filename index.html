@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="si" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,99 +12,155 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     
+    <script>
+        // Set Theme immediately to avoid flickering
+        let savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
     <style>
+        /* --- CSS Variables for Light / Dark Mode --- */
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --bg-header: linear-gradient(135deg, #2563eb, #7c3aed);
+            --bg-login: radial-gradient(circle at center, #f1f5f9 0%, #e2e8f0 100%);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-brand: #2563eb;
+            --border-main: #cbd5e1;
+            --border-input: #94a3b8;
+            --table-header: #f1f5f9;
+            --table-even: rgba(241, 245, 249, 0.8);
+            --table-hover: rgba(37, 99, 235, 0.08);
+            --btn-tab-bg: #e2e8f0;
+            --btn-tab-text: #475569;
+            --subject-row-bg: #f8fafc;
+            --chart-grid: #e2e8f0;
+            --card-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            --login-box-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --bg-header: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --bg-login: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-brand: #38bdf8;
+            --border-main: #334155;
+            --border-input: #475569;
+            --table-header: #0f172a;
+            --table-even: rgba(15, 23, 42, 0.4);
+            --table-hover: rgba(56, 189, 248, 0.05);
+            --btn-tab-bg: #1e293b;
+            --btn-tab-text: #94a3b8;
+            --subject-row-bg: #0f172a;
+            --chart-grid: #334155;
+            --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --login-box-bg: rgba(30, 41, 59, 0.95);
+        }
+
         /* --- Base Reset & Prevent Horizontal Scroll --- */
         * { box-sizing: border-box; -webkit-text-size-adjust: 100%;}
-        html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 10px; font-size: 16px; }
+        html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; transition: background 0.3s, color 0.3s;}
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 10px; font-size: 16px; }
 
         /* --- Login & Portal Interface - PERFECTLY CENTERED --- */
-        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); z-index: 1000; padding: 20px; display: flex; align-items: center; justify-content: center; }
-        .login-box { margin: auto; background: rgba(30, 41, 59, 0.95); padding: 40px 25px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 450px; backdrop-filter: blur(10px); max-height: 100%; overflow-y: auto; }
-        .login-box h2 { margin: 0 0 10px; color: #f8fafc; font-size: 24px; font-weight: 700;}
-        .login-box p { color: #94a3b8; margin-bottom: 30px; font-size: 14px;}
-        .login-box input, .login-box select { width: 100%; padding: 14px 15px; margin: 10px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-size: 16px; text-align: center; transition: 0.3s;}
-        .login-box input:focus, .login-box select:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); outline: none;}
+        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-login); z-index: 1000; padding: 20px; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
+        .login-box { margin: auto; background: var(--login-box-bg); padding: 40px 25px; border-radius: 16px; border: 1px solid var(--border-main); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 450px; backdrop-filter: blur(10px); max-height: 100%; overflow-y: auto; transition: 0.3s; }
+        .login-box h2 { margin: 0 0 10px; color: var(--text-main); font-size: 24px; font-weight: 700;}
+        .login-box p { color: var(--text-muted); margin-bottom: 30px; font-size: 14px;}
+        .login-box input, .login-box select { width: 100%; padding: 14px 15px; margin: 10px 0; background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-main); border-radius: 8px; font-size: 16px; text-align: center; transition: 0.3s;}
+        .login-box input:focus, .login-box select:focus { border-color: var(--text-brand); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); outline: none;}
         .btn-login { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s;}
         .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
         .login-error { color: #ef4444; font-size: 13px; display: none; margin-top: 10px;}
 
         /* --- Main App Container --- */
         #mainApp { display: none; width: 100%; max-width: 100%; margin: 0 auto; padding: 5px; padding-bottom: 30px; }
-        .school-header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-align: center; padding: 20px; border-radius: 16px; margin-bottom: 20px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1);}
+        .school-header { position: relative; background: var(--bg-header); color: white; text-align: center; padding: 20px; border-radius: 16px; margin-bottom: 20px; width: 100%; box-shadow: var(--card-shadow); border: 1px solid rgba(255,255,255,0.1); transition: background 0.3s;}
         .school-header h1 { margin: 0; font-size: clamp(20px, 5vw, 32px); font-weight: 800; letter-spacing: 1px;}
         .school-header h3 { margin: 8px 0 0 0; font-size: clamp(13px, 3vw, 18px); color: #e0e7ff; font-weight: 500;}
+        .theme-toggle-btn { position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; font-size: 20px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: white;}
+        .theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
+        .theme-toggle-btn-login { position: absolute; top: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 50%; font-size: 20px; cursor: pointer; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; transition: 0.3s; color: var(--text-main); box-shadow: var(--card-shadow);}
+        .theme-toggle-btn-login:hover { transform: scale(1.1); }
 
         /* --- Tabs & Cards --- */
         .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-        .tab-btn { flex: 1 1 20%; background: #1e293b; border: 1px solid #334155; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.3s; color: #94a3b8; min-width: 120px;}
+        .tab-btn { flex: 1 1 20%; background: var(--btn-tab-bg); border: 1px solid var(--border-main); padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.3s; color: var(--btn-tab-text); min-width: 120px;}
         .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
         .dashboard { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; width: 100%; }
-        .card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; min-width: 0; margin-bottom: 20px;}
-        h3.section-title { margin-top: 0; color: #f8fafc; padding-bottom: 12px; border-bottom: 1px solid #334155; font-size: 18px; text-align: center; font-weight: 600;}
+        .card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border-main); box-shadow: var(--card-shadow); width: 100%; min-width: 0; margin-bottom: 20px; transition: background 0.3s, border 0.3s;}
+        h3.section-title { margin-top: 0; color: var(--text-main); padding-bottom: 12px; border-bottom: 1px solid var(--border-main); font-size: 18px; text-align: center; font-weight: 600;}
 
         /* --- Inputs & Buttons --- */
-        input, select, button, textarea { width: 100%; padding: 14px; margin: 8px 0; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 8px; font-family: inherit; font-size: 16px; box-sizing: border-box; transition: 0.2s;}
-        input:focus, select:focus, textarea:focus { border-color: #38bdf8; outline: none; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        input, select, button, textarea { width: 100%; padding: 14px; margin: 8px 0; background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-main); border-radius: 8px; font-family: inherit; font-size: 16px; box-sizing: border-box; transition: 0.2s;}
+        input:focus, select:focus, textarea:focus { border-color: var(--text-brand); outline: none; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         input[type="text"], input[type="number"], select { text-align: center; text-align-last: center; }
         
         /* --- CUSTOM TABLE DROPDOWN --- */
-        .custom-dropdown { position: relative; width: 100%; background: #0f172a; border: 1px solid #3b82f6; border-radius: 8px; font-size: 15px; text-align: left; margin: 8px 0;}
-        .dropdown-header { padding: 14px 15px; color: #38bdf8; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
-        .dropdown-list { position: absolute; top: 100%; left: 0; width: 100%; background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; max-height: 250px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.8); margin-top: 5px;}
-        .dropdown-table { width: 100%; border-collapse: collapse; }
-        .dropdown-table th { background: #0f172a; position: sticky; top: 0; padding: 10px; font-size: 13px; color: #94a3b8; border-bottom: 1px solid #334155; text-align: center; z-index: 2;}
-        .dropdown-table td { padding: 10px; border-bottom: 1px solid #334155; color: #f8fafc; font-size: 14px; cursor: pointer;}
-        .dropdown-table tr:hover td { background: rgba(56, 189, 248, 0.15); color: #fff;}
+        .custom-dropdown { position: relative; width: 100%; background: var(--bg-input); border: 1px solid var(--text-brand); border-radius: 8px; font-size: 15px; text-align: left; margin: 8px 0;}
+        .dropdown-header { padding: 14px 15px; color: var(--text-brand); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
+        .dropdown-list { position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-card); border: 1px solid var(--text-brand); border-radius: 8px; max-height: 250px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-top: 5px;}
+        .dropdown-table { width: 100%; border-collapse: collapse; background: var(--bg-card);}
+        .dropdown-table th { background: var(--table-header); position: sticky; top: 0; padding: 10px; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-main); text-align: center; z-index: 2;}
+        .dropdown-table td { padding: 10px; border-bottom: 1px solid var(--border-main); color: var(--text-main); font-size: 14px; cursor: pointer;}
+        .dropdown-table tr:hover td { background: var(--table-hover); color: var(--text-main);}
         .dropdown-table tr:last-child td { border-bottom: none; }
 
         .flex-row { display: flex; gap: 12px; width: 100%; flex-direction: column; } 
-        .subject-row { display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: #0f172a; padding: 10px 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 10px; gap: 8px; width: 100%;}
-        .subject-row label, .subject-row select { flex: 1; font-size: 13px; font-weight: 600; color: #cbd5e1; text-align: left; margin: 0; border: none; background: transparent; padding: 0;}
-        .subject-row select { background: #1e293b; border: 1px solid #475569; padding: 8px; font-size: 13px; color:#f8fafc;}
-        .subject-row input { flex: 1; font-size: 15px; text-align: center; padding: 8px; margin: 0; border: 1px solid #475569; background: #1e293b;}
+        .subject-row { display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: var(--subject-row-bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-main); margin-bottom: 10px; gap: 8px; width: 100%; transition: background 0.3s;}
+        .subject-row label, .subject-row select { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-main); text-align: left; margin: 0; border: none; background: transparent; padding: 0;}
+        .subject-row select { background: var(--bg-card); border: 1px solid var(--border-input); padding: 8px; font-size: 13px; color: var(--text-main);}
+        .subject-row input { flex: 1; font-size: 15px; text-align: center; padding: 8px; margin: 0; border: 1px solid var(--border-input); background: var(--bg-card); color: var(--text-main);}
 
         .btn-submit { background: linear-gradient(to right, #38bdf8, #3b82f6); color: white; font-weight: bold; font-size: 15px; margin-top: 20px; padding: 16px; border: none; cursor: pointer; border-radius: 10px; box-shadow: 0 4px 12px rgba(56,189,248,0.3); transition: 0.3s;}
         .btn-submit:hover { opacity: 0.9; }
         .action-buttons { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; justify-content: center;}
-        .action-buttons button { flex: 1 1 30%; min-width: 100px; padding: 14px 10px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; border: none;}
-        .btn-print { background: linear-gradient(to right, #10b981, #059669); color: white; }
-        .btn-pdf { background: linear-gradient(to right, #f43f5e, #e11d48); color: white; }
-        .btn-clear { background: linear-gradient(to right, #64748b, #475569); color: white; border: none; }
-        .table-filters { display: flex; gap: 10px; flex-wrap: wrap; background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 12px; width: 100%; justify-content: center;}
+        .action-buttons button { flex: 1 1 30%; min-width: 100px; padding: 14px 10px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; border: none; color: white;}
+        .btn-print { background: linear-gradient(to right, #10b981, #059669); }
+        .btn-pdf { background: linear-gradient(to right, #f43f5e, #e11d48); }
+        .btn-clear { background: linear-gradient(to right, #64748b, #475569); border: none; }
+        .table-filters { display: flex; gap: 10px; flex-wrap: wrap; background: var(--subject-row-bg); border: 1px solid var(--border-main); padding: 15px; border-radius: 12px; width: 100%; justify-content: center; transition: 0.3s;}
         .table-filters select, .table-filters button { flex: 1 1 30%; min-width: 120px; padding: 12px 10px; font-size: 14px;}
 
         /* --- Scrollable Table Container --- */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid #334155; display: block;}
-        table { width: 100%; border-collapse: collapse; font-size: 14px; background: #1e293b;}
-        th, td { padding: 10px 8px; border-bottom: 1px solid #334155; text-align: center; border-right: 1px solid #334155;}
-        th { background-color: #0f172a; color: #38bdf8; font-weight: 600; white-space: normal; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;}
-        tr:nth-child(even) { background-color: rgba(15, 23, 42, 0.4); }
-        tr:hover { background-color: rgba(56, 189, 248, 0.05); }
-        .rank-col { background-color: rgba(234, 179, 8, 0.1); font-weight: bold; color: #facc15; font-size: 15px;}
-        .serial-col { font-weight: bold; color: #64748b; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid var(--border-main); display: block;}
+        table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--bg-card);}
+        th, td { padding: 10px 8px; border-bottom: 1px solid var(--border-main); text-align: center; border-right: 1px solid var(--border-main); color: var(--text-main);}
+        th { background-color: var(--table-header); color: var(--text-brand); font-weight: 600; white-space: normal; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;}
+        tr:nth-child(even) { background-color: var(--table-even); }
+        tr:hover { background-color: var(--table-hover); }
+        .rank-col { background-color: rgba(234, 179, 8, 0.1); font-weight: bold; color: #d97706; font-size: 15px;}
+        [data-theme="dark"] .rank-col { color: #facc15; }
+        .serial-col { font-weight: bold; color: var(--text-muted); }
         .term-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; white-space: nowrap; border: 1px solid rgba(59,130,246,0.3);}
         .chart-container { position: relative; width: 100%; height: 350px; margin-top: 20px;}
-        .dev-footer { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; font-weight: 500; border-top: 1px solid #334155; margin-top: 20px;}
-        .dev-footer span { color: #38bdf8; font-weight: bold; }
+        .dev-footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; font-weight: 500; border-top: 1px solid var(--border-main); margin-top: 20px;}
+        .dev-footer span { color: var(--text-brand); font-weight: bold; }
 
         /* --- PDF & Print Handling --- */
         #printHeader, #analysisPrintHeader { display: none; text-align: center; margin-bottom: 20px; }
         #printHeader h2, #analysisPrintHeader h2 { margin: 0; color: #000; font-size: 24px; font-weight: bold; }
         #printHeader h4, #analysisPrintHeader h4 { margin: 8px 0; color: #333; font-size: 16px; font-weight: 500;}
         #printHeader hr, #analysisPrintHeader hr { border: 2px solid #000; margin-top: 15px; margin-bottom: 15px;}
-        .search-result-box { background:#0f172a; border-radius:12px; padding:15px; margin-top:20px; text-align:left; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;}
-        .search-result-box h4 { margin: 0 0 15px 0; color: #38bdf8; font-size: 18px;}
-        .search-table { width: 100%; border-collapse: collapse;}
-        .search-table th, .search-table td { border: 1px solid #334155; padding: 8px; font-size: 14px; text-align: center; color: #e2e8f0; word-wrap: break-word;}
+        .search-result-box { background: var(--bg-input); border-radius:12px; padding:15px; margin-top:20px; text-align:left; border: 1px solid var(--text-brand); width: 100%; box-sizing: border-box;}
+        .search-result-box h4 { margin: 0 0 15px 0; color: var(--text-brand); font-size: 18px;}
+        .search-table { width: 100%; border-collapse: collapse; background: transparent;}
+        .search-table th, .search-table td { border: 1px solid var(--border-main); padding: 8px; font-size: 14px; text-align: center; color: var(--text-main); word-wrap: break-word;}
         .print-only-header { display: none; }
-        .hint-text { font-size: 12px; color: #94a3b8; margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
+        .hint-text { font-size: 12px; color: var(--text-muted); margin-top: -4px; margin-bottom: 12px; display: block; text-align: center;}
 
         /* Custom Scrollbar for Results */
         .scrollable-results::-webkit-scrollbar, .dropdown-list::-webkit-scrollbar { width: 6px; height: 6px; }
-        .scrollable-results::-webkit-scrollbar-track, .dropdown-list::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 8px; }
+        .scrollable-results::-webkit-scrollbar-track, .dropdown-list::-webkit-scrollbar-track { background: var(--bg-body); border-radius: 8px; }
         .scrollable-results::-webkit-scrollbar-thumb, .dropdown-list::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 8px; }
 
         /* PDF Export Mode CSS */
@@ -129,8 +185,7 @@
            MAXIMIZED MOBILE RESPONSIVE SETTINGS
            ============================================================== */
         @media (max-width: 768px) {
-            body { padding: 2px; } /* Reduce outer padding to almost 0 */
-            
+            body { padding: 2px; }
             #loginScreen { padding: 10px; }
             .login-box { padding: 25px 15px; margin: 0 auto; width: 100%; max-width: 100%; border-radius: 12px; }
             #studentSearchBox { width: 100%; max-width: 100%; }
@@ -139,23 +194,19 @@
             .school-header { padding: 15px 5px; border-radius: 8px; margin-bottom: 10px; }
             .card { padding: 10px; border-radius: 8px; margin-bottom: 15px; }
             
-            /* Tabs side by side to save vertical space */
             .tab-btn { flex: 1 1 48%; margin-bottom: 5px; font-size: 13px; padding: 10px 5px; min-width: 45%; }
-            
             .table-filters { padding: 10px; }
             .table-filters select, .table-filters button { flex: 1 1 100%; padding: 10px; font-size: 14px;}
             .action-buttons button { flex: 1 1 100%; margin-bottom: 5px; padding: 12px;}
             
             input, select, button, textarea { padding: 10px; font-size: 14px; }
-            
-            th, td { padding: 6px 4px; font-size: 12px; } /* Smaller padding inside tables */
+            th, td { padding: 6px 4px; font-size: 12px; }
             h3.section-title { font-size: 15px; padding-bottom: 8px; margin-bottom: 10px; }
             
             .subject-row { padding: 8px; gap: 5px; }
             .subject-row label, .subject-row select, .subject-row input { text-align: center; width: 100%; }
             .flex-row { flex-direction: column; gap: 8px; }
             .chart-container { height: 260px; }
-            
             .search-result-box { padding: 10px; }
         }
 
@@ -167,14 +218,13 @@
         @media print {
             @page { size: A4 landscape; margin: 1cm; }
             body { background: white; margin: 0; padding: 0; overflow: visible; color: #000; font-size: 14px; }
-            .school-header, .tab-nav, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard, #analysisReportCard .table-filters { display: none !important; }
+            .school-header, .tab-nav, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard, #analysisReportCard .table-filters, .theme-toggle-btn, .theme-toggle-btn-login { display: none !important; }
             body:not(.print-search-mode) #printHeader, body:not(.print-search-mode) #analysisPrintHeader { display: block; }
             body:not(.print-search-mode) .table-responsive { overflow-x: visible !important; border: none; display: table; width: 100%;}
             
             body.print-search-mode @page { size: A4 portrait; margin: 1cm; }
             body.print-search-mode .card { display: none !important; }
             body.print-search-mode #searchCard { display: block !important; box-shadow: none; border: none; padding: 0; margin: 0;}
-            /* Keep only the search results in print search mode */
             body.print-search-mode #searchCard > *:not(#searchResults) { display: none !important; }
             body.print-search-mode .search-result-box { border: 1px solid #000; background: #fff; box-shadow: none; page-break-inside: avoid; margin-top: 0;}
             body.print-search-mode .search-result-box h4 { color: #000; }
@@ -197,13 +247,16 @@
         }
     </style>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="icon-192x192.png">
 </head>
 <body>
 
     <!-- Login & Student Portal -->
     <div id="loginScreen">
+        <!-- Theme Toggle Login -->
+        <button id="themeToggleLogin" class="theme-toggle-btn-login" onclick="toggleTheme()" aria-label="Toggle Theme">🌙</button>
+
         <!-- Admin Login Box -->
         <div class="login-box" id="adminLoginBox">
             <h2>Welcome Back!</h2>
@@ -215,23 +268,23 @@
                 <button type="submit" class="btn-login">Login as Admin</button>
             </form>
             
-            <hr style="border: 1px solid #334155; margin: 25px 0 15px 0;">
-            <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
+            <hr style="border: 1px solid var(--border-main); margin: 25px 0 15px 0;">
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 10px;">ශිෂ්‍ය ප්‍රතිඵල බැලීම සඳහා පහත බොත්තම ඔබන්න</p>
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
-            <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
+            <div style="margin-top: 25px; font-size: 13px; color: var(--text-muted);">
                 Developer - Kelum Koonara | 0714469232
             </div>
         </div>
 
         <!-- Student Search Box -->
         <div class="login-box" id="studentSearchBox" style="display: none; max-width: 100%; width: 100%; padding-bottom: 20px;">
-            <h2 style="color: #38bdf8; font-size: clamp(18px, 5vw, 24px);">මො/හෙළගම කනිටු විදුහල</h2>
-            <p>ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
+            <h2 style="color: var(--text-brand); font-size: clamp(18px, 5vw, 24px);">මො/හෙළගම කනිටු විදුහල</h2>
+            <p style="color: var(--text-muted);">ශිෂ්‍ය ප්‍රතිඵල (Student Results)</p>
 
             <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">වාරය තෝරන්න (Select Term):</label>
-                <select id="portalTermSelect" style="border-width: 2px; border-color: #3b82f6;">
+                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted);">වාරය තෝරන්න (Select Term):</label>
+                <select id="portalTermSelect" style="border-width: 2px; border-color: var(--text-brand);">
                     <option value="පළමු වාරය" selected>පළමු වාරය</option>
                     <option value="දෙවන වාරය">දෙවන වාරය</option>
                     <option value="තෙවන වාරය">තෙවන වාරය</option>
@@ -239,16 +292,16 @@
             </div>
             
             <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 14px; font-weight: bold; color: #94a3b8;">ඔබගේ ඇතුළත්වීමේ අංකය (Admission No):</label>
+                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted);">ඔබගේ ඇතුළත්වීමේ අංකය (Admission No):</label>
                 <input type="text" id="portalSearchInput" placeholder="උදා: 1234">
             </div>
             
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
-            <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
+            <button type="button" class="btn-clear" style="width: 100%; padding: 14px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; color: white;" onclick="showAdminLogin()">⬅️ ආපසු (Back)</button>
             
             <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 70vh; overflow-y: auto;"></div>
             
-            <div style="margin-top: 25px; font-size: 13px; color: #94a3b8;">
+            <div style="margin-top: 25px; font-size: 13px; color: var(--text-muted);">
                 Developer - Kelum Koonara | 0714469232
             </div>
         </div>
@@ -257,6 +310,7 @@
     <!-- Main App -->
     <div id="mainApp">
         <div class="school-header">
+            <button id="themeToggleApp" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle Theme">🌙</button>
             <h1>මො/හෙළගම කනිටු විදුහල</h1>
             <h3>Marks Analyzing System</h3>
         </div>
@@ -277,8 +331,8 @@
                     <form id="marksForm">
                         <div class="flex-row">
                             <div style="width: 100%;">
-                                <label style="font-size: 14px; font-weight: bold; color: #94a3b8; display: block; margin-top: 5px; text-align: center;">වාරය (Term):</label>
-                                <select id="termSelect" required style="border-width: 2px; border-color: #3b82f6;">
+                                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">වාරය (Term):</label>
+                                <select id="termSelect" required style="border-width: 2px; border-color: var(--text-brand);">
                                     <option value="" disabled selected>වාරය තෝරන්න</option>
                                     <option value="පළමු වාරය">පළමු වාරය</option>
                                     <option value="දෙවන වාරය">දෙවන වාරය</option>
@@ -286,8 +340,8 @@
                                 </select>
                             </div>
                             <div style="width: 100%;">
-                                <label style="font-size: 14px; font-weight: bold; color: #94a3b8; display: block; margin-top: 5px; text-align: center;">ශ්‍රේණිය (Grade):</label>
-                                <select id="gradeSelect" onchange="loadStudentsForMarks(); loadSubjects();" required style="border-width: 2px; border-color: #3b82f6;">
+                                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">ශ්‍රේණිය (Grade):</label>
+                                <select id="gradeSelect" onchange="loadStudentsForMarks(); loadSubjects();" required style="border-width: 2px; border-color: var(--text-brand);">
                                     <option value="" disabled selected>තෝරන්න</option>
                                     <option value="6">6</option><option value="7">7</option><option value="8">8</option>
                                     <option value="9">9</option><option value="10">10</option><option value="11">11</option>
@@ -295,14 +349,14 @@
                             </div>
                         </div>
 
-                        <div style="margin-top: 20px; padding: 15px; background: #0f172a; border-radius: 12px; border: 1px solid #3b82f6;">
-                            <label style="font-size: 15px; font-weight: bold; color: #38bdf8; display: block; margin-bottom: 8px; text-align: center;">ශිෂ්‍යයා තෝරන්න (Select Student):</label>
+                        <div style="margin-top: 20px; padding: 15px; background: var(--bg-input); border-radius: 12px; border: 1px solid var(--text-brand);">
+                            <label style="font-size: 15px; font-weight: bold; color: var(--text-brand); display: block; margin-bottom: 8px; text-align: center;">ශිෂ්‍යයා තෝරන්න (Select Student):</label>
                             
                             <!-- Custom Table Dropdown -->
                             <div class="custom-dropdown" id="studentCustomDropdown">
                                 <div class="dropdown-header" onclick="toggleStudentDropdown()">
                                     <span id="selectedStudentText">පළමුව ශ්‍රේණිය තෝරන්න</span>
-                                    <span style="font-size: 12px; color: #94a3b8;">▼</span>
+                                    <span style="font-size: 12px; color: var(--text-muted);">▼</span>
                                 </div>
                                 <div class="dropdown-list" id="studentDropdownList" style="display:none;">
                                     <!-- Table injected via JS -->
@@ -316,7 +370,7 @@
                             <input type="hidden" id="studentName" required>
                         </div>
 
-                        <h4 style="margin-bottom: 10px; margin-top: 25px; color: #e2e8f0; text-align: center; font-weight: 600;">විෂයයන් සඳහා ලකුණු:</h4>
+                        <h4 style="margin-bottom: 10px; margin-top: 25px; color: var(--text-main); text-align: center; font-weight: 600;">විෂයයන් සඳහා ලකුණු:</h4>
                         <div id="subjectsContainer"></div>
                         
                         <div class="flex-row" style="gap: 10px; margin-top: 20px;">
@@ -364,7 +418,7 @@
                                 <option value="35_49">35 - 49 (S)</option>
                                 <option value="0_34">0 - 34 (W)</option>
                             </select>
-                            <button class="btn-clear" onclick="clearTableFilters()" style="flex: 1 1 100%; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; border: 1px solid #475569;">🔄 Reset List View</button>
+                            <button class="btn-clear" onclick="clearTableFilters()" style="flex: 1 1 100%; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; border: 1px solid var(--border-input);">🔄 Reset List View</button>
                         </div>
                     </div>
 
@@ -488,7 +542,7 @@
                         <!-- Gender, DOB, Scholarship Options -->
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">ස්ත්‍රී/පුරුෂ (Gender)</label>
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">ස්ත්‍රී/පුරුෂ (Gender)</label>
                                 <select id="reg_gender" required style="width: 100%; margin-top: 2px;">
                                     <option value="" disabled selected>තෝරන්න</option>
                                     <option value="පිරිමි">පිරිමි (Male)</option>
@@ -496,11 +550,11 @@
                                 </select>
                             </div>
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">උපන් දිනය (DOB)</label>
-                                <input type="text" id="reg_dob" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="color: #f8fafc; margin-top: 2px;">
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">උපන් දිනය (DOB)</label>
+                                <input type="text" id="reg_dob" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" required style="margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">ශිෂ්‍යත්ව ලාභියෙක් ද?</label>
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">ශිෂ්‍යත්ව ලාභියෙක් ද?</label>
                                 <select id="reg_scholarship" required style="width: 100%; margin-top: 2px;">
                                     <option value="" disabled selected>තෝරන්න</option>
                                     <option value="ඔව්">ඔව්</option>
@@ -567,8 +621,8 @@
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">පන්තිභාර ශ්‍රේණිය (Class Teacher)</label>
-                                <select id="treg_class" style="color: #f8fafc; margin-top: 2px;">
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">පන්තිභාර ශ්‍රේණිය (Class Teacher)</label>
+                                <select id="treg_class" style="margin-top: 2px;">
                                     <option value="නැත" selected>නැත (None)</option>
                                     <option value="6">6 ශ්‍රේණිය</option>
                                     <option value="7">7 ශ්‍රේණිය</option>
@@ -581,29 +635,29 @@
                             
                             <!-- Custom Teacher Subject Dropdown -->
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">විෂයභාර ගුරු (Subjects)</label>
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">විෂයභාර ගුරු (Subjects)</label>
                                 <div class="custom-dropdown" id="teacherSubjectDropdown" style="margin-top: 2px;">
                                     <div class="dropdown-header" onclick="toggleTeacherSubjectDropdown()">
-                                        <span id="teacherSubjectText" style="color: #f8fafc; font-weight: normal;">විෂයයන් තෝරන්න</span>
-                                        <span style="font-size: 12px; color: #94a3b8;">▼</span>
+                                        <span id="teacherSubjectText" style="color: var(--text-main); font-weight: normal;">විෂයයන් තෝරන්න</span>
+                                        <span style="font-size: 12px; color: var(--text-muted);">▼</span>
                                     </div>
                                     <div class="dropdown-list" id="teacherSubjectList" style="display:none; padding: 10px; max-height: 200px; overflow-y: auto;">
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="සිංහල" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සිංහල</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="දෙමළ" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> දෙමළ</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ආගම" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ආගම</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ගණිතය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ගණිතය</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="විද්‍යාව" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> විද්‍යාව</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ඉංග්‍රීසි" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ඉංග්‍රීසි</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ඉතිහාසය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ඉතිහාසය</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="භූගෝල විද්‍යාව" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> භූගෝල විද්‍යාව</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="පුරවැසි අධ්‍යාපනය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> පුරවැසි අධ්‍යාපනය</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="සෞඛ්‍යය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සෞඛ්‍යය</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="ICT" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ICT</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="චිත්‍ර" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> චිත්‍ර</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="නැටුම්" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> නැටුම්</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="සංගීතය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සංගීතය</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="PTS" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> PTS</label>
-                                        <label style="display:flex; align-items:center; padding: 8px; color:#f8fafc; cursor:pointer;"><input type="checkbox" value="කෘෂි හා ආහාර තාක්ෂණය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> කෘෂි හා ආහාර තාක්ෂණය</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="සිංහල" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සිංහල</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="දෙමළ" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> දෙමළ</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="ආගම" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ආගම</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="ගණිතය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ගණිතය</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="විද්‍යාව" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> විද්‍යාව</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="ඉංග්‍රීසි" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ඉංග්‍රීසි</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="ඉතිහාසය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ඉතිහාසය</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="භූගෝල විද්‍යාව" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> භූගෝල විද්‍යාව</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="පුරවැසි අධ්‍යාපනය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> පුරවැසි අධ්‍යාපනය</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="සෞඛ්‍යය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සෞඛ්‍යය</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="ICT" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> ICT</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="චිත්‍ර" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> චිත්‍ර</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="නැටුම්" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> නැටුම්</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="සංගීතය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> සංගීතය</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="PTS" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> PTS</label>
+                                        <label style="display:flex; align-items:center; padding: 8px; color:var(--text-main); cursor:pointer;"><input type="checkbox" value="කෘෂි හා ආහාර තාක්ෂණය" onchange="updateTeacherSubjects()" style="width:auto; margin:0 10px 0 0;"> කෘෂි හා ආහාර තාක්ෂණය</label>
                                     </div>
                                 </div>
                                 <input type="hidden" id="treg_subjects_hidden">
@@ -612,22 +666,22 @@
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">පත්වීමේ දිනය (Appointment Date)</label>
-                                <input type="text" id="treg_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">පත්වීමේ දිනය (Appointment Date)</label>
+                                <input type="text" id="treg_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">මෙම පාසලට පත්වු දිනය</label>
-                                <input type="text" id="treg_school_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">මෙම පාසලට පත්වු දිනය</label>
+                                <input type="text" id="treg_school_appoint_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="margin-top: 2px;">
                             </div>
                         </div>
 
                         <div class="flex-row">
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #94a3b8; padding-left: 10px;">වාරසටහන් අනුමත දිනය</label>
-                                <input type="text" id="treg_timetable_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="color: #f8fafc; margin-top: 2px;">
+                                <label style="font-size: 12px; color: var(--text-muted); padding-left: 10px;">වාරසටහන් අනුමත දිනය</label>
+                                <input type="text" id="treg_timetable_date" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" style="margin-top: 2px;">
                             </div>
                             <div style="width: 100%; text-align: left;">
-                                <label style="font-size: 12px; color: #0f172a; display: block; margin-top: 2px;">.</label>
+                                <label style="font-size: 12px; color: var(--bg-card); display: block; margin-top: 2px;">.</label>
                                 <input type="tel" id="treg_phone" placeholder="දුරකථන අංකය (Phone Number)" style="margin-top: -3px;">
                             </div>
                         </div>
@@ -666,6 +720,31 @@
     </div>
 
     <script>
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            let currentTheme = document.documentElement.getAttribute('data-theme');
+            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcons(newTheme);
+            if (myChart !== null) {
+                updateChart(); // Redraw chart to apply new grid/text colors
+            }
+        }
+
+        function updateThemeIcons(theme) {
+            let icon = theme === 'dark' ? '☀️' : '🌙';
+            let btn1 = document.getElementById('themeToggleApp');
+            let btn2 = document.getElementById('themeToggleLogin');
+            if(btn1) btn1.innerText = icon;
+            if(btn2) btn2.innerText = icon;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let initialTheme = document.documentElement.getAttribute('data-theme');
+            updateThemeIcons(initialTheme);
+        });
+
         // Safely bind global event listeners to prevent null errors on login screen
         document.addEventListener('click', function(event) {
             try {
@@ -728,11 +807,11 @@
             
             if(selected.length > 0) {
                 textSpan.innerText = selected.length + " තෝරාගෙන ඇත";
-                textSpan.style.color = "#38bdf8";
+                textSpan.style.color = "var(--text-brand)";
                 textSpan.style.fontWeight = "bold";
             } else {
                 textSpan.innerText = "විෂයයන් තෝරන්න";
-                textSpan.style.color = "#f8fafc";
+                textSpan.style.color = "var(--text-main)";
                 textSpan.style.fontWeight = "normal";
             }
         }
@@ -866,7 +945,7 @@
         function resetStudentForm() {
             document.getElementById("studentRegForm").reset();
             document.getElementById("reg_admNo").readOnly = false;
-            document.getElementById("reg_admNo").style.backgroundColor = "#0f172a";
+            document.getElementById("reg_admNo").style.backgroundColor = "var(--bg-input)";
             let btn = document.getElementById("studentSubmitBtn");
             btn.innerText = "ශිෂ්‍යයා ලියාපදිංචි/වෙනස් කරන්න";
             btn.style.background = "linear-gradient(to right, #10b981, #059669)";
@@ -931,12 +1010,12 @@
             });
 
             filtered.forEach(s => {
-                let scholBadge = s.scholarship === "ඔව්" ? '<span style="color:#10b981; font-weight:bold;">ඔව්</span>' : '<span style="color:#94a3b8;">නැත</span>';
+                let scholBadge = s.scholarship === "ඔව්" ? '<span style="color:#10b981; font-weight:bold;">ඔව්</span>' : '<span style="color:var(--text-muted);">නැත</span>';
                 let genderBadge = (s.gender || 'පිරිමි') === "පිරිමි" ? '<span style="color:#38bdf8;">පිරිමි</span>' : '<span style="color:#ec4899;">ගැහැණු</span>';
                 
                 tbody.innerHTML += `
                     <tr>
-                        <td style="font-weight:bold; color:#38bdf8;">${s.admissionNo}</td>
+                        <td style="font-weight:bold; color:var(--text-brand);">${s.admissionNo}</td>
                         <td style="text-align:left;">${s.nameInitials}</td>
                         <td>${genderBadge}</td>
                         <td>${s.grade}</td>
@@ -957,7 +1036,7 @@
             if(s) {
                 document.getElementById("reg_admNo").value = s.admissionNo;
                 document.getElementById("reg_admNo").readOnly = true;
-                document.getElementById("reg_admNo").style.backgroundColor = "rgba(255,255,255,0.1)";
+                document.getElementById("reg_admNo").style.backgroundColor = "rgba(128,128,128,0.1)";
                 
                 document.getElementById("reg_fullName").value = s.fullName;
                 document.getElementById("reg_initialName").value = s.nameInitials;
@@ -982,7 +1061,7 @@
         function resetTeacherForm() {
             document.getElementById("teacherRegForm").reset();
             document.getElementById("treg_id").readOnly = false;
-            document.getElementById("treg_id").style.backgroundColor = "#0f172a";
+            document.getElementById("treg_id").style.backgroundColor = "var(--bg-input)";
             document.getElementById("treg_class").value = "නැත";
             
             // Uncheck all custom subject checkboxes
@@ -1062,14 +1141,14 @@
                 if (!t) return;
                 let classBadge = t.classTeacher && t.classTeacher !== 'නැත' ? 
                     `<span class="term-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border-color: transparent;">Grade ${t.classTeacher}</span>` : 
-                    `<span class="term-badge" style="background: rgba(100,116,139,0.2); color: #94a3b8; border-color: transparent;">නැත</span>`;
+                    `<span class="term-badge" style="background: rgba(100,116,139,0.2); color: var(--text-muted); border-color: transparent;">නැත</span>`;
                     
                 tbody.innerHTML += `
                     <tr>
                         <td style="font-weight:bold; color:#f43f5e;">${t.id}</td>
                         <td style="text-align:left;">${t.name}</td>
                         <td>${classBadge}</td>
-                        <td style="font-size: 13px; color: #cbd5e1; max-width: 150px; white-space: normal; line-height: 1.4;">${t.subjects || '-'}</td>
+                        <td style="font-size: 13px; color: var(--text-muted); max-width: 150px; white-space: normal; line-height: 1.4;">${t.subjects || '-'}</td>
                         <td>${t.phone}</td>
                         <td>
                             <button type="button" onclick="editTeacher('${t.id}')" style="background:#f59e0b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Edit</button>
@@ -1085,7 +1164,7 @@
             if(t) {
                 document.getElementById("treg_id").value = t.id;
                 document.getElementById("treg_id").readOnly = true;
-                document.getElementById("treg_id").style.backgroundColor = "rgba(255,255,255,0.1)";
+                document.getElementById("treg_id").style.backgroundColor = "rgba(128,128,128,0.1)";
                 
                 document.getElementById("treg_name").value = t.name || "";
                 document.getElementById("treg_nic").value = t.nic || "";
@@ -1156,8 +1235,8 @@
                     let index = 1;
                     studentsInGrade.forEach(s => {
                         tableHTML += `<tr onclick="selectStudentForMarks('${s.admissionNo}', '${s.nameInitials}')">
-                            <td style="text-align: center; color: #94a3b8;">${index++}</td>
-                            <td style="font-weight: bold; color: #38bdf8; text-align: center;">${s.admissionNo}</td>
+                            <td style="text-align: center; color: var(--text-muted);">${index++}</td>
+                            <td style="font-weight: bold; color: var(--text-brand); text-align: center;">${s.admissionNo}</td>
                             <td style="text-align: left;">${s.nameInitials}</td>
                         </tr>`;
                     });
@@ -1357,7 +1436,6 @@
             let headHtml = `<th>No</th><th style="text-align:left;">නම</th><th>වාරය</th>`;
             displaySubjects.forEach(sub => {
                 let isFiltered = (filterSub === sub);
-                // Subjects headers left aligned
                 let style = isFiltered ? 'background-color: #3b82f6; color: #fff; font-weight: bold; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                 headHtml += `<th style="${style}">${sub}</th>`;
             });
@@ -1369,7 +1447,7 @@
 
             if(filteredData.length === 0) {
                 let totalCols = isAdvancedFilterActive ? (5 + displaySubjects.length) : (6 + displaySubjects.length);
-                tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">තෝරාගත් කාණ්ඩය සඳහා දත්ත නොමැත.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: var(--text-muted); text-align: center; padding: 30px;">තෝරාගත් කාණ්ඩය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
 
@@ -1394,12 +1472,12 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #3b82f6; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     if(mark === "AB") style += "color:#ef4444;";
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
 
-                row += `<td style="font-weight:bold; color:#f8fafc;">${student.total}</td><td style="color:#38bdf8; font-weight:bold;">${student.average}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-main);">${student.total}</td><td style="color:var(--text-brand); font-weight:bold;">${student.average}</td>`;
                 if (!isAdvancedFilterActive) row += `<td class="rank-col">${currentRank}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
@@ -1414,12 +1492,12 @@
                     let mark = student.marks[sub]; 
                     let displayMark = (mark !== undefined) ? mark : '-';
                     let isFiltered = (filterSub === sub); 
-                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #60a5fa; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
+                    let style = isFiltered ? 'background-color: rgba(59, 130, 246, 0.2); font-weight: bold; color: #3b82f6; text-align: left; padding-left: 10px;' : 'text-align: left; padding-left: 10px;';
                     if(mark === "AB") style += "color:#ef4444;";
                     row += `<td style="${style}">${displayMark}</td>`;
                 });
 
-                row += `<td style="font-weight:bold; color:#64748b;">${student.total}</td><td style="color:#64748b; font-weight:bold;">${student.average}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted);">${student.total}</td><td style="color:var(--text-muted); font-weight:bold;">${student.average}</td>`;
                 if (!isAdvancedFilterActive) row += `<td class="rank-col" style="color:#ef4444; font-size:12px;">Pending</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
@@ -1460,7 +1538,7 @@
 
             if(filteredData.length === 0) {
                 let totalCols = 3 + displaySubjects.length;
-                tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: #94a3b8; text-align: center; padding: 30px;">මෙම වාරය සහ ශ්‍රේණිය සඳහා දත්ත නොමැත.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="${totalCols}" style="color: var(--text-muted); text-align: center; padding: 30px;">මෙම වාරය සහ ශ්‍රේණිය සඳහා දත්ත නොමැත.</td></tr>`;
                 return;
             }
 
@@ -1492,7 +1570,8 @@
                     let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        let color = g === 'AB' ? '#ef4444' : '#facc15';
+                        let color = g === 'AB' ? '#ef4444' : '#d97706';
+                        if(document.documentElement.getAttribute('data-theme') === 'dark') color = g === 'AB' ? '#ef4444' : '#facc15';
                         displayHtml = `<span style="font-size: 15px; font-weight: bold; color: ${color};">${g}</span>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
@@ -1505,7 +1584,7 @@
                 });
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#a78bfa; font-size:13px; white-space:nowrap; background: rgba(167, 139, 250, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:#8b5cf6; font-size:13px; white-space:nowrap; background: rgba(139, 92, 246, 0.1);">${gradesSummary}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
 
@@ -1521,7 +1600,7 @@
                     let displayHtml = '-';
                     if (mark !== undefined) {
                         let g = getGrade(mark);
-                        let color = g === 'AB' ? '#ef4444' : '#94a3b8';
+                        let color = g === 'AB' ? '#ef4444' : 'var(--text-muted)';
                         displayHtml = `<span style="font-size: 15px; font-weight: bold; color: ${color};">${g}</span>`;
                         if (gradeCounts[g] !== undefined) gradeCounts[g]++;
                     }
@@ -1534,7 +1613,7 @@
                 });
                 let gradesSummary = gradesSummaryArray.join(' ') || '-';
 
-                row += `<td style="font-weight:bold; color:#64748b; font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
+                row += `<td style="font-weight:bold; color:var(--text-muted); font-size:13px; white-space:nowrap; background: rgba(100, 116, 139, 0.1);">${gradesSummary}</td>`;
                 row += `</tr>`; tableBody.innerHTML += row; 
             });
         }
@@ -1615,7 +1694,7 @@
                 
                 html += `<div class="search-result-box" style="width: 100%; box-sizing: border-box;">
                             <h4>👤 ${record.name} - ${record.fullClassName}</h4>
-                            <div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: #94a3b8;">📅 ${record.term}</div>
+                            <div style="margin-bottom: 12px; font-size: 14px; font-weight: bold; color: var(--text-muted);">📅 ${record.term}</div>
                             <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
                                 <table class="search-table" style="width: 100%; min-width: unset;">
                                     <tr>
@@ -1626,28 +1705,29 @@
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
-                    let color = grade === 'AB' ? '#ef4444' : '#38bdf8';
-                    let gradeColor = grade === 'AB' ? '#ef4444' : '#facc15';
+                    let color = grade === 'AB' ? '#ef4444' : 'var(--text-brand)';
+                    let gradeColor = grade === 'AB' ? '#ef4444' : '#d97706';
+                    if(document.documentElement.getAttribute('data-theme') === 'dark') gradeColor = grade === 'AB' ? '#ef4444' : '#facc15';
                     html += `<tr><td style="text-align:left; white-space: normal; padding-left: 10px;">${sub}</td><td style="font-weight:bold; color:${color};">${mark}</td><td style="font-weight:bold; color:${gradeColor};">${grade}</td></tr>`; 
                 }
 
                 html += `
-                         <tr style="background: rgba(245, 158, 11, 0.2); color:#fcd34d;">
+                         <tr style="background: rgba(245, 158, 11, 0.2); color:#d97706;">
                             <th style="text-align:right; padding-right: 10px;">එකතුව (Total):</th>
                             <th style="font-size:16px; text-align: center;">${record.total}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
-                         <tr style="background: rgba(59, 130, 246, 0.2); color:#93c5fd;">
+                         <tr style="background: rgba(59, 130, 246, 0.2); color:var(--text-brand);">
                             <th style="text-align:right; padding-right: 10px;">සාමාන්‍යය (Average):</th>
                             <th style="font-size:16px; text-align: center;">${record.average}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
-                         <tr style="background: rgba(16, 185, 129, 0.2); color:#6ee7b7;">
+                         <tr style="background: rgba(16, 185, 129, 0.2); color:#10b981;">
                             <th style="text-align:right; padding-right: 10px;">ස්ථානය (Rank):</th>
                             <th style="font-size:16px; text-align: center;">${classRankDisplay}</th>
                             <th style="text-align: center;">-</th>
                          </tr>
-                         <tr style="background: rgba(236, 72, 153, 0.2); color:#f472b6;">
+                         <tr style="background: rgba(236, 72, 153, 0.2); color:#ec4899;">
                             <th style="text-align:right; padding-right: 10px;">පන්තියේ සිසුන් ගණන:</th>
                             <th style="font-size:16px; text-align: center;">${totalStudentsInClass}</th>
                             <th style="text-align: center;">-</th>
@@ -1710,50 +1790,52 @@
                 let totalStudentsInClass = sameGradeCohort.length;
                 
                 html += `
-                <div class="search-result-box portal-result-card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #3b82f6; width: 100%; box-sizing: border-box;">
-                    <h4 class="portal-student-name" style="color: #38bdf8; margin: 0 0 5px 0; font-size: 16px; word-wrap: break-word;">👤 ${record.name} - ${record.fullClassName}</h4>
-                    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; font-weight: bold;">📅 වාරය: ${record.term}</div>
+                <div class="search-result-box portal-result-card" style="background: var(--bg-card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--text-brand); width: 100%; box-sizing: border-box;">
+                    <h4 class="portal-student-name" style="color: var(--text-brand); margin: 0 0 5px 0; font-size: 16px; word-wrap: break-word;">👤 ${record.name} - ${record.fullClassName}</h4>
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; font-weight: bold;">📅 වාරය: ${record.term}</div>
                     
                     <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: transparent; min-width: 300px;">
                         <tr>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: left; background: rgba(0,0,0,0.2); white-space: normal; padding-left: 10px;">විෂය</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">ලකුණු</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; background: rgba(0,0,0,0.2); white-space: normal;">සාමාර්ථය</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: left; background: rgba(0,0,0,0.05); white-space: normal; padding-left: 10px; color: var(--text-main);">විෂය</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: center; background: rgba(0,0,0,0.05); white-space: normal; color: var(--text-main);">ලකුණු</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: center; background: rgba(0,0,0,0.05); white-space: normal; color: var(--text-main);">සාමාර්ථය</th>
                         </tr>`;
                 
                 for (let [sub, mark] of Object.entries(record.marks)) { 
                     let grade = getGrade(mark);
-                    let color = grade === 'AB' ? '#ef4444' : '#38bdf8';
-                    let gradeColor = grade === 'AB' ? '#ef4444' : '#facc15';
+                    let color = grade === 'AB' ? '#ef4444' : 'var(--text-brand)';
+                    let gradeColor = grade === 'AB' ? '#ef4444' : '#d97706';
+                    if(document.documentElement.getAttribute('data-theme') === 'dark') gradeColor = grade === 'AB' ? '#ef4444' : '#facc15';
+
                     html += `
                         <tr>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: left; color: #e2e8f0; white-space: normal; padding-left: 10px;">${sub}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: ${color}; white-space: normal;">${mark}</td>
-                            <td style="border: 1px solid #334155; padding: 6px; text-align: center; font-weight: bold; color: ${gradeColor}; white-space: normal;">${grade}</td>
+                            <td style="border: 1px solid var(--border-main); padding: 6px; text-align: left; color: var(--text-main); white-space: normal; padding-left: 10px;">${sub}</td>
+                            <td style="border: 1px solid var(--border-main); padding: 6px; text-align: center; font-weight: bold; color: ${color}; white-space: normal;">${mark}</td>
+                            <td style="border: 1px solid var(--border-main); padding: 6px; text-align: center; font-weight: bold; color: ${gradeColor}; white-space: normal;">${grade}</td>
                         </tr>`; 
                 }
                 
                 html += `
-                        <tr style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">එකතුව (Total):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.total}</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        <tr style="background: rgba(245, 158, 11, 0.15); color: #d97706;">
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">එකතුව (Total):</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.total}</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
-                        <tr style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">සාමාන්‍යය (Average):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.average}</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        <tr style="background: rgba(59, 130, 246, 0.15); color: var(--text-brand);">
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">සාමාන්‍යය (Average):</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${record.average}</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
-                        <tr style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">ස්ථානය (Rank):</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${classRankDisplay}</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        <tr style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">ස්ථානය (Rank):</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${classRankDisplay}</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
-                        <tr style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">පන්තියේ සිසුන් ගණන:</th>
-                            <th style="border: 1px solid #334155; padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${totalStudentsInClass}</th>
-                            <th style="border: 1px solid #334155; padding: 6px; text-align: center; white-space: normal;">-</th>
+                        <tr style="background: rgba(236, 72, 153, 0.15); color: #ec4899;">
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: right; white-space: normal; padding-right: 10px;">පන්තියේ සිසුන් ගණන:</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; font-size: 15px; text-align: center; white-space: normal;">${totalStudentsInClass}</th>
+                            <th style="border: 1px solid var(--border-main); padding: 6px; text-align: center; white-space: normal;">-</th>
                         </tr>
                     </table>
                     </div>
@@ -1780,7 +1862,7 @@
                     #adminLoginBox { display: none !important; }
                     #studentSearchBox { width: 100% !important; max-width: 100% !important; background: white !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
                     #studentSearchBox > *:not(#portalSearchResults) { display: none !important; } 
-                    .btn-login, .btn-clear, #portalActionButtons { display: none !important; } 
+                    .btn-login, .btn-clear, #portalActionButtons, .theme-toggle-btn-login { display: none !important; } 
                     .portal-result-card { background: white !important; border: 1px solid #000 !important; color: #000 !important; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 20px !important; }
                     .portal-result-card * { color: #000 !important; border-color: #000 !important; }
                     .portal-print-header { display: block !important; text-align: center; margin-bottom: 20px; color: #000; }
@@ -1899,7 +1981,11 @@
             let canvas = document.getElementById('marksChart');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
-            Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = '#334155';
+            
+            // Dynamic colors based on Theme
+            let rootStyles = getComputedStyle(document.documentElement);
+            Chart.defaults.color = rootStyles.getPropertyValue('--text-muted').trim() || '#64748b'; 
+            Chart.defaults.borderColor = rootStyles.getPropertyValue('--chart-grid').trim() || '#e2e8f0';
 
             myChart = new Chart(ctx, { 
                 type: 'bar', 
@@ -1907,7 +1993,7 @@
                 options: { 
                     responsive: true, maintainAspectRatio: false, 
                     scales: { 
-                        y: { beginAtZero: true, max: 100, grid: { color: '#334155' } },
+                        y: { beginAtZero: true, max: 100 },
                         x: { grid: { display: false } }
                     },
                     plugins: { legend: { display: false } }
