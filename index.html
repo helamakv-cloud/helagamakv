@@ -715,11 +715,19 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Koonara</span> | 0714469232
+            Developer - <span>Kelum Konara</span> | 0714469232
         </div>
     </div>
 
     <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registered Successfully!'))
+                    .catch(err => console.error('Service Worker Registration Failed:', err));
+            });
+        }
         // --- Theme Toggle Logic ---
         function toggleTheme() {
             let currentTheme = document.documentElement.getAttribute('data-theme');
