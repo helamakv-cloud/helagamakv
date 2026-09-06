@@ -105,6 +105,10 @@
         input:focus, select:focus, textarea:focus { border-color: var(--text-brand); outline: none; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         input[type="text"], input[type="number"], select { text-align: center; text-align-last: center; }
         
+        /* Subject-wise mark input style */
+        .sw-mark-input { width: 100%; padding: 8px; background: var(--bg-card); border: 1px solid var(--border-input); color: var(--text-main); border-radius: 6px; text-align: center; }
+        .sw-mark-input:focus { border-color: var(--text-brand); outline: none; }
+        
         /* --- CUSTOM TABLE DROPDOWN --- */
         .custom-dropdown { position: relative; width: 100%; background: var(--bg-input); border: 1px solid var(--text-brand); border-radius: 8px; font-size: 15px; text-align: left; margin: 8px 0;}
         .dropdown-header { padding: 14px 15px; color: var(--text-brand); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
@@ -218,7 +222,7 @@
         @media print {
             @page { size: A4 landscape; margin: 1cm; }
             body { background: white; margin: 0; padding: 0; overflow: visible; color: #000; font-size: 14px; }
-            .school-header, .tab-nav, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard, #analysisReportCard .table-filters, .theme-toggle-btn, .theme-toggle-btn-login { display: none !important; }
+            .school-header, .tab-nav, #subjectWiseFormCard, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard, #analysisReportCard .table-filters, .theme-toggle-btn, .theme-toggle-btn-login { display: none !important; }
             body:not(.print-search-mode) #printHeader, body:not(.print-search-mode) #analysisPrintHeader { display: block; }
             body:not(.print-search-mode) .table-responsive { overflow-x: visible !important; border: none; display: table; width: 100%;}
             
@@ -326,8 +330,48 @@
         <!-- TAB 1: ලකුණු කළමනාකරණය -->
         <div id="tab-marks" class="tab-content active">
             <div class="dashboard">
+                
+                <!-- NEW: Subject-wise Marks Entry Card -->
+                <div class="card" id="subjectWiseFormCard">
+                    <h3 class="section-title" style="color: #10b981;">විෂය අනුව ලකුණු ඇතුළත් කරන්න (පන්තියටම එකවර)</h3>
+                    <div class="flex-row">
+                        <div style="width: 100%;">
+                            <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">වාරය (Term):</label>
+                            <select id="sw_termSelect" required style="border-width: 2px; border-color: var(--text-brand);">
+                                <option value="පළමු වාරය" selected>පළමු වාරය</option>
+                                <option value="දෙවන වාරය">දෙවන වාරය</option>
+                                <option value="තෙවන වාරය">තෙවන වාරය</option>
+                            </select>
+                        </div>
+                        <div style="width: 100%;">
+                            <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">ශ්‍රේණිය (Grade):</label>
+                            <select id="sw_gradeSelect" onchange="loadSubjectsForSW()" required style="border-width: 2px; border-color: var(--text-brand);">
+                                <option value="" disabled selected>තෝරන්න</option>
+                                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                <option value="9">9</option><option value="10">10</option><option value="11">11</option>
+                            </select>
+                        </div>
+                        <div style="width: 100%;">
+                            <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">විෂය (Subject):</label>
+                            <select id="sw_subjectSelect" onchange="loadStudentsForSW()" required style="border-width: 2px; border-color: var(--text-brand);">
+                                <option value="" disabled selected>පළමුව ශ්‍රේණිය තෝරන්න</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="sw_studentsContainer" class="table-responsive" style="margin-top: 20px; border:none;">
+                        <!-- ළමුන්ගේ නම් සහ ලකුණු ඇතුළත් කරන කොටුව මෙතනට Load වේවි -->
+                    </div>
+                    
+                    <div class="flex-row" style="gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #10b981, #059669);" onclick="saveSubjectWiseMarks()">මෙම විෂයේ ලකුණු පද්ධතියට එක් කරන්න</button>
+                        <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="document.getElementById('sw_studentsContainer').innerHTML=''">Clear</button>
+                    </div>
+                </div>
+
+                <!-- EXISTING: Individual Student Marks Entry Card -->
                 <div class="card" id="formCard">
-                    <h3 class="section-title">විෂය ලකුණු ඇතුළත් කරන්න</h3>
+                    <h3 class="section-title">එක් ශිෂ්‍යයෙකුගේ සියලු විෂයයන්ට ලකුණු ඇතුළත් කරන්න</h3>
                     <form id="marksForm">
                         <div class="flex-row">
                             <div style="width: 100%;">
@@ -374,7 +418,7 @@
                         <div id="subjectsContainer"></div>
                         
                         <div class="flex-row" style="gap: 10px; margin-top: 20px;">
-                            <button type="submit" class="btn-submit" style="flex: 2; margin-top: 0;">ලකුණු පද්ධතියට එක් කරන්න</button>
+                            <button type="submit" class="btn-submit" style="flex: 2; margin-top: 0;">ශිෂ්‍යයාගේ ලකුණු පද්ධතියට එක් කරන්න</button>
                             <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="clearMarksInputs()">Clear</button>
                         </div>
                     </form>
@@ -791,6 +835,14 @@
         let registeredTeachers = []; 
         let myChart = null; 
 
+        // Shared Subject Arrays
+        const juniorSubjects = ["සිංහල", "දෙමළ", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
+        const aestheticSubjects = ["චිත්‍ර", "නැටුම්"];
+        const seniorCore = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය"];
+        const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය", "දෙමළ"]; 
+        const bucket2 = ["චිත්‍ර", "නැටුම්"]; 
+        const bucket3 = ["කෘෂි හා ආහාර තාක්ෂණය", "සෞඛ්‍ය හා ශාරිරික අධ්‍යාපනය"]; 
+
         window.onload = function() {
             loadFromFirebase();
             document.getElementById("gradeSelect").value = "11"; 
@@ -857,7 +909,6 @@
                 });
                 studentsData = data;
                 
-                // If old data was found and fixed, silently save it back to DB to permanently fix the columns
                 if(needsUpdate) {
                     db.ref('hkMarksData').set(studentsData);
                 }
@@ -948,7 +999,7 @@
         });
 
         // ==========================================
-        // STUDENT REGISTRATION (Fixed Edit + Gender)
+        // STUDENT REGISTRATION 
         // ==========================================
         function resetStudentForm() {
             document.getElementById("studentRegForm").reset();
@@ -999,6 +1050,9 @@
                 alert(isUpdate ? "ශිෂ්‍ය තොරතුරු සාර්ථකව Update කරන ලදී!" : "ශිෂ්‍ය තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
                 resetStudentForm();
                 loadStudentsForMarks(); 
+                if(document.getElementById("sw_gradeSelect").value !== "") {
+                    loadStudentsForSW();
+                }
             });
         });
 
@@ -1009,7 +1063,6 @@
             let filtered = registeredStudents.filter(s => s !== null && s !== undefined);
             if(filterGrade !== "all") filtered = filtered.filter(s => s.grade === filterGrade);
 
-            // Sorting by Gender (Male first) then alphabetically by name
             filtered.sort((a, b) => {
                 let gA = a.gender || 'පිරිමි';
                 let gB = b.gender || 'පිරිමි';
@@ -1064,7 +1117,7 @@
         }
 
         // ==========================================
-        // TEACHER REGISTRATION (Fixed Edit)
+        // TEACHER REGISTRATION 
         // ==========================================
         function resetTeacherForm() {
             document.getElementById("teacherRegForm").reset();
@@ -1072,7 +1125,6 @@
             document.getElementById("treg_id").style.backgroundColor = "var(--bg-input)";
             document.getElementById("treg_class").value = "නැත";
             
-            // Uncheck all custom subject checkboxes
             let checkboxes = document.querySelectorAll('#teacherSubjectList input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = false);
             updateTeacherSubjects();
@@ -1186,7 +1238,6 @@
                 
                 document.getElementById("treg_class").value = t.classTeacher || "නැත";
                 
-                // Update Custom Checkboxes
                 let tSubjects = t.subjects ? t.subjects.split(', ') : [];
                 let checkboxes = document.querySelectorAll('#teacherSubjectList input[type="checkbox"]');
                 checkboxes.forEach(cb => {
@@ -1203,7 +1254,7 @@
         }
 
         // ==========================================
-        // MARKS MANAGEMENT (Custom Dropdown)
+        // MARKS MANAGEMENT (Individual Student)
         // ==========================================
         function toggleStudentDropdown() {
             let list = document.getElementById("studentDropdownList");
@@ -1227,7 +1278,6 @@
             if(grade) {
                 let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
                 
-                // Sort dropdown by Gender (Male first) then alphabetically
                 studentsInGrade.sort((a, b) => {
                     let gA = a.gender || 'පිරිමි';
                     let gB = b.gender || 'පිරිමි';
@@ -1263,13 +1313,6 @@
             document.getElementById("studentId").value = admNo;
             document.getElementById("studentName").value = nameInitials;
         }
-
-        const juniorSubjects = ["සිංහල", "දෙමළ", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
-        const aestheticSubjects = ["චිත්‍ර", "නැටුම්"];
-        const seniorCore = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය"];
-        const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය", "දෙමළ"]; 
-        const bucket2 = ["චිත්‍ර", "නැටුම්"]; 
-        const bucket3 = ["කෘෂි හා ආහාර තාක්ෂණය", "සෞඛ්‍ය හා ශාරිරික අධ්‍යාපනය"]; 
 
         function loadSubjects() {
             let grade = parseInt(document.getElementById("gradeSelect").value);
@@ -1316,7 +1359,7 @@
                 let rawVal = input.value.trim().toUpperCase();
                 if (rawVal === "AB") {
                     studentMarks[subject] = "AB"; 
-                    subjectCount++; // Count for average
+                    subjectCount++; 
                 } else {
                     let mark = parseFloat(rawVal);
                     if (!isNaN(mark)) { 
@@ -1361,7 +1404,7 @@
             
             let isUpdate = false;
             for(let i=0; i < studentsData.length; i++) {
-                if(studentsData[i] && studentsData[i].id === id && studentsData[i].term === term) {
+                if(studentsData[i] && studentsData[i].id === id && studentsData[i].term === term && studentsData[i].grade === grade.toString()) {
                     let mergedMarks = { ...studentsData[i].marks, ...studentMarks };
                     let newTotal = 0; let newSubjectCount = 0;
                     for (let sub in mergedMarks) { 
@@ -1395,7 +1438,7 @@
         });
 
         // ==========================================
-        // RANK BOARD (Clean Marks Only, Left Aligned Subjects)
+        // RANK BOARD 
         // ==========================================
         function applySubjectFilter() { updateTable(true); }
 
@@ -1512,7 +1555,7 @@
         }
 
         // ==========================================
-        // ANALYSIS REPORT (Master Sheet) Sorted By Gender -> Name
+        // ANALYSIS REPORT (Master Sheet)
         // ==========================================
         function updateAnalysisTable() {
             let tableHeadRow = document.getElementById("analysisTableHeadRow");
@@ -1525,7 +1568,6 @@
 
             let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
             
-            // Assign Gender from registration data to sort the Master Sheet
             filteredData.forEach(s => {
                 let reg = registeredStudents.find(rs => rs && rs.admissionNo === s.id);
                 s.gender = reg ? (reg.gender || 'පිරිමි') : 'පිරිමි';
@@ -1540,7 +1582,6 @@
                 headHtml += `<th style="text-align: left; padding-left: 10px;">${sub}</th>`; 
             });
             
-            // සාමාර්ථ සඳහා වෙනම තීරු (Columns) 5ක් එකතු කිරීම
             headHtml += `<th style="color:#10b981; font-size:14px;">A</th>
                          <th style="color:#3b82f6; font-size:14px;">B</th>
                          <th style="color:#f59e0b; font-size:14px;">C</th>
@@ -1560,7 +1601,6 @@
             let completeStudents = filteredData.filter(s => Object.keys(s.marks).length >= reqCount);
             let pendingStudents = filteredData.filter(s => Object.keys(s.marks).length < reqCount);
 
-            // Master sheet sorting by Gender (Male first) then Alphabetically
             completeStudents.sort((a, b) => {
                 if (a.gender !== b.gender) return a.gender === 'පිරිමි' ? -1 : 1;
                 return a.name.localeCompare(b.name);
@@ -1592,7 +1632,6 @@
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
                 });
 
-                // A, B, C, S, W ප්‍රමාණ වෙනම තීරු වලට ඇතුළත් කිරීම
                 let aCount = gradeCounts['A'] > 0 ? gradeCounts['A'] : '-';
                 let bCount = gradeCounts['B'] > 0 ? gradeCounts['B'] : '-';
                 let cCount = gradeCounts['C'] > 0 ? gradeCounts['C'] : '-';
@@ -1627,7 +1666,6 @@
                     row += `<td style="padding: 6px; text-align: left; padding-left: 10px;">${displayHtml}</td>`;
                 });
 
-                // Pending ළමුන්ගේ A, B, C, S, W ප්‍රමාණ වෙනම තීරු වලට ඇතුළත් කිරීම (අළු පැහැයෙන් පෙන්වයි)
                 let aCount = gradeCounts['A'] > 0 ? gradeCounts['A'] : '-';
                 let bCount = gradeCounts['B'] > 0 ? gradeCounts['B'] : '-';
                 let cCount = gradeCounts['C'] > 0 ? gradeCounts['C'] : '-';
@@ -1694,7 +1732,7 @@
         }
 
         // ==========================================
-        // ADMIN SEARCH FUNCTION (Inside Dashboard)
+        // ADMIN SEARCH FUNCTION 
         // ==========================================
         function searchAdminStudentById() {
             let searchId = document.getElementById("searchIdInput").value.trim();
@@ -1776,7 +1814,7 @@
         }
 
         // ==========================================
-        // STUDENT PORTAL FUNCTIONS (Outside App)
+        // STUDENT PORTAL FUNCTIONS
         // ==========================================
         function showStudentPortal() {
             document.getElementById("adminLoginBox").style.display = "none";
@@ -1981,7 +2019,7 @@
                 filteredChartData.forEach(s => {
                     if (s.marks && s.marks[subject] !== undefined) { 
                         if (s.marks[subject] === "AB") {
-                            count++; // count absent for average
+                            count++; 
                         } else {
                             sum += s.marks[subject]; 
                             count++; 
@@ -2008,7 +2046,6 @@
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
             
-            // Dynamic colors based on Theme
             let rootStyles = getComputedStyle(document.documentElement);
             Chart.defaults.color = rootStyles.getPropertyValue('--text-muted').trim() || '#64748b'; 
             Chart.defaults.borderColor = rootStyles.getPropertyValue('--chart-grid').trim() || '#e2e8f0';
@@ -2025,6 +2062,150 @@
                     plugins: { legend: { display: false } }
                 } 
             });
+        }
+
+        // ==========================================
+        // NEW: SUBJECT-WISE MARKS ENTRY LOGIC
+        // ==========================================
+        function loadSubjectsForSW() {
+            let grade = parseInt(document.getElementById("sw_gradeSelect").value);
+            let subjectSelect = document.getElementById("sw_subjectSelect");
+            subjectSelect.innerHTML = `<option value="" disabled selected>විෂය තෝරන්න</option>`;
+            
+            let subjectsToLoad = [];
+            if (grade <= 9) {
+                subjectsToLoad = [...juniorSubjects, ...aestheticSubjects];
+            } else if (grade === 10 || grade === 11) {
+                subjectsToLoad = [...seniorCore, ...bucket1, ...bucket2, ...bucket3];
+            }
+
+            subjectsToLoad.forEach(sub => {
+                subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+            });
+            
+            document.getElementById("sw_studentsContainer").innerHTML = ""; 
+        }
+
+        function loadStudentsForSW() {
+            let grade = document.getElementById("sw_gradeSelect").value;
+            let term = document.getElementById("sw_termSelect").value;
+            let subject = document.getElementById("sw_subjectSelect").value;
+            let container = document.getElementById("sw_studentsContainer");
+            
+            if(!grade || !subject) return;
+
+            let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
+            
+            studentsInGrade.sort((a, b) => {
+                let gA = a.gender || 'පිරිමි';
+                let gB = b.gender || 'පිරිමි';
+                if (gA !== gB) return gA === 'පිරිමි' ? -1 : 1;
+                return (a.nameInitials || '').localeCompare(b.nameInitials || '');
+            });
+
+            if(studentsInGrade.length === 0) {
+                container.innerHTML = `<p style="color:red; text-align:center;">මෙම ශ්‍රේණිය සඳහා ළමුන් ලියාපදිංචි කර නොමැත.</p>`;
+                return;
+            }
+
+            let html = `<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                            <thead><tr><th>No</th><th style="text-align: left;">ශිෂ්‍යයාගේ නම</th><th>ලකුණු</th></tr></thead><tbody>`;
+            
+            let index = 1;
+            studentsInGrade.forEach(s => {
+                let existingRecord = studentsData.find(d => d && d.id === s.admissionNo && d.term === term && d.grade === grade);
+                let currentMark = "";
+                if(existingRecord && existingRecord.marks && existingRecord.marks[subject] !== undefined) {
+                    currentMark = existingRecord.marks[subject];
+                }
+
+                html += `<tr class="subject-row">
+                            <td style="width: 10%; text-align: center;">${index++}</td>
+                            <td style="width: 60%; text-align: left; font-weight: bold;">${s.admissionNo} - ${s.nameInitials}</td>
+                            <td style="width: 30%;">
+                                <input type="text" class="sw-mark-input" data-admo="${s.admissionNo}" data-name="${s.nameInitials}" value="${currentMark}" placeholder="0-100 / ab" style="width: 100%; text-align: center; padding: 8px;">
+                            </td>
+                         </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function saveSubjectWiseMarks() {
+            let term = document.getElementById("sw_termSelect").value;
+            let grade = document.getElementById("sw_gradeSelect").value;
+            let subject = document.getElementById("sw_subjectSelect").value;
+            let inputs = document.querySelectorAll(".sw-mark-input");
+            
+            if(!subject || inputs.length === 0) {
+                alert("කරුණාකර විෂය සහ ලකුණු ඇතුළත් කරන්න.");
+                return;
+            }
+
+            let hasUpdates = false;
+
+            inputs.forEach(input => {
+                let admo = input.getAttribute("data-admo");
+                let name = input.getAttribute("data-name");
+                let rawVal = input.value.trim().toUpperCase();
+                
+                let markValue = null;
+                if (rawVal === "AB") {
+                    markValue = "AB";
+                } else if (!isNaN(parseFloat(rawVal)) && rawVal !== "") {
+                    markValue = parseFloat(rawVal);
+                }
+
+                if (markValue !== null) {
+                    let existingIndex = studentsData.findIndex(d => d && d.id === admo && d.term === term && d.grade === grade);
+                    
+                    if (existingIndex !== -1) {
+                        studentsData[existingIndex].marks[subject] = markValue;
+                    } else {
+                        let newMarks = {};
+                        newMarks[subject] = markValue;
+                        studentsData.push({
+                            id: admo,
+                            name: name,
+                            term: term,
+                            grade: grade,
+                            fullClassName: "Grade " + grade,
+                            marks: newMarks,
+                            serialNo: studentsData.length + 1
+                        });
+                    }
+                    hasUpdates = true;
+                }
+            });
+
+            if (hasUpdates) {
+                studentsData.forEach(student => {
+                    if (student && student.term === term && student.grade === grade) {
+                        let newTotal = 0;
+                        let newSubjectCount = 0;
+                        for (let sub in student.marks) { 
+                            if (student.marks[sub] === "AB") {
+                                newSubjectCount++;
+                            } else if (typeof student.marks[sub] === "number") {
+                                newTotal += student.marks[sub]; 
+                                newSubjectCount++; 
+                            }
+                        }
+                        student.total = newTotal;
+                        student.average = newSubjectCount > 0 ? parseFloat((newTotal / newSubjectCount).toFixed(2)) : 0;
+                    }
+                });
+
+                studentsData = studentsData.filter(s => s !== null && s !== undefined);
+                db.ref('hkMarksData').set(studentsData).then(() => {
+                    alert(subject + " විෂය සඳහා ලකුණු සාර්ථකව Save කරන ලදී!");
+                    document.getElementById("tableTermSelect").value = term;
+                    document.getElementById("tableGradeSelect").value = grade;
+                    updateTable(); 
+                });
+            } else {
+                alert("ලකුණු කිසිවක් ඇතුළත් කර නොමැත.");
+            }
         }
     </script>
 </body>
