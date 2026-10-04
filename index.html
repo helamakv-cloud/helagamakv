@@ -105,10 +105,6 @@
         input:focus, select:focus, textarea:focus { border-color: var(--text-brand); outline: none; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         input[type="text"], input[type="number"], select { text-align: center; text-align-last: center; }
         
-        /* Subject-wise mark input style */
-        .sw-mark-input { width: 100%; padding: 8px; background: var(--bg-card); border: 1px solid var(--border-input); color: var(--text-main); border-radius: 6px; text-align: center; }
-        .sw-mark-input:focus { border-color: var(--text-brand); outline: none; }
-        
         /* --- CUSTOM TABLE DROPDOWN --- */
         .custom-dropdown { position: relative; width: 100%; background: var(--bg-input); border: 1px solid var(--text-brand); border-radius: 8px; font-size: 15px; text-align: left; margin: 8px 0;}
         .dropdown-header { padding: 14px 15px; color: var(--text-brand); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
@@ -148,7 +144,6 @@
         .term-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; white-space: nowrap; border: 1px solid rgba(59,130,246,0.3);}
         .chart-container { position: relative; width: 100%; height: 350px; margin-top: 20px;}
         .dev-footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; font-weight: 500; border-top: 1px solid var(--border-main); margin-top: 20px;}
-        .dev-footer span { color: var(--text-brand); font-weight: bold; }
 
         /* --- PDF & Print Handling --- */
         #printHeader, #analysisPrintHeader { display: none; text-align: center; margin-bottom: 20px; }
@@ -222,7 +217,7 @@
         @media print {
             @page { size: A4 landscape; margin: 1cm; }
             body { background: white; margin: 0; padding: 0; overflow: visible; color: #000; font-size: 14px; }
-            .school-header, .tab-nav, #subjectWiseFormCard, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard, #analysisReportCard .table-filters, .theme-toggle-btn, .theme-toggle-btn-login { display: none !important; }
+            .school-header, .tab-nav, #formCard, #chartCard, .action-buttons, .table-filters, #regStudentFormCard, #regTeacherFormCard, #searchCard, #analysisReportCard .table-filters, .theme-toggle-btn, .theme-toggle-btn-login { display: none !important; }
             body:not(.print-search-mode) #printHeader, body:not(.print-search-mode) #analysisPrintHeader { display: block; }
             body:not(.print-search-mode) .table-responsive { overflow-x: visible !important; border: none; display: table; width: 100%;}
             
@@ -277,7 +272,7 @@
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #10b981, #059669); margin-top: 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onclick="showStudentPortal()">🎓 ඔබේ ප්‍රතිඵලය බලන්න</button>
             
             <div style="margin-top: 25px; font-size: 13px; color: var(--text-muted);">
-               © Kelum Konara | Smart<span style="color: #10b981;">Soft</span>
+                &copy; 2026 | Kelum Konara | Smart<span style="color: #10b981; font-weight: bold;">Soft</span>
             </div>
         </div>
 
@@ -296,8 +291,13 @@
             </div>
             
             <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted);">ඔබගේ ඇතුළත්වීමේ අංකය (Admission No):</label>
+                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted);">ඇතුළත්වීමේ අංකය (Admission No):</label>
                 <input type="text" id="portalSearchInput" placeholder="උදා: 1234">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted);">උපන් දිනය (DOB):</label>
+                <input type="text" id="portalDobInput" placeholder="YYYY-MM-DD" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')">
             </div>
             
             <button type="button" class="btn-login" style="background: linear-gradient(to right, #38bdf8, #3b82f6); margin-top: 0;" onclick="searchInPortal()">ප්‍රතිඵල සොයන්න</button>
@@ -306,7 +306,7 @@
             <div id="portalSearchResults" class="scrollable-results" style="margin-top: 20px; text-align: left; max-height: 70vh; overflow-y: auto;"></div>
             
             <div style="margin-top: 25px; font-size: 13px; color: var(--text-muted);">
-                 © Kelum Konara | Smart<span style="color: #10b981;">Soft</span>
+                &copy; 2026 | Kelum Konara | Smart<span style="color: #10b981; font-weight: bold;">Soft</span>
             </div>
         </div>
     </div>
@@ -328,73 +328,52 @@
         </div>
         
         <!-- TAB 1: ලකුණු කළමනාකරණය -->
+        <!-- TAB 1: ලකුණු කළමනාකරණය -->
         <div id="tab-marks" class="tab-content active">
             <div class="dashboard">
                 
-                <!-- NEW: Subject-wise Marks Entry Card -->
-                <div class="card" id="subjectWiseFormCard">
-                    <h3 class="section-title" style="color: #10b981;">විෂය අනුව ලකුණු ඇතුළත් කරන්න (පන්තියටම එකවර)</h3>
+                <div class="card" id="subjectWiseEntryCard">
+                    <h3 class="section-title">විෂය අනුව ලකුණු ඇතුළත් කිරීම (Subject-wise Entry)</h3>
                     <div class="flex-row">
-                        <div style="width: 100%;">
-                            <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">වාරය (Term):</label>
-                            <select id="sw_termSelect" required style="border-width: 2px; border-color: var(--text-brand);">
-                                <option value="පළමු වාරය" selected>පළමු වාරය</option>
+                        <select id="subWiseTerm" style="border-width: 2px; border-color: var(--text-brand); width: 100%;">
+                            <option value="පළමු වාරය">පළමු වාරය</option>
+                            <option value="දෙවන වාරය">දෙවන වාරය</option>
+                            <option value="තෙවන වාරය">තෙවන වාරය</option>
+                        </select>
+                        
+                        <select id="subWiseGrade" onchange="generateSubjectList()" style="border-width: 2px; border-color: var(--text-brand); width: 100%;">
+                            <option value="" disabled selected>ශ්‍රේණිය තෝරන්න</option>
+                            <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                            <option value="9">9</option><option value="10">10</option><option value="11">11</option>
+                        </select>
+                        
+                        <select id="subWiseSubject" onchange="generateStudentsListForSubject()" style="border-width: 2px; border-color: var(--text-brand); width: 100%;">
+                            <option value="" disabled selected>පළමුව ශ්‍රේණිය තෝරන්න</option>
+                        </select>
+                    </div>
+
+                    <div id="subjectWiseStudentsContainer" style="margin-top: 20px;">
+                        <!-- ලැයිස්තුව මෙහි දිස්වනු ඇත -->
+                    </div>
+
+                    <button type="button" class="btn-submit" onclick="saveSubjectWiseMarks()" style="width: 100%; margin-top: 20px;">ලකුණු පද්ධතියට එක් කරන්න (Save Marks)</button>
+                </div>
+                
+                <div class="card" id="formCard">
+                    <h3 class="section-title">තනි ශිෂ්‍ය ලකුණු ඇතුළත් කිරීම</h3>
+                    <form id="marksForm">
+                        <div class="flex-row">
+                            <select id="termSelect" style="border-width: 2px; border-color: var(--text-brand); width: 100%;">
+                                <option value="පළමු වාරය">පළමු වාරය</option>
                                 <option value="දෙවන වාරය">දෙවන වාරය</option>
                                 <option value="තෙවන වාරය">තෙවන වාරය</option>
                             </select>
-                        </div>
-                        <div style="width: 100%;">
-                            <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">ශ්‍රේණිය (Grade):</label>
-                            <select id="sw_gradeSelect" onchange="loadSubjectsForSW()" required style="border-width: 2px; border-color: var(--text-brand);">
-                                <option value="" disabled selected>තෝරන්න</option>
+                            
+                            <select id="gradeSelect" onchange="loadSubjects(); loadStudentsForMarks();" style="border-width: 2px; border-color: var(--text-brand); width: 100%;">
+                                <option value="" disabled selected>ශ්‍රේණිය තෝරන්න</option>
                                 <option value="6">6</option><option value="7">7</option><option value="8">8</option>
                                 <option value="9">9</option><option value="10">10</option><option value="11">11</option>
                             </select>
-                        </div>
-                        <div style="width: 100%;">
-                            <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">විෂය (Subject):</label>
-                            <select id="sw_subjectSelect" onchange="loadStudentsForSW()" required style="border-width: 2px; border-color: var(--text-brand);">
-                                <option value="" disabled selected>පළමුව ශ්‍රේණිය තෝරන්න</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="sw_studentsContainer" class="table-responsive" style="margin-top: 20px; border:none;">
-                        <!-- ළමුන්ගේ නම් සහ ලකුණු ඇතුළත් කරන කොටුව මෙතනට Load වේවි -->
-                    </div>
-                    
-                    <div class="flex-row" style="gap: 10px; margin-top: 20px;">
-                        <button type="button" class="btn-submit" style="flex: 2; margin-top: 0; background: linear-gradient(to right, #10b981, #059669);" onclick="saveSubjectWiseMarks()">මෙම විෂයේ ලකුණු පද්ධතියට එක් කරන්න</button>
-                        <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="document.getElementById('sw_studentsContainer').innerHTML=''">Clear</button>
-                    </div>
-                </div>
-
-                <!-- EXISTING: Individual Student Marks Entry Card -->
-                <div class="card" id="formCard">
-                    <h3 class="section-title">එක් ශිෂ්‍යයෙකුගේ සියලු විෂයයන්ට ලකුණු ඇතුළත් කරන්න</h3>
-                    <form id="marksForm">
-                        <div class="flex-row">
-                            <div style="width: 100%;">
-                                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">වාරය (Term):</label>
-                                <select id="termSelect" required style="border-width: 2px; border-color: var(--text-brand);">
-                                    <option value="" disabled selected>වාරය තෝරන්න</option>
-                                    <option value="පළමු වාරය">පළමු වාරය</option>
-                                    <option value="දෙවන වාරය">දෙවන වාරය</option>
-                                    <option value="තෙවන වාරය">තෙවන වාරය</option>
-                                </select>
-                            </div>
-                            <div style="width: 100%;">
-                                <label style="font-size: 14px; font-weight: bold; color: var(--text-muted); display: block; margin-top: 5px; text-align: center;">ශ්‍රේණිය (Grade):</label>
-                                <select id="gradeSelect" onchange="loadStudentsForMarks(); loadSubjects();" required style="border-width: 2px; border-color: var(--text-brand);">
-                                    <option value="" disabled selected>තෝරන්න</option>
-                                    <option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                                    <option value="9">9</option><option value="10">10</option><option value="11">11</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 20px; padding: 15px; background: var(--bg-input); border-radius: 12px; border: 1px solid var(--text-brand);">
-                            <label style="font-size: 15px; font-weight: bold; color: var(--text-brand); display: block; margin-bottom: 8px; text-align: center;">ශිෂ්‍යයා තෝරන්න (Select Student):</label>
                             
                             <!-- Custom Table Dropdown -->
                             <div class="custom-dropdown" id="studentCustomDropdown">
@@ -408,17 +387,17 @@
                             </div>
                             <input type="hidden" id="selectedStudentDropValue" required>
                             <!-- Custom Dropdown End -->
-
-                            <span class="hint-text" style="margin-top: 12px;">ළමුන් නොපෙන්වයි නම් පළමුව "ශිෂ්‍ය ලියාපදිංචිය" මගින් ළමුන් ඇතුළත් කරන්න.</span>
-                            <input type="hidden" id="studentId" required>
-                            <input type="hidden" id="studentName" required>
                         </div>
+
+                        <span class="hint-text" style="margin-top: 12px;">ළමුන් නොපෙන්වයි නම් පළමුව "ශිෂ්‍ය ලියාපදිංචිය" මගින් ළමුන් ඇතුළත් කරන්න.</span>
+                        <input type="hidden" id="studentId" required>
+                        <input type="hidden" id="studentName" required>
 
                         <h4 style="margin-bottom: 10px; margin-top: 25px; color: var(--text-main); text-align: center; font-weight: 600;">විෂයයන් සඳහා ලකුණු:</h4>
                         <div id="subjectsContainer"></div>
                         
                         <div class="flex-row" style="gap: 10px; margin-top: 20px;">
-                            <button type="submit" class="btn-submit" style="flex: 2; margin-top: 0;">ශිෂ්‍යයාගේ ලකුණු පද්ධතියට එක් කරන්න</button>
+                            <button type="submit" class="btn-submit" style="flex: 2; margin-top: 0;">ලකුණු පද්ධතියට එක් කරන්න</button>
                             <button type="button" class="btn-clear" style="flex: 1; margin-top: 0; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;" onclick="clearMarksInputs()">Clear</button>
                         </div>
                     </form>
@@ -759,19 +738,11 @@
         </div>
 
         <div class="dev-footer">
-            Developer - <span>Kelum Konara</span> | 0714469232
+            &copy; 2026 | Kelum Konara | Smart<span style="color: #10b981; font-weight: bold;">Soft</span>
         </div>
     </div>
 
     <script>
-        // PWA Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker Registered Successfully!'))
-                    .catch(err => console.error('Service Worker Registration Failed:', err));
-            });
-        }
         // --- Theme Toggle Logic ---
         function toggleTheme() {
             let currentTheme = document.documentElement.getAttribute('data-theme');
@@ -834,14 +805,6 @@
         let registeredStudents = []; 
         let registeredTeachers = []; 
         let myChart = null; 
-
-        // Shared Subject Arrays
-        const juniorSubjects = ["සිංහල", "දෙමළ", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
-        const aestheticSubjects = ["චිත්‍ර", "නැටුම්"];
-        const seniorCore = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය"];
-        const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය", "දෙමළ"]; 
-        const bucket2 = ["චිත්‍ර", "නැටුම්"]; 
-        const bucket3 = ["කෘෂි හා ආහාර තාක්ෂණය", "සෞඛ්‍ය හා ශාරිරික අධ්‍යාපනය"]; 
 
         window.onload = function() {
             loadFromFirebase();
@@ -909,6 +872,7 @@
                 });
                 studentsData = data;
                 
+                // If old data was found and fixed, silently save it back to DB to permanently fix the columns
                 if(needsUpdate) {
                     db.ref('hkMarksData').set(studentsData);
                 }
@@ -999,7 +963,7 @@
         });
 
         // ==========================================
-        // STUDENT REGISTRATION 
+        // STUDENT REGISTRATION (Fixed Edit + Gender)
         // ==========================================
         function resetStudentForm() {
             document.getElementById("studentRegForm").reset();
@@ -1050,9 +1014,6 @@
                 alert(isUpdate ? "ශිෂ්‍ය තොරතුරු සාර්ථකව Update කරන ලදී!" : "ශිෂ්‍ය තොරතුරු සාර්ථකව ලියාපදිංචි කරන ලදී!");
                 resetStudentForm();
                 loadStudentsForMarks(); 
-                if(document.getElementById("sw_gradeSelect").value !== "") {
-                    loadStudentsForSW();
-                }
             });
         });
 
@@ -1063,6 +1024,7 @@
             let filtered = registeredStudents.filter(s => s !== null && s !== undefined);
             if(filterGrade !== "all") filtered = filtered.filter(s => s.grade === filterGrade);
 
+            // Sorting by Gender (Male first) then alphabetically by name
             filtered.sort((a, b) => {
                 let gA = a.gender || 'පිරිමි';
                 let gB = b.gender || 'පිරිමි';
@@ -1117,7 +1079,7 @@
         }
 
         // ==========================================
-        // TEACHER REGISTRATION 
+        // TEACHER REGISTRATION (Fixed Edit)
         // ==========================================
         function resetTeacherForm() {
             document.getElementById("teacherRegForm").reset();
@@ -1125,6 +1087,7 @@
             document.getElementById("treg_id").style.backgroundColor = "var(--bg-input)";
             document.getElementById("treg_class").value = "නැත";
             
+            // Uncheck all custom subject checkboxes
             let checkboxes = document.querySelectorAll('#teacherSubjectList input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = false);
             updateTeacherSubjects();
@@ -1238,6 +1201,7 @@
                 
                 document.getElementById("treg_class").value = t.classTeacher || "නැත";
                 
+                // Update Custom Checkboxes
                 let tSubjects = t.subjects ? t.subjects.split(', ') : [];
                 let checkboxes = document.querySelectorAll('#teacherSubjectList input[type="checkbox"]');
                 checkboxes.forEach(cb => {
@@ -1254,7 +1218,7 @@
         }
 
         // ==========================================
-        // MARKS MANAGEMENT (Individual Student)
+        // MARKS MANAGEMENT (Custom Dropdown)
         // ==========================================
         function toggleStudentDropdown() {
             let list = document.getElementById("studentDropdownList");
@@ -1278,6 +1242,7 @@
             if(grade) {
                 let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
                 
+                // Sort dropdown by Gender (Male first) then alphabetically
                 studentsInGrade.sort((a, b) => {
                     let gA = a.gender || 'පිරිමි';
                     let gB = b.gender || 'පිරිමි';
@@ -1313,6 +1278,13 @@
             document.getElementById("studentId").value = admNo;
             document.getElementById("studentName").value = nameInitials;
         }
+
+        const juniorSubjects = ["සිංහල", "දෙමළ", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය", "භූගෝල විද්‍යාව", "පුරවැසි අධ්‍යාපනය", "සෞඛ්‍යය", "ICT", "PTS"];
+        const aestheticSubjects = ["චිත්‍ර", "නැටුම්"];
+        const seniorCore = ["සිංහල", "ආගම", "ගණිතය", "විද්‍යාව", "ඉංග්‍රීසි", "ඉතිහාසය"];
+        const bucket1 = ["පුරවැසි අධ්‍යාපනය", "භූගෝලය", "දෙමළ"]; 
+        const bucket2 = ["චිත්‍ර", "නැටුම්"]; 
+        const bucket3 = ["කෘෂි හා ආහාර තාක්ෂණය", "සෞඛ්‍ය හා ශාරිරික අධ්‍යාපනය"]; 
 
         function loadSubjects() {
             let grade = parseInt(document.getElementById("gradeSelect").value);
@@ -1359,7 +1331,7 @@
                 let rawVal = input.value.trim().toUpperCase();
                 if (rawVal === "AB") {
                     studentMarks[subject] = "AB"; 
-                    subjectCount++; 
+                    subjectCount++; // Count for average
                 } else {
                     let mark = parseFloat(rawVal);
                     if (!isNaN(mark)) { 
@@ -1404,7 +1376,7 @@
             
             let isUpdate = false;
             for(let i=0; i < studentsData.length; i++) {
-                if(studentsData[i] && studentsData[i].id === id && studentsData[i].term === term && studentsData[i].grade === grade.toString()) {
+                if(studentsData[i] && studentsData[i].id === id && studentsData[i].term === term) {
                     let mergedMarks = { ...studentsData[i].marks, ...studentMarks };
                     let newTotal = 0; let newSubjectCount = 0;
                     for (let sub in mergedMarks) { 
@@ -1438,7 +1410,7 @@
         });
 
         // ==========================================
-        // RANK BOARD 
+        // RANK BOARD (Clean Marks Only, Left Aligned Subjects)
         // ==========================================
         function applySubjectFilter() { updateTable(true); }
 
@@ -1555,7 +1527,7 @@
         }
 
         // ==========================================
-        // ANALYSIS REPORT (Master Sheet)
+        // ANALYSIS REPORT (Master Sheet) Sorted By Gender -> Name
         // ==========================================
         function updateAnalysisTable() {
             let tableHeadRow = document.getElementById("analysisTableHeadRow");
@@ -1568,6 +1540,7 @@
 
             let filteredData = studentsData.filter(s => s && s.term === selectedTerm && s.grade === selectedGrade);
             
+            // Assign Gender from registration data to sort the Master Sheet
             filteredData.forEach(s => {
                 let reg = registeredStudents.find(rs => rs && rs.admissionNo === s.id);
                 s.gender = reg ? (reg.gender || 'පිරිමි') : 'පිරිමි';
@@ -1601,6 +1574,7 @@
             let completeStudents = filteredData.filter(s => Object.keys(s.marks).length >= reqCount);
             let pendingStudents = filteredData.filter(s => Object.keys(s.marks).length < reqCount);
 
+            // Master sheet sorting by Gender (Male first) then Alphabetically
             completeStudents.sort((a, b) => {
                 if (a.gender !== b.gender) return a.gender === 'පිරිමි' ? -1 : 1;
                 return a.name.localeCompare(b.name);
@@ -1732,7 +1706,7 @@
         }
 
         // ==========================================
-        // ADMIN SEARCH FUNCTION 
+        // ADMIN SEARCH FUNCTION (Inside Dashboard)
         // ==========================================
         function searchAdminStudentById() {
             let searchId = document.getElementById("searchIdInput").value.trim();
@@ -1814,7 +1788,7 @@
         }
 
         // ==========================================
-        // STUDENT PORTAL FUNCTIONS
+        // STUDENT PORTAL FUNCTIONS (Outside App)
         // ==========================================
         function showStudentPortal() {
             document.getElementById("adminLoginBox").style.display = "none";
@@ -1825,23 +1799,39 @@
             document.getElementById("studentSearchBox").style.display = "none";
             document.getElementById("adminLoginBox").style.display = "block";
             document.getElementById("portalSearchInput").value = "";
+            document.getElementById("portalDobInput").value = "";
             document.getElementById("portalSearchResults").innerHTML = "";
         }
 
         function searchInPortal() {
             let searchId = document.getElementById("portalSearchInput").value.trim();
+            let authDob = document.getElementById("portalDobInput").value.trim();
             let selectedTerm = document.getElementById("portalTermSelect").value;
             let resultsContainer = document.getElementById("portalSearchResults");
             
-            if(!searchId) { 
-                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>කරුණාකර ඇතුළත්වීමේ අංකය ඇතුළත් කරන්න.</p>"; 
+            if(!searchId || !authDob) { 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top: 15px;'>කරුණාකර ඇතුළත්වීමේ අංකය සහ උපන් දිනය ඇතුළත් කරන්න.</p>"; 
                 return; 
             }
+
+            // --- Authentication Check ---
+            let registeredStudent = registeredStudents.find(s => s && s.admissionNo === searchId);
+            
+            if(!registeredStudent) {
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top: 15px;'>මෙම ඇතුළත්වීමේ අංකය පද්ධතියේ ලියාපදිංචි කර නොමැත.</p>"; 
+                return;
+            }
+
+            if(registeredStudent.dob !== authDob) {
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top: 15px;'>ඔබ ඇතුළත් කළ උපන් දිනය වැරදියි! කරුණාකර නිවැරදි උපන් දිනය (YYYY-MM-DD) ලබා දෙන්න.</p>"; 
+                return;
+            }
+            // -----------------------------
 
             let foundRecords = studentsData.filter(s => s && s.id === searchId && s.term === selectedTerm);
             
             if(foundRecords.length === 0) { 
-                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි අංකය සහ වාරය පරීක්ෂා කරන්න.</p>"; 
+                resultsContainer.innerHTML = "<p style='color:#ef4444; text-align:center; font-size:14px; margin-top: 15px;'>මෙම අංකයට සහ වාරයට අදාළ ප්‍රතිඵල පද්ධතියේ නොමැත. කරුණාකර නිවැරදි වාරය පරීක්ෂා කරන්න.</p>"; 
                 return; 
             }
 
@@ -2001,6 +1991,138 @@
             });
         }
 
+        // ශ්‍රේණියට අදාළ විෂයයන් ලැයිස්තුව සෑදීම
+function generateSubjectList() {
+    let grade = parseInt(document.getElementById("subWiseGrade").value);
+    let subjectSelect = document.getElementById("subWiseSubject");
+    subjectSelect.innerHTML = `<option value="" disabled selected>විෂය තෝරන්න</option>`;
+    
+    let subjects = [];
+    if (grade <= 9) {
+        subjects = [...juniorSubjects, ...aestheticSubjects];
+    } else if (grade === 10 || grade === 11) {
+        subjects = [...seniorCore, ...bucket1, ...bucket2, ...bucket3];
+    }
+    
+    subjects.forEach(sub => {
+        subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+    });
+}
+
+// තෝරාගත් විෂයට අදාළ සිසුන්ගේ ලැයිස්තුව සෑදීම
+function generateStudentsListForSubject() {
+    let grade = document.getElementById("subWiseGrade").value;
+    let subject = document.getElementById("subWiseSubject").value;
+    let container = document.getElementById("subjectWiseStudentsContainer");
+    
+    if(!grade || !subject) return;
+
+    // තෝරාගත් ශ්‍රේණියේ ළමුන් පෙරීම
+    let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
+    
+    if(studentsInGrade.length === 0) {
+        container.innerHTML = "<p style='color:red; text-align:center;'>මෙම ශ්‍රේණිය සඳහා සිසුන් ලියාපදිංචි කර නොමැත.</p>";
+        return;
+    }
+
+    // ළමුන් අකාරාදී පිළිවෙලට සකස් කිරීම
+    studentsInGrade.sort((a, b) => (a.nameInitials || '').localeCompare(b.nameInitials || ''));
+
+    let html = `<table class="dropdown-table" style="width: 100%; margin-top: 10px;">
+        <thead>
+            <tr>
+                <th style="padding: 10px; background: var(--table-header);">Admission No</th>
+                <th style="text-align: left; padding: 10px; background: var(--table-header);">නම</th>
+                <th style="padding: 10px; background: var(--table-header);">ලකුණු</th>
+            </tr>
+        </thead>
+        <tbody>`;
+        
+    studentsInGrade.forEach(s => {
+        html += `<tr>
+            <td style="font-weight: bold; text-align: center; color: var(--text-brand);">${s.admissionNo}</td>
+            <td style="text-align: left; font-weight: 600;">${s.nameInitials}</td>
+            <td style="text-align: center;">
+                <input type="text" class="sub-wise-mark mark-input" data-id="${s.admissionNo}" data-name="${s.nameInitials}" placeholder="ලකුණු / AB" style="width: 100%; max-width: 120px; padding: 8px; text-align: center; border: 1px solid var(--border-input); border-radius: 6px;">
+            </td>
+        </tr>`;
+    });
+    
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+// ලකුණු Firebase වෙත Save කිරීම
+function saveSubjectWiseMarks() {
+    let term = document.getElementById("subWiseTerm").value;
+    let grade = document.getElementById("subWiseGrade").value;
+    let subject = document.getElementById("subWiseSubject").value;
+    let markInputs = document.querySelectorAll(".sub-wise-mark");
+
+    if(!grade || !subject || markInputs.length === 0) {
+        alert("කරුණාකර ශ්‍රේණිය සහ විෂය තෝරන්න!");
+        return;
+    }
+
+    markInputs.forEach(input => {
+        let id = input.getAttribute("data-id");
+        let name = input.getAttribute("data-name");
+        let rawVal = input.value.trim().toUpperCase();
+        
+        if(rawVal !== "") {
+            let mark = rawVal === "AB" ? "AB" : parseFloat(rawVal);
+            if(rawVal === "AB" || !isNaN(mark)) {
+                
+                // පවතින දත්ත යාවත්කාලීන කිරීම හෝ අලුතින් එක් කිරීම
+                let existingRecord = studentsData.find(s => s && s.id === id && s.term === term);
+                
+                if(existingRecord) {
+                    existingRecord.marks[subject] = mark;
+                    
+                    // Total සහ Average නැවත ගණනය කිරීම
+                    let total = 0, count = 0;
+                    for (let sub in existingRecord.marks) {
+                        if(existingRecord.marks[sub] !== "AB") {
+                            total += existingRecord.marks[sub];
+                        }
+                        count++;
+                    }
+                    existingRecord.total = total;
+                    existingRecord.average = count > 0 ? parseFloat((total / count).toFixed(2)) : 0;
+                    
+                } else {
+                    let newMarks = {};
+                    newMarks[subject] = mark;
+                    let total = mark === "AB" ? 0 : mark;
+                    let average = mark === "AB" ? 0 : mark;
+                    
+                    studentsData.push({
+                        id: id,
+                        name: name,
+                        term: term,
+                        grade: grade,
+                        fullClassName: "Grade " + grade,
+                        marks: newMarks,
+                        total: total,
+                        average: average,
+                        serialNo: studentsData.length + 1
+                    });
+                }
+            }
+        }
+    });
+
+    // Firebase වෙත දත්ත යැවීම
+    studentsData = studentsData.filter(s => s !== null && s !== undefined);
+    db.ref('hkMarksData').set(studentsData).then(() => {
+        alert(subject + " විෂය සඳහා ලකුණු සාර්ථකව පද්ධතියට එක් කරන ලදී!");
+        document.getElementById("subjectWiseStudentsContainer").innerHTML = "";
+        document.getElementById("subWiseSubject").value = "";
+    }).catch(error => {
+        alert("ලකුණු ඇතුළත් කිරීමේදී දෝෂයක් ඇති විය.");
+    });
+}
+
         // --- Chart Function ---
         function updateChart() {
             if(!studentsData || studentsData.length === 0) return;
@@ -2019,7 +2141,7 @@
                 filteredChartData.forEach(s => {
                     if (s.marks && s.marks[subject] !== undefined) { 
                         if (s.marks[subject] === "AB") {
-                            count++; 
+                            count++; // count absent for average
                         } else {
                             sum += s.marks[subject]; 
                             count++; 
@@ -2046,6 +2168,7 @@
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
             
+            // Dynamic colors based on Theme
             let rootStyles = getComputedStyle(document.documentElement);
             Chart.defaults.color = rootStyles.getPropertyValue('--text-muted').trim() || '#64748b'; 
             Chart.defaults.borderColor = rootStyles.getPropertyValue('--chart-grid').trim() || '#e2e8f0';
@@ -2062,150 +2185,6 @@
                     plugins: { legend: { display: false } }
                 } 
             });
-        }
-
-        // ==========================================
-        // NEW: SUBJECT-WISE MARKS ENTRY LOGIC
-        // ==========================================
-        function loadSubjectsForSW() {
-            let grade = parseInt(document.getElementById("sw_gradeSelect").value);
-            let subjectSelect = document.getElementById("sw_subjectSelect");
-            subjectSelect.innerHTML = `<option value="" disabled selected>විෂය තෝරන්න</option>`;
-            
-            let subjectsToLoad = [];
-            if (grade <= 9) {
-                subjectsToLoad = [...juniorSubjects, ...aestheticSubjects];
-            } else if (grade === 10 || grade === 11) {
-                subjectsToLoad = [...seniorCore, ...bucket1, ...bucket2, ...bucket3];
-            }
-
-            subjectsToLoad.forEach(sub => {
-                subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
-            });
-            
-            document.getElementById("sw_studentsContainer").innerHTML = ""; 
-        }
-
-        function loadStudentsForSW() {
-            let grade = document.getElementById("sw_gradeSelect").value;
-            let term = document.getElementById("sw_termSelect").value;
-            let subject = document.getElementById("sw_subjectSelect").value;
-            let container = document.getElementById("sw_studentsContainer");
-            
-            if(!grade || !subject) return;
-
-            let studentsInGrade = registeredStudents.filter(s => s && s.grade === grade);
-            
-            studentsInGrade.sort((a, b) => {
-                let gA = a.gender || 'පිරිමි';
-                let gB = b.gender || 'පිරිමි';
-                if (gA !== gB) return gA === 'පිරිමි' ? -1 : 1;
-                return (a.nameInitials || '').localeCompare(b.nameInitials || '');
-            });
-
-            if(studentsInGrade.length === 0) {
-                container.innerHTML = `<p style="color:red; text-align:center;">මෙම ශ්‍රේණිය සඳහා ළමුන් ලියාපදිංචි කර නොමැත.</p>`;
-                return;
-            }
-
-            let html = `<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                            <thead><tr><th>No</th><th style="text-align: left;">ශිෂ්‍යයාගේ නම</th><th>ලකුණු</th></tr></thead><tbody>`;
-            
-            let index = 1;
-            studentsInGrade.forEach(s => {
-                let existingRecord = studentsData.find(d => d && d.id === s.admissionNo && d.term === term && d.grade === grade);
-                let currentMark = "";
-                if(existingRecord && existingRecord.marks && existingRecord.marks[subject] !== undefined) {
-                    currentMark = existingRecord.marks[subject];
-                }
-
-                html += `<tr class="subject-row">
-                            <td style="width: 10%; text-align: center;">${index++}</td>
-                            <td style="width: 60%; text-align: left; font-weight: bold;">${s.admissionNo} - ${s.nameInitials}</td>
-                            <td style="width: 30%;">
-                                <input type="text" class="sw-mark-input" data-admo="${s.admissionNo}" data-name="${s.nameInitials}" value="${currentMark}" placeholder="0-100 / ab" style="width: 100%; text-align: center; padding: 8px;">
-                            </td>
-                         </tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        }
-
-        function saveSubjectWiseMarks() {
-            let term = document.getElementById("sw_termSelect").value;
-            let grade = document.getElementById("sw_gradeSelect").value;
-            let subject = document.getElementById("sw_subjectSelect").value;
-            let inputs = document.querySelectorAll(".sw-mark-input");
-            
-            if(!subject || inputs.length === 0) {
-                alert("කරුණාකර විෂය සහ ලකුණු ඇතුළත් කරන්න.");
-                return;
-            }
-
-            let hasUpdates = false;
-
-            inputs.forEach(input => {
-                let admo = input.getAttribute("data-admo");
-                let name = input.getAttribute("data-name");
-                let rawVal = input.value.trim().toUpperCase();
-                
-                let markValue = null;
-                if (rawVal === "AB") {
-                    markValue = "AB";
-                } else if (!isNaN(parseFloat(rawVal)) && rawVal !== "") {
-                    markValue = parseFloat(rawVal);
-                }
-
-                if (markValue !== null) {
-                    let existingIndex = studentsData.findIndex(d => d && d.id === admo && d.term === term && d.grade === grade);
-                    
-                    if (existingIndex !== -1) {
-                        studentsData[existingIndex].marks[subject] = markValue;
-                    } else {
-                        let newMarks = {};
-                        newMarks[subject] = markValue;
-                        studentsData.push({
-                            id: admo,
-                            name: name,
-                            term: term,
-                            grade: grade,
-                            fullClassName: "Grade " + grade,
-                            marks: newMarks,
-                            serialNo: studentsData.length + 1
-                        });
-                    }
-                    hasUpdates = true;
-                }
-            });
-
-            if (hasUpdates) {
-                studentsData.forEach(student => {
-                    if (student && student.term === term && student.grade === grade) {
-                        let newTotal = 0;
-                        let newSubjectCount = 0;
-                        for (let sub in student.marks) { 
-                            if (student.marks[sub] === "AB") {
-                                newSubjectCount++;
-                            } else if (typeof student.marks[sub] === "number") {
-                                newTotal += student.marks[sub]; 
-                                newSubjectCount++; 
-                            }
-                        }
-                        student.total = newTotal;
-                        student.average = newSubjectCount > 0 ? parseFloat((newTotal / newSubjectCount).toFixed(2)) : 0;
-                    }
-                });
-
-                studentsData = studentsData.filter(s => s !== null && s !== undefined);
-                db.ref('hkMarksData').set(studentsData).then(() => {
-                    alert(subject + " විෂය සඳහා ලකුණු සාර්ථකව Save කරන ලදී!");
-                    document.getElementById("tableTermSelect").value = term;
-                    document.getElementById("tableGradeSelect").value = grade;
-                    updateTable(); 
-                });
-            } else {
-                alert("ලකුණු කිසිවක් ඇතුළත් කර නොමැත.");
-            }
         }
     </script>
 </body>
