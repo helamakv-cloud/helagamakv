@@ -244,6 +244,28 @@
             .rank-col, .term-badge { background-color: transparent !important; color: #000 !important; border: none !important;}
             .dev-footer { display: none !important; }
         }
+        body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: var(--bg-body); 
+    color: var(--text-main); 
+    min-height: 100vh; 
+    padding: 10px; 
+    font-size: 16px;
+    
+    /* Copy කිරීම වැළැක්වීමේ කේත */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+/* Input Box සහ Dropdown වල පමණක් අකුරු වෙනස් කිරීමට ඉඩ ලබා දීම */
+input, select, textarea {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+}
     </style>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
@@ -743,6 +765,28 @@
     </div>
 
     <script>
+        // --- Copy Protection / Security Measures ---
+        
+        // 1. Right-Click මෙනුව (Context Menu) Disable කිරීම
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // 2. Ctrl+C (Copy) සහ Ctrl+X (Cut) Keyboard Shortcuts Disable කිරීම
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+        });
+        document.addEventListener('cut', function(e) {
+            e.preventDefault();
+        });
+
+        // 3. Mouse එකෙන් දත්ත Select කිරීම තහනම් කිරීම (Inputs වල හැර)
+        document.addEventListener('selectstart', function(e) {
+            const tagName = e.target.tagName.toLowerCase();
+            if (tagName !== 'input' && tagName !== 'textarea' && tagName !== 'select') {
+                e.preventDefault();
+            }
+        });
         // --- Theme Toggle Logic ---
         function toggleTheme() {
             let currentTheme = document.documentElement.getAttribute('data-theme');
